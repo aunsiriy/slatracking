@@ -1,0 +1,163 @@
+/**
+ * Typography Utility Classes - pea
+ * Display/Title -> var(--pea-font-family-display)
+ * Body/Text -> var(--pea-font-family-body)
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap');
+
+.pea-typescale-display-2xl {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-display-2xl);
+  line-height: var(--pea-line-height-display-2xl);
+  letter-spacing: var(--pea-letter-spacing-tightest);
+}
+
+.pea-typescale-display-xl {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-display-xl);
+  line-height: var(--pea-line-height-display-xl);
+  letter-spacing: var(--pea-letter-spacing-tighter);
+}
+
+.pea-typescale-display-lg {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-display-lg);
+  line-height: var(--pea-line-height-display-lg);
+  letter-spacing: var(--pea-letter-spacing-tighter);
+}
+
+.pea-typescale-display-md {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-display-md);
+  line-height: var(--pea-line-height-display-md);
+  letter-spacing: var(--pea-letter-spacing-tight);
+}
+
+.pea-typescale-display-sm {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-display-sm);
+  line-height: var(--pea-line-height-display-sm);
+  letter-spacing: var(--pea-letter-spacing-tight);
+}
+
+.pea-typescale-display-xs {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-display-xs);
+  line-height: var(--pea-line-height-display-xs);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-title-xl {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-text-xl);
+  line-height: var(--pea-line-height-text-xl);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-title-lg {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-text-lg);
+  line-height: var(--pea-line-height-text-lg);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-title-md {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-text-md);
+  line-height: var(--pea-line-height-text-md);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-title-sm {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-text-sm);
+  line-height: var(--pea-line-height-text-sm);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-title-xs {
+  font-family: var(--pea-font-family-display, IBM Plex Sans Thai, sans-serif);
+  font-size: var(--pea-font-size-text-xs);
+  line-height: var(--pea-line-height-text-xs);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-body-xl {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-xl);
+  line-height: var(--pea-line-height-text-xl);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-body-lg {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-lg);
+  line-height: var(--pea-line-height-text-lg);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-body-md {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-md);
+  line-height: var(--pea-line-height-text-md);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-body-sm {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-sm);
+  line-height: var(--pea-line-height-text-sm);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-body-xs {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-xs);
+  line-height: var(--pea-line-height-text-xs);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-text-xl {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-xl);
+  line-height: var(--pea-line-height-text-xl);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-text-lg {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-lg);
+  line-height: var(--pea-line-height-text-lg);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-text-md {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-md);
+  line-height: var(--pea-line-height-text-md);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-text-sm {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-sm);
+  line-height: var(--pea-line-height-text-sm);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+.pea-typescale-text-xs {
+  font-family: var(--pea-font-family-body, Google Sans, sans-serif);
+  font-size: var(--pea-font-size-text-xs);
+  line-height: var(--pea-line-height-text-xs);
+  letter-spacing: var(--pea-letter-spacing-normal);
+}
+
+/* Font Weight Utilities */
+/* Usage: class="pea-typescale-body-md pea-font-bold" */
+
+.pea-font-normal { font-weight: var(--pea-font-weight-normal); }
+.pea-font-medium { font-weight: var(--pea-font-weight-medium); }
+.pea-font-semibold { font-weight: var(--pea-font-weight-semibold); }
+.pea-font-bold { font-weight: var(--pea-font-weight-bold); }
