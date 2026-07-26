@@ -49,7 +49,7 @@ const ROLES = {
     cards:{
       ba:{enabled:true,badge:'จัดการได้',cta:'จัดการ BA Master',ctaVariant:'primary',stat:'5 รายการรอตรวจสอบ'},
       sla:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดูรายงานทั้งหมด',ctaVariant:'secondary',stat:'96 ส่งแล้ว · 21 ถูกคืน'},
-      learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดู Learning Form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form-overview'}
+      learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'จัดการ learning form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form-overview-admin'}
     }
   },
   manager:{
