@@ -1,0 +1,55 @@
+*{box-sizing:border-box}
+body{margin:0;background:var(--pea-bg-secondary);color:var(--pea-text-primary);font-family:var(--pea-font-family-body,"Google Sans",sans-serif);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--pea-font-family-display,"IBM Plex Sans Thai",sans-serif);margin:0}
+a{color:var(--pea-text-brand-secondary);text-decoration:none}
+a:hover{color:var(--pea-text-brand-secondary-hover)}
+button{font-family:inherit}
+.icon{display:inline-block;flex-shrink:0}
+.card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
+.ba-tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary);white-space:nowrap}
+
+.lftop{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;background:#fff;border-bottom:1px solid var(--pea-border-secondary)}
+.lftop-left{display:flex;align-items:center;gap:10px}
+.lftop-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
+.lftop-word{display:flex;flex-direction:column;line-height:1.2}
+.lftop-title{font-family:var(--pea-font-family-display);font-weight:700;font-size:15px}
+.lftop-sub{font-size:11px;color:var(--pea-text-tertiary)}
+.lftop-back{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-secondary);padding:8px 12px;border-radius:8px}
+.lftop-back:hover{background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
+
+.lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
+.lfbreadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pea-text-tertiary);margin-bottom:16px}
+.lfbreadcrumb .is-current{color:var(--pea-text-brand-secondary);font-weight:600}
+.lfpage-head{margin-bottom:22px}
+.lfpage-head h1{font-size:26px;font-weight:700;margin-bottom:6px}
+.lfpage-head p{font-size:14px;color:var(--pea-text-tertiary)}
+
+.lfkpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.lfkpi-card{padding:18px 20px;display:flex;align-items:center;gap:14px}
+.lfkpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lfkpi-icon--brand{background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary)}
+.lfkpi-icon--blue{background:var(--pea-utility-blue-50);color:var(--pea-utility-blue-700)}
+.lfkpi-icon--warning{background:var(--pea-utility-warning-50);color:var(--pea-utility-warning-700)}
+.lfkpi-value{font-family:var(--pea-font-family-display);font-size:26px;font-weight:700;color:var(--pea-text-primary)}
+.lfkpi-label{font-size:13px;color:var(--pea-text-tertiary)}
+
+.lfmenu-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.lfmenu-card{padding:24px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.lfmenu-icon{width:44px;height:44px;border-radius:10px;background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary);display:flex;align-items:center;justify-content:center}
+.lfmenu-title{font-size:17px;font-weight:700}
+.lfmenu-desc{font-size:13px;color:var(--pea-text-tertiary);line-height:1.55;flex:1;margin:0}
+
+.lflist-card{padding:20px 22px}
+.lflist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.lflist-head h3{font-size:16px;font-weight:700}
+.lfyear-filter{display:flex;gap:6px}
+.lfyear-btn{border:1px solid var(--pea-border-secondary);background:#fff;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--pea-text-secondary);cursor:pointer}
+.lfyear-btn.is-active{background:var(--pea-bg-brand-solid);border-color:var(--pea-bg-brand-solid);color:#fff}
+.lflist-empty{padding:32px 0;text-align:center;font-size:13.5px;color:var(--pea-text-tertiary)}
+.lflist-rows{display:flex;flex-direction:column}
+.lflist-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--pea-border-tertiary)}
+.lflist-row:first-child{border-top:none}
+.lflist-row-process{font-size:14px;font-weight:600;color:var(--pea-text-primary)}
+.lflist-row-unit{font-size:12.5px;color:var(--pea-text-tertiary);margin-top:2px}
+
+@media (max-width:900px){.lfkpi-grid,.lfmenu-grid{grid-template-columns:1fr}.lflist-row{grid-template-columns:1fr;gap:8px}}

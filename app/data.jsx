@@ -49,7 +49,7 @@ const ROLES = {
     cards:{
       ba:{enabled:true,badge:'จัดการได้',cta:'จัดการ BA Master',ctaVariant:'primary',stat:'5 รายการรอตรวจสอบ'},
       sla:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดูรายงานทั้งหมด',ctaVariant:'secondary',stat:'96 ส่งแล้ว · 21 ถูกคืน'},
-      learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดู Learning Form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form'}
+      learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดู Learning Form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form-overview'}
     }
   },
   manager:{
@@ -71,7 +71,7 @@ const ROLES = {
     cards:{
       ba:{enabled:false,badge:'View only',cta:'ดูโครงสร้าง BA',ctaVariant:'secondary',stat:'อ้างอิงเท่านั้น'},
       sla:{enabled:true,badge:'ต้องดำเนินการ',cta:'ไปที่รายงาน SLA',ctaVariant:'primary',stat:'4 ต้องกรอก · 2 ถูกคืน',href:'/sla-overview'},
-      learning:{enabled:true,badge:'ได้รับมอบหมาย',cta:'ไปที่ Learning Form',ctaVariant:'secondary',stat:'2 รายการรอดำเนินการ',href:'/learning-form'}
+      learning:{enabled:true,badge:'ได้รับมอบหมาย',cta:'ไปที่ Learning Form',ctaVariant:'secondary',stat:'2 รายการรอดำเนินการ',href:'/learning-form-overview'}
     }
   },
   staff:{
@@ -93,7 +93,7 @@ const ROLES = {
     cards:{
       ba:{enabled:false,badge:'View only',cta:'ดูโครงสร้าง BA',ctaVariant:'secondary',stat:'อ้างอิงเท่านั้น'},
       sla:{enabled:false,badge:'ดูผลของฉัน',cta:'ดูผล SLA ของฉัน',ctaVariant:'secondary',stat:'1 รายการรอกรอก'},
-      learning:{enabled:true,badge:'ได้รับมอบหมาย',cta:'กรอก Learning Form',ctaVariant:'primary',stat:'1 รายการ ครบกำหนด 20 ก.ค.',href:'/p1-p11-overview'}
+      learning:{enabled:true,badge:'ได้รับมอบหมาย',cta:'กรอก Learning Form',ctaVariant:'primary',stat:'1 รายการ ครบกำหนด 20 ก.ค.',href:'/learning-form-overview'}
     }
   }
 };
