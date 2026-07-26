@@ -1,38 +1,44 @@
 # PEA-SLA Tracking System
 
-A real, buildable/deployable Vite + React app, migrated from the `design_handoff_pea_sla_phase2` click-through prototype (10 HTML pages, React-via-CDN + Babel-in-browser, no build step).
+A real, buildable/deployable Next.js (App Router) app, migrated from a Vite multi-page app, itself migrated from the `design_handoff_pea_sla_phase2` click-through prototype (10 HTML pages, React-via-CDN + Babel-in-browser, no build step).
 
-## What changed vs. the prototype
+## What changed vs. the Vite app
 
-- **Build tooling**: Vite multi-page app instead of CDN React/Babel-standalone. Each page is a real Vite entry (`index.html`, `ba-sla-master.html`, etc.) that loads a bundled JS module instead of loose `<script type="text/babel">` tags.
-- **React**: self-hosted production UMD build (`public/vendor/react*.production.min.js`) instead of the unpkg CDN — no runtime network dependency, version-pinned via `package.json`.
-- **No Babel at runtime**: the original `.jsx` files never actually used JSX syntax (`React.createElement` calls throughout), so Vite/esbuild compiles them directly — Babel-standalone is gone.
-- **Same page logic, same look**: every page's markup, inline `<style>` block, and JSX component code is carried over verbatim. Cross-page navigation hrefs were remapped from the original spaced filenames (`"Landing Page.html"`) to URL-safe kebab-case (`index.html`, `ba-sla-master.html`, ...) — see the table below.
-- **Bug fixed**: `src/shared/ba-sla-data.jsx`'s `flattenBaLevels()` read `window.BA_GROUPS` instead of the local `BA_GROUPS` constant. The original prototype only worked because Babel-standalone downleveled `const`/`let` to `var` (which attaches to `window`); real ES modules don't do that, so this same-file self-reference threw and left the BA & SLA Master page blank. Fixed to read the local constant directly.
-- **Broken asset fixed**: the landing page's hero background referenced a non-existent `container10-mrth48bg-f5pb.png`; pointed to `assets/hero-bg.jpg` instead.
+- **Build tooling**: Next.js App Router instead of a Vite multi-page app. Each former `*.html` entry is now a route under `app/` (`app/page.jsx` for `/`, `app/ba-sla-master/page.jsx` for `/ba-sla-master`, etc.).
+- **Routing**: cross-page navigation uses `next/link` (`<Link href="/...">`) and clean paths instead of `.html` filenames; the couple of imperative "back"/"switch" button actions still use `window.location.href`, just with clean paths.
+- **Images**: the repeated logo images now render through `next/image`.
+- **React**: still resolved as a single shared instance across the app. The precompiled, sourceless design-system bundle in `public/_ds` (no build step of its own) reads `window.React` and calls its own hooks directly, so `app/react-globals-bridge.jsx` exposes the npm `react` instance Next.js hydrates with as `window.React` before that bundle's components ever render — see the comment in that file for why this matters. The old self-hosted UMD `react`/`react-dom` scripts are gone; `react`/`react-dom` are now regular npm dependencies.
+- **Env vars**: none existed (no `VITE_*` usage anywhere in app code), so there was nothing to rename to `NEXT_PUBLIC_*`.
+- **Same page logic, same look**: every page's component code, inline styles (now per-route `page.css` files), and behavior is carried over as-is. The only functional code changes were the routing/image swaps above, `'use client'` boundaries, and moving `org-tree-data` from a 1.1MB global `<script>` (`window.ORG_TREE`) to a real ES module import (`src/shared/org-tree-data.js`) to remove a load-order race.
 
 ## Page map
 
-| Original file | New URL |
-|---|---|
-| Landing Page.html | `/` (index.html) |
-| BA SLA Master.html | `/ba-sla-master.html` |
-| BA Structure View.html | `/ba-structure-view.html` |
-| SLA Overview.html | `/sla-overview.html` |
-| SLA Report Form.html | `/sla-report-form.html` |
-| SLA Report Form Level2.html | `/sla-report-form-level2.html` |
-| SLA Status Tracking.html | `/sla-status-tracking.html` |
-| Learning Form.html | `/learning-form.html` |
-| P1-P11 Overview.html | `/p1-p11-overview.html` |
-| QIR Annual Form.html | `/qir-annual-form.html` |
+| Route |
+|---|
+| `/` |
+| `/ba-sla-master` |
+| `/ba-structure-view` |
+| `/sla-overview` |
+| `/sla-report-form` |
+| `/sla-report-form-level2` |
+| `/sla-status-tracking` |
+| `/learning-form` |
+| `/p1-p11-overview` |
+| `/qir-annual-form` |
 
 ## Project structure
 
 ```
-public/            static assets served as-is (design system bundle, icons.css, logo, org tree data, vendor React)
-src/shared/         modules shared by 2+ pages (icons, BA/SLA data + admin panel, P1-P11 data)
-src/pages/<page>/   each page's data.jsx + app.jsx + entry.js (import order mirrors the original <script> order)
-*.html              one Vite entry per page (flat, at project root — matches the original's flat layout)
+public/                     static assets served as-is (design system bundle, icons.css, logo, vendor scripts)
+src/shared/                  modules shared by 2+ routes (icons, BA/SLA data + admin panel, P1-P11 data, org tree)
+app/layout.jsx                root layout: design-system <link> tags, beforeInteractive <Script>s, React bridge
+app/react-globals-bridge.jsx  bridges npm React to window.React for the design-system bundle's hooks
+app/<route>/page.jsx          server component: sets the route's <title>, renders view.jsx
+app/<route>/view.jsx           'use client' wrapper: imports that route's data.jsx/app.jsx (order matters) + page.css
+app/<route>/*-data.jsx         that route's mock data (still window-global style, unchanged from the Vite app)
+app/<route>/*-app.jsx          that route's component tree (still React.createElement style, unchanged apart from
+                               the routing/image/export edits described above)
+app/<route>/page.css           that route's original inline <style> block, extracted verbatim
 ```
 
 ## Develop
@@ -45,11 +51,11 @@ npm run dev
 ## Build & deploy
 
 ```bash
-npm run build    # outputs static site to dist/
-npm run preview  # serve the production build locally to sanity-check it
+npm run build
+npm start
 ```
 
-`dist/` is a fully static site (HTML + JS + CSS + assets) — upload it as-is to any static host (Vercel, Netlify, GitHub Pages, S3, nginx, etc.). No server-side runtime is required.
+Deploys to Vercel with zero extra config (`vercel.json` just pins `framework: nextjs`).
 
 ## Known gaps (carried over from the prototype)
 

@@ -1,3 +1,5 @@
+import { ORG_TREE } from '@/src/shared/org-tree-data.js';
+
 const {Button:SmButton,Badge:SmBadge,InputField:SmInputField,Toggle:SmToggle,Radio:SmRadio,Textarea:SmTextarea}=window.DesignSystem_cbd181;
 
 function monthLabel(k){const idx=parseInt(k.replace('M',''),10)-1;return ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][idx]||k;}
@@ -28,7 +30,7 @@ function collectAllKong(nodes,acc){
 }
 let ALL_KONG_NAMES=null;
 function getAllKongNames(){
-  if(!ALL_KONG_NAMES)ALL_KONG_NAMES=collectAllKong(window.ORG_TREE,[]);
+  if(!ALL_KONG_NAMES)ALL_KONG_NAMES=collectAllKong(ORG_TREE,[]);
   return ALL_KONG_NAMES;
 }
 
@@ -260,7 +262,7 @@ function buildFaiKongChildren(node,directOnly){
 }
 const REGION_PREFIX={'สายงานภาคกลาง':'กฟก','สายงานภาคตะวันออกเฉียงเหนือ':'กฟฉ','สายงานภาคใต้':'กฟต','สายงานภาคเหนือ':'กฟน'};
 function buildOrgSlaTree(){
-  const root=window.ORG_TREE[0];
+  const root=ORG_TREE[0];
   const flat=[];
   function addSayngan(node,displayName,displayCode,directOnly){
     const kids=buildFaiKongChildren(node,directOnly);
@@ -348,7 +350,7 @@ function SlaOverview({items,onAdd,onEdit,onDelete,onSelectNode}){
   const [treeQ,setTreeQ]=React.useState('');
   const [statusFilter,setStatusFilter]=React.useState('all');
   const [selectedId,setSelectedId]=React.useState(()=>{
-    const root=tree.find(n=>n.id===window.ORG_TREE[0].id);
+    const root=tree.find(n=>n.id===ORG_TREE[0].id);
     const secretariat=root&&root.children&&root.children.find(c=>c.name.includes('เลขานุการองค์กร'));
     return secretariat?secretariat.id:null;
   });
@@ -411,7 +413,7 @@ function collectAllUnitNames(nodes,acc){
 }
 let ALL_UNIT_NAMES=null;
 function getAllUnitNames(){
-  if(!ALL_UNIT_NAMES)ALL_UNIT_NAMES=collectAllUnitNames(window.ORG_TREE,[]);
+  if(!ALL_UNIT_NAMES)ALL_UNIT_NAMES=collectAllUnitNames(ORG_TREE,[]);
   return ALL_UNIT_NAMES;
 }
 
