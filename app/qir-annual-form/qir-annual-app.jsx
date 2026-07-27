@@ -11,7 +11,7 @@ function TopBar(){
         React.createElement('span',{className:'qtop-sub'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)')
       )
     ),
-    React.createElement(Link,{className:'qtop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับไปหน้าหลัก')
+    React.createElement(Link,{className:'qtop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ')
   );
 }
 

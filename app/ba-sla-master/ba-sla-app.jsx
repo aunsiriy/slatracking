@@ -15,7 +15,7 @@ const TABS=[
 function TopBar(){
   return React.createElement('header',{className:'ttb'},
     React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับหน้าหลัก'),
+      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
       React.createElement('span',{className:'ttb-divider'}),
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
       React.createElement('span',{className:'ttb-title'},'BA & SLA Master')

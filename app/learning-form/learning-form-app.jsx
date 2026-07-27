@@ -5,13 +5,13 @@ const {Button,Badge,InputField,Textarea,Radio,Checkbox}=window.DesignSystem_cbd1
 function TopBar(){
   return React.createElement('header',{className:'ltop'},
     React.createElement('div',{className:'ltop-left'},
+      React.createElement(Link,{className:'ltop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
       React.createElement(Image,{className:'ltop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ltop-word'},
         React.createElement('span',{className:'ltop-title'},'PEA-SLA Tracking System'),
         React.createElement('span',{className:'ltop-sub'},'Learning Form & QIR')
       )
-    ),
-    React.createElement(Link,{className:'ltop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับไปหน้าหลัก')
+    )
   );
 }
 

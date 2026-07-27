@@ -1,17 +1,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Badge,InputField}=window.DesignSystem_cbd181;
+const {Button,Badge,InputField,Avatar}=window.DesignSystem_cbd181;
 
 function TopBar(){
-  return React.createElement('header',{className:'lfatop'},
-    React.createElement('div',{className:'lfatop-left'},
-      React.createElement(Image,{className:'lfatop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'lfatop-word'},
-        React.createElement('span',{className:'lfatop-title'},'PEA-SLA Tracking System'),
-        React.createElement('span',{className:'lfatop-sub'},'ภาพรวม Learning Form & QIR (กนอ.)')
-      )
+  return React.createElement('header',{className:'ttb'},
+    React.createElement('div',{className:'ttb-left'},
+      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
+      React.createElement('span',{className:'ttb-divider'}),
+      React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
+      React.createElement('span',{className:'ttb-title'},'PEA-SLA Tracking System')
     ),
-    React.createElement(Link,{className:'lfatop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับไปหน้าหลัก')
+    React.createElement('div',{className:'ttb-right'},
+      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
+      React.createElement(Avatar,{variant:'text',size:'sm',text:'สด'})
+    )
   );
 }
 
@@ -56,43 +58,6 @@ function MenuCards(){
   );
 }
 
-function AssignModal({onClose,onAssign}){
-  const [selected,setSelected]=React.useState(()=>new Set());
-  const [year,setYear]=React.useState(window.LFOA_YEARS[0]);
-  function toggle(key){setSelected(s=>{const n=new Set(s);n.has(key)?n.delete(key):n.add(key);return n;});}
-  const isValid=selected.size>0;
-  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
-    React.createElement('div',{className:'modal-card',onClick:e=>e.stopPropagation()},
-      React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,'สร้าง Learning Form เพื่อมอบหมาย'),
-        React.createElement('button',{className:'lfa-modal-close',onClick:onClose},React.createElement(Icon,{name:'x',size:18}))
-      ),
-      React.createElement('div',{className:'modal-body'},
-        React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'ปีงบประมาณ',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('select',{className:'modal-select',value:year,onChange:e=>setYear(e.target.value)},
-            window.LFOA_YEARS.map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))
-          )
-        ),
-        React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'มอบหมายให้หน่วยงาน',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('div',{className:'lfa-unit-list'},
-            window.LFOA_UNITS.map(u=>React.createElement('label',{key:u.key,className:'lfa-unit-row'},
-              React.createElement('input',{type:'checkbox',checked:selected.has(u.key),onChange:()=>toggle(u.key)}),
-              React.createElement('span',{className:'lfa-unit-name'},u.name),
-              React.createElement('span',{className:'ba-tag'},window.LFOA_LEVEL_LABEL[u.level])
-            ))
-          )
-        )
-      ),
-      React.createElement('div',{className:'modal-footer'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
-        React.createElement(Button,{variant:'primary',size:'md',disabled:!isValid,onClick:()=>{onAssign(Array.from(selected),year);}},'มอบหมาย')
-      )
-    )
-  );
-}
-
 function RecentList({year,setYear,items:allItems}){
   const items=allItems.filter(it=>it.year===year);
   return React.createElement('div',{className:'card lfalist-card'},
@@ -122,20 +87,20 @@ function RecentList({year,setYear,items:allItems}){
 function App(){
   const [year,setYear]=React.useState(window.LFOA_YEARS[0]);
   const [items,setItems]=React.useState(window.LFOA_ITEMS);
-  const [modalOpen,setModalOpen]=React.useState(false);
   const [toast,setToast]=React.useState(null);
   React.useEffect(()=>{window.LFOA_ITEMS=items;},[items]);
   React.useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(null),2600);return()=>clearTimeout(t);},[toast]);
-  function handleAssign(unitKeys,y){
-    const newItems=unitKeys.map((k,idx)=>{
-      const u=window.LFOA_UNITS.find(x=>x.key===k);
-      return {id:Date.now()+idx,process:'Learning Form ที่มอบหมายใหม่',unit:u.name,level:u.level,year:y,status:'draft'};
-    });
-    setItems(prev=>[...newItems,...prev]);
-    setYear(y);
-    setModalOpen(false);
-    setToast(`มอบหมาย Learning Form ให้ ${unitKeys.length} หน่วยงานแล้ว`);
-  }
+  React.useEffect(()=>{
+    const raw=sessionStorage.getItem('lfoa_pending_assign');
+    if(!raw)return;
+    sessionStorage.removeItem('lfoa_pending_assign');
+    try{
+      const pending=JSON.parse(raw);
+      setItems(prev=>[...pending.items,...prev]);
+      setYear(pending.year);
+      setToast(`มอบหมาย Learning Form ให้ ${pending.count} หน่วยงานแล้ว`);
+    }catch(e){}
+  },[]);
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lfacontent'},
@@ -145,12 +110,11 @@ function App(){
           React.createElement('h1',null,'ภาพรวม Learning Form'),
           React.createElement('p',null,'สรุปจำนวน Learning Form ทั้งองค์กร และมอบหมายการจัดทำให้หน่วยงานต่างๆ')
         ),
-        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>setModalOpen(true)},'สร้าง Learning Form เพื่อมอบหมาย')
+        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>{window.location.href='/learning-form-create';}},'สร้าง Learning Form')
       ),
       React.createElement(KpiCards,{year}),
       React.createElement(MenuCards),
       React.createElement(RecentList,{year,setYear:setYear,items}),
-      modalOpen&&React.createElement(AssignModal,{onClose:()=>setModalOpen(false),onAssign:handleAssign}),
       toast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),toast)
     )
   );

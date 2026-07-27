@@ -8,14 +8,14 @@ button{font-family:inherit}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 .ba-tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary);white-space:nowrap}
 
-.lfatop{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;background:#fff;border-bottom:1px solid var(--pea-border-secondary)}
-.lfatop-left{display:flex;align-items:center;gap:10px}
-.lfatop-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
-.lfatop-word{display:flex;flex-direction:column;line-height:1.2}
-.lfatop-title{font-family:var(--pea-font-family-display);font-weight:700;font-size:15px}
-.lfatop-sub{font-size:11px;color:var(--pea-text-tertiary)}
-.lfatop-back{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-secondary);padding:8px 12px;border-radius:8px}
-.lfatop-back:hover{background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
+.ttb{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#fff;border-bottom:1px solid var(--pea-border-secondary);position:sticky;top:0;z-index:10}
+.ttb-left{display:flex;align-items:center;gap:14px}
+.back-link{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary)}
+.back-link:hover{color:var(--pea-text-brand-secondary)}
+.ttb-divider{width:1px;height:20px;background:var(--pea-border-secondary)}
+.ttb-logo{width:28px;height:28px}
+.ttb-title{font-family:"IBM Plex Sans Thai";font-weight:700;font-size:16px;line-height:1.25}
+.ttb-right{display:flex;align-items:center;gap:12px}
 
 .lfacontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
 .lfabreadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pea-text-tertiary);margin-bottom:16px}

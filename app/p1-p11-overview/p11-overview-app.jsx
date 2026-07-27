@@ -5,13 +5,13 @@ const {Button,Badge}=window.DesignSystem_cbd181;
 function TopBar(){
   return React.createElement('header',{className:'ptop'},
     React.createElement('div',{className:'ptop-left'},
+      React.createElement(Link,{className:'ptop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
       React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ptop-word'},
         React.createElement('span',{className:'ptop-title'},'PEA-SLA Tracking System'),
         React.createElement('span',{className:'ptop-sub'},'P1-P11 / QIR ประจำปี')
       )
-    ),
-    React.createElement(Link,{className:'ptop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับไปหน้าหลัก')
+    )
   );
 }
 

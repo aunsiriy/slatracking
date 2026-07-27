@@ -137,7 +137,7 @@ function BaStructureView(){
 
   return React.createElement(React.Fragment,null,
     React.createElement('header',{className:'bv-header'},
-      React.createElement(Link,{href:'/',className:'bv-back'},React.createElement(Icon,{name:'corner-up-left',size:15}),'กลับหน้าหลัก'),
+      React.createElement(Link,{href:'/',className:'bv-back'},React.createElement(Icon,{name:'corner-up-left',size:15}),'กลับ'),
       React.createElement('div',{className:'bv-header-title'},
         React.createElement(FeaturedIcon,{icon:React.createElement(Icon,{name:'building',size:20}),size:'md',color:'brand'}),
         React.createElement('div',null,
