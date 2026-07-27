@@ -1,11 +1,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Badge,InputField,Textarea,Radio,Checkbox}=window.DesignSystem_cbd181;
+const {Button,Badge,InputField,Textarea,Radio,Checkbox,FeaturedIcon}=window.DesignSystem_cbd181;
+
+const LF_STATUS_MAP={pending:{label:'รอดำเนินการ',color:'warning'},draft:{label:'บันทึกร่าง',color:'gray'},completed:{label:'เสร็จสิ้น',color:'success'}};
+function computeLfStatus(savedCount,total){
+  if(savedCount===0)return 'pending';
+  if(savedCount<total)return 'draft';
+  return 'completed';
+}
 
 function TopBar(){
   return React.createElement('header',{className:'ltop'},
+    React.createElement(Link,{className:'ltop-back',href:'/learning-form-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
     React.createElement('div',{className:'ltop-left'},
-      React.createElement(Link,{className:'ltop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
       React.createElement(Image,{className:'ltop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ltop-word'},
         React.createElement('span',{className:'ltop-title'},'PEA-SLA Tracking System'),
@@ -18,6 +25,8 @@ function TopBar(){
 function Breadcrumb(){
   return React.createElement('div',{className:'lbreadcrumb'},
     React.createElement(Link,{href:'/'},'หน้าหลัก'),
+    React.createElement(Icon,{name:'chevron-right',size:14}),
+    React.createElement(Link,{href:'/learning-form-overview'},'ภาพรวม Learning Form'),
     React.createElement(Icon,{name:'chevron-right',size:14}),
     React.createElement('span',{className:'is-current'},'Learning Form · '+window.LF_META.processName)
   );
@@ -75,8 +84,6 @@ function MetaSection(){
   );
 }
 
-function computeStatus(result,target){return null;}
-
 function MetricCard({item,onChange}){
   const [open,setOpen]=React.useState(false);
   function set(field,value){onChange({...item,[field]:value});}
@@ -102,19 +109,13 @@ function MetricCard({item,onChange}){
       React.createElement('div',{className:'lmetric-section'},
         React.createElement('span',{className:'lfield-label'},'ประเด็นพิจารณาผลการดำเนินงาน'),
         React.createElement('div',{className:'lradio-group'},
-          window.LF_ANALYSIS_OPTIONS.map(o=>React.createElement('label',{key:o.key,className:'lradio-row'},
-            React.createElement('input',{type:'radio',name:'analysis-'+item.id,checked:item.analysis===o.key,onChange:()=>set('analysis',o.key)}),
-            o.label
-          ))
+          window.LF_ANALYSIS_OPTIONS.map(o=>React.createElement(Radio,{key:o.key,size:'sm',name:'analysis-'+item.id,value:o.key,label:o.label,isChecked:item.analysis===o.key,onChange:()=>set('analysis',o.key)}))
         )
       ),
       React.createElement('div',{className:'lmetric-section'},
         React.createElement('span',{className:'lfield-label'},'แนวทางที่เกี่ยวข้อง'),
         React.createElement('div',{className:'lcheck-group'},
-          window.LF_FOLLOWUP_OPTIONS.map(o=>React.createElement('label',{key:o.key,className:'lcheck-row'},
-            React.createElement('input',{type:'checkbox',checked:item.followup.includes(o.key),onChange:()=>toggleFollowup(o.key)}),
-            o.label
-          ))
+          window.LF_FOLLOWUP_OPTIONS.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:item.followup.includes(o.key),onChange:()=>toggleFollowup(o.key)}))
         )
       ),
       React.createElement(Textarea,{label:'รายละเอียดการวิเคราะห์',value:item.analysisDetail,onChange:v=>set('analysisDetail',v)}),
@@ -126,14 +127,18 @@ function MetricCard({item,onChange}){
 function EffectivenessSection(){
   const [leading,setLeading]=React.useState(window.LF_LEADING_METRICS);
   const [lagging,setLagging]=React.useState(window.LF_LAGGING_METRICS);
+  const [tab,setTab]=React.useState('leading');
   function updateLeading(next){setLeading(leading.map(i=>i.id===next.id?next:i));}
   function updateLagging(next){setLagging(lagging.map(i=>i.id===next.id?next:i));}
   return React.createElement(SectionCard,{title:'ส่วนที่ 2 — ผลการดำเนินงานตามตัวชี้วัด (ย้อนหลัง 3 ปี)',
     hint:'แตะที่รายการเพื่อดูรายละเอียดและกรอกผลการวิเคราะห์'},
-    React.createElement('div',{className:'lmetric-group-label'},'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)'),
-    React.createElement('div',{className:'lmetric-list'},leading.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLeading}))),
-    React.createElement('div',{className:'lmetric-group-label'},'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)'),
-    React.createElement('div',{className:'lmetric-list'},lagging.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLagging})))
+    React.createElement('div',{className:'lmetric-tabs'},
+      React.createElement('button',{type:'button',className:'lmetric-tab'+(tab==='leading'?' is-active':''),onClick:()=>setTab('leading')},'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)'),
+      React.createElement('button',{type:'button',className:'lmetric-tab'+(tab==='lagging'?' is-active':''),onClick:()=>setTab('lagging')},'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)')
+    ),
+    tab==='leading'?
+      React.createElement('div',{className:'lmetric-list'},leading.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLeading}))):
+      React.createElement('div',{className:'lmetric-list'},lagging.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLagging})))
   );
 }
 
@@ -176,9 +181,8 @@ function PrioritiesSection(){
       React.createElement('div',{className:'lduration-group'},
         React.createElement('span',{className:'lfield-label'},'ปีที่ดำเนินการ'),
         React.createElement('div',{className:'lduration-options'},
-          window.LF_PRIORITY_DURATIONS.map(d=>React.createElement('label',{key:d.key,className:'lduration-option'+(r.duration===d.key?' is-active':'')},
-            React.createElement('input',{type:'radio',name:'duration-'+r.id,checked:r.duration===d.key,onChange:()=>update(r.id,'duration',d.key)}),
-            React.createElement('div',null,React.createElement('div',{className:'lduration-label'},d.label),React.createElement('div',{className:'lduration-hint'},d.hint))
+          window.LF_PRIORITY_DURATIONS.map(d=>React.createElement('div',{key:d.key,className:'lduration-option'+(r.duration===d.key?' is-active':'')},
+            React.createElement(Radio,{size:'sm',name:'duration-'+r.id,value:d.key,label:d.label,hint:d.hint,isChecked:r.duration===d.key,onChange:()=>update(r.id,'duration',d.key)})
           ))
         )
       )
@@ -243,8 +247,8 @@ function KnowledgeCard({item,onChange}){
   function set(field,value){onChange({...item,[field]:value});}
   return React.createElement('div',{className:'card lknowledge-card'},
     React.createElement('div',{className:'lknowledge-type'},
-      React.createElement('label',{className:'lradio-row'},React.createElement('input',{type:'radio',name:'ktype-'+item.id,checked:item.type==='existing',onChange:()=>set('type','existing')}),'องค์ความรู้เดิม (จากระบบ KM-Si)'),
-      React.createElement('label',{className:'lradio-row'},React.createElement('input',{type:'radio',name:'ktype-'+item.id,checked:item.type==='new',onChange:()=>set('type','new')}),'องค์ความรู้ใหม่')
+      React.createElement(Radio,{size:'sm',name:'ktype-'+item.id,value:'existing',label:'องค์ความรู้เดิม (จากระบบ KM-Si)',isChecked:item.type==='existing',onChange:()=>set('type','existing')}),
+      React.createElement(Radio,{size:'sm',name:'ktype-'+item.id,value:'new',label:'องค์ความรู้ใหม่',isChecked:item.type==='new',onChange:()=>set('type','new')})
     ),
     React.createElement('div',{className:'lknowledge-grid'},
       React.createElement(InputField,{fieldType:'default',label:'หัวข้อองค์ความรู้',size:'md',value:item.topic,onChange:v=>set('topic',v)}),
@@ -284,9 +288,119 @@ function QirReportsSection(){
   );
 }
 
+const LF_STEPS=[
+{key:'meta',label:'ข้อมูลพื้นฐาน',hint:'กรอกข้อมูลพื้นฐานของกระบวนการและผู้เกี่ยวข้อง',Component:MetaSection},
+{key:'effectiveness',label:'ผลการดำเนินงานตามตัวชี้วัด',hint:'ทบทวนผลการดำเนินงานตามตัวชี้วัดย้อนหลัง 3 ปี',Component:EffectivenessSection},
+{key:'issues',label:'ประเด็นพิจารณา',hint:'ระบุประเด็นพิจารณาสำหรับการปรับปรุงกระบวนการ',Component:IssuesSection},
+{key:'priorities',label:'จัดลำดับความสำคัญ',hint:'จัดลำดับความสำคัญของประเด็นที่จะพัฒนา',Component:PrioritiesSection},
+{key:'nextyear',label:'ตัวชี้วัดปีถัดไป',hint:'กำหนดตัวชี้วัดและเป้าหมายสำหรับปีถัดไป',Component:NextYearMetricsSection},
+{key:'qir',label:'กิจกรรม QIR',hint:'บันทึกกิจกรรม QIR ที่จะดำเนินการ',Component:QirActivitiesSection},
+{key:'knowledge',label:'องค์ความรู้',hint:'บันทึกองค์ความรู้เดิมและองค์ความรู้ใหม่',Component:KnowledgeSection},
+{key:'reports',label:'ออก Report',hint:'ออกรายงาน QIR สำหรับนำเสนอคณะกรรมการ',Component:QirReportsSection}
+];
+
+function ProgressRing({current,total,size=56}){
+  const pct=current/total;
+  const stroke=6;
+  const radius=(size-stroke)/2;
+  const circumference=2*Math.PI*radius;
+  const offset=circumference*(1-pct);
+  return React.createElement('div',{className:'lstepper-ring-wrap',style:{width:size,height:size}},
+    React.createElement('svg',{className:'lstepper-ring',width:size,height:size,viewBox:`0 0 ${size} ${size}`},
+      React.createElement('circle',{cx:size/2,cy:size/2,r:radius,fill:'none',stroke:'var(--pea-border-tertiary)',strokeWidth:stroke}),
+      React.createElement('circle',{cx:size/2,cy:size/2,r:radius,fill:'none',stroke:'var(--pea-border-brand)',strokeWidth:stroke,strokeDasharray:circumference,strokeDashoffset:offset,strokeLinecap:'round',transform:`rotate(-90 ${size/2} ${size/2})`})
+    ),
+    React.createElement('span',{className:'lstepper-ring-text'},current+' / '+total)
+  );
+}
+
+function Stepper({step,setStep,savedSteps}){
+  const [expanded,setExpanded]=React.useState(false);
+  React.useEffect(()=>{setExpanded(false);},[step]);
+  const total=LF_STEPS.length;
+  const current=LF_STEPS[step];
+  const next=LF_STEPS[step+1];
+  return React.createElement(React.Fragment,null,
+    React.createElement('div',{className:'lstepper'},
+      LF_STEPS.map((s,i)=>React.createElement('button',{key:s.key,type:'button',className:'lstepper-item'+(i===step?' is-active':'')+(savedSteps.has(i)?' is-done':''),onClick:()=>setStep(i)},
+        React.createElement('span',{className:'lstepper-num'},savedSteps.has(i)?React.createElement(Icon,{name:'check',size:13}):i+1),
+        React.createElement('span',{className:'lstepper-label'},s.label)
+      ))
+    ),
+    React.createElement('div',{className:'lstepper-m'},
+      React.createElement('button',{type:'button',className:'lstepper-m-head',onClick:()=>setExpanded(v=>!v)},
+        React.createElement(ProgressRing,{current:step+1,total}),
+        React.createElement('div',{className:'lstepper-m-info'},
+          React.createElement('div',{className:'lstepper-m-title'},current.label),
+          next&&React.createElement('div',{className:'lstepper-m-next'},'ถัดไป: '+next.label)
+        ),
+        React.createElement(Icon,{name:'chevron-down',size:20,className:'lstepper-m-chevron'+(expanded?' is-open':'')})
+      ),
+      expanded&&React.createElement('div',{className:'lstepper-m-list'},
+        LF_STEPS.map((s,i)=>React.createElement('button',{key:s.key,type:'button',className:'lstepper-m-item'+(i===step?' is-active':'')+(savedSteps.has(i)?' is-done':''),onClick:()=>setStep(i)},
+          React.createElement('span',{className:'lstepper-m-dot'},
+            savedSteps.has(i)?React.createElement(Icon,{name:'check',size:12}):
+            i===step?React.createElement('span',{className:'lstepper-m-dot-fill'}):null
+          ),
+          React.createElement('div',{className:'lstepper-m-item-text'},
+            React.createElement('div',{className:'lstepper-m-item-title'},s.label),
+            React.createElement('div',{className:'lstepper-m-item-hint'},s.hint)
+          )
+        ))
+      )
+    )
+  );
+}
+
+function ConfirmModal({title,description,confirmLabel,cancelLabel,onConfirm,onCancel}){
+  return React.createElement('div',{className:'lmodal-overlay',onClick:onCancel},
+    React.createElement('div',{className:'lmodal-card',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'lmodal-rings'},
+        React.createElement('span',{className:'lmodal-ring',style:{width:150,height:150,opacity:.5}}),
+        React.createElement('span',{className:'lmodal-ring',style:{width:260,height:260,opacity:.35}}),
+        React.createElement('span',{className:'lmodal-ring',style:{width:370,height:370,opacity:.2}}),
+        React.createElement('span',{className:'lmodal-ring',style:{width:480,height:480,opacity:.1}})
+      ),
+      React.createElement('button',{type:'button',className:'lmodal-close','aria-label':'ปิด',onClick:onCancel},React.createElement(Icon,{name:'x',size:18})),
+      React.createElement(FeaturedIcon,{size:'lg',color:'success',icon:React.createElement(Icon,{name:'check',size:22})}),
+      React.createElement('h3',{className:'lmodal-title'},title),
+      React.createElement('p',{className:'lmodal-desc'},description),
+      React.createElement('div',{className:'lmodal-actions'},
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:onCancel},cancelLabel||'ยกเลิก'),
+        React.createElement(Button,{variant:'primary',size:'md',onClick:onConfirm},confirmLabel||'ยืนยัน')
+      )
+    )
+  );
+}
+
 function App(){
   const [year,setYear]=React.useState(window.LF_META.year);
+  const [step,setStep]=React.useState(0);
+  const [savedSteps,setSavedSteps]=React.useState(()=>new Set());
+  const [modal,setModal]=React.useState(null);
   const m=window.LF_META;
+  const StepComponent=LF_STEPS[step].Component;
+  const statusInfo=LF_STATUS_MAP[computeLfStatus(savedSteps.size,LF_STEPS.length)];
+  function saveStep(){
+    setModal({
+      title:'ยืนยันการบันทึกข้อมูล',
+      description:'ข้อมูลขั้นตอน "'+LF_STEPS[step].label+'" จะถูกบันทึก คุณยังสามารถกลับมาแก้ไขข้อมูลนี้ได้ภายหลัง',
+      onConfirm:()=>{
+        setSavedSteps(prev=>{const next=new Set(prev);next.add(step);return next;});
+        setModal(null);
+      }
+    });
+  }
+  function saveAll(){
+    setModal({
+      title:'ยืนยันการบันทึกข้อมูลทั้งหมด',
+      description:'ข้อมูลทุกขั้นตอนของ Learning Form นี้จะถูกบันทึก คุณยังสามารถกลับมาแก้ไขข้อมูลได้ภายหลัง',
+      onConfirm:()=>{
+        setSavedSteps(new Set(LF_STEPS.map((_,i)=>i)));
+        setModal(null);
+      }
+    });
+  }
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lcontent'},
@@ -298,20 +412,28 @@ function App(){
             React.createElement('div',{className:'lyear-filter'},
               window.LF_YEARS.map(y=>React.createElement('button',{key:y,className:'lyear-btn'+(y===year?' is-active':''),onClick:()=>setYear(y)},'ปี '+y))
             ),
-            React.createElement(Badge,{label:m.status,type:'pill-color',color:'success',size:'sm'})
+            React.createElement(Badge,{label:statusInfo.label,type:'pill-color',color:statusInfo.color,size:'sm'})
           )
         ),
         React.createElement('p',{className:'ltitle-sub'},m.processName)
       ),
-      React.createElement(MetaSection),
-      React.createElement(EffectivenessSection),
-      React.createElement(IssuesSection),
-      React.createElement(PrioritiesSection),
-      React.createElement(NextYearMetricsSection),
-      React.createElement(QirActivitiesSection),
-      React.createElement(KnowledgeSection),
-      React.createElement(QirReportsSection)
-    )
+      React.createElement('div',{className:'lstep-layout'},
+        React.createElement(Stepper,{step,setStep,savedSteps}),
+        React.createElement('div',{className:'lstep-main'},
+          React.createElement(StepComponent),
+          React.createElement('div',{className:'lstep-nav'},
+            React.createElement(Button,{variant:'secondary',size:'md',isDisabled:step===0,leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:()=>setStep(s=>Math.max(0,s-1))},'ย้อนกลับ'),
+            React.createElement('span',{className:'lstep-nav-count'},'ขั้นตอน '+(step+1)+' / '+LF_STEPS.length+(savedSteps.has(step)?' · บันทึกแล้ว':'')),
+            React.createElement('div',{className:'lstep-nav-right'},
+              React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:saveStep},savedSteps.has(step)?'บันทึกอีกครั้ง':'บันทึก'),
+              step<LF_STEPS.length-1?React.createElement(Button,{variant:'primary',size:'md',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>setStep(s=>Math.min(LF_STEPS.length-1,s+1))},'ถัดไป'):
+              React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:saveAll},'บันทึกทั้งหมด')
+            )
+          )
+        )
+      )
+    ),
+    modal&&React.createElement(ConfirmModal,{...modal,onCancel:()=>setModal(null)})
   );
 }
 

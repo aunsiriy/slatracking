@@ -10,7 +10,7 @@ const LF_META={year:'2568',ba:'S1.3',baLabel:'กระบวนการพั�
   {name:'พรศักดิ์ รอดรักษา',position:'รก.นอ.',empId:'261517',tel:'9521'},
   {name:'รวี ว่องวีระยุทธ์',position:'รก.นอ.',empId:'491667',tel:'9522'}
  ],
- formName:'ทดสอบ กนอ.',status:'อนุมัติแล้ว'};
+ formName:'ทดสอบ กนอ.'};
 
 const LF_ANALYSIS_OPTIONS=[
 {key:'on_target',label:'ผลการดำเนินงานเป็นไปตาม/ดีกว่าเป้าหมาย/ดีกว่าอดีต'},

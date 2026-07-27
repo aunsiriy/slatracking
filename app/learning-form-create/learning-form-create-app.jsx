@@ -144,7 +144,7 @@ function App(){
     const unitKeys=Array.from(selected);
     const newItems=unitKeys.map((k,idx)=>{
       const u=window.LFC_UNITS.find(x=>x.key===k);
-      return {id:Date.now()+idx,process:processName,unit:u.name,level:u.level,year,status:'draft'};
+      return {id:Date.now()+idx,process:processName,unit:u.name,level:u.level,year,status:'pending'};
     });
     sessionStorage.setItem('lfoa_pending_assign',JSON.stringify({items:newItems,year,count:unitKeys.length}));
     window.alert('บันทึกและมอบหมายเรียบร้อยแล้ว');
