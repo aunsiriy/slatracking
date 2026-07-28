@@ -407,12 +407,14 @@ function App(){
       React.createElement(Breadcrumb),
       React.createElement('div',{className:'card ltitle-card'},
         React.createElement('div',{className:'ltitle-top'},
-          React.createElement('h1',null,m.formName),
+          React.createElement('div',{className:'ltitle-heading'},
+            React.createElement('h1',null,m.formName),
+            React.createElement(Badge,{label:statusInfo.label,type:'pill-color',color:statusInfo.color,size:'sm'})
+          ),
           React.createElement('div',{className:'ltitle-actions'},
             React.createElement('div',{className:'lyear-filter'},
               window.LF_YEARS.map(y=>React.createElement('button',{key:y,className:'lyear-btn'+(y===year?' is-active':''),onClick:()=>setYear(y)},'ปี '+y))
-            ),
-            React.createElement(Badge,{label:statusInfo.label,type:'pill-color',color:statusInfo.color,size:'sm'})
+            )
           )
         ),
         React.createElement('p',{className:'ltitle-sub'},m.processName)

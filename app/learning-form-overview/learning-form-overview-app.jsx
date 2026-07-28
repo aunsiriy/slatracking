@@ -58,6 +58,7 @@ function MenuCards(){
 
 function RecentList({year,setYear}){
   const items=window.LFO_ITEMS.filter(it=>it.year===year);
+  function openForm(){window.location.href='/learning-form';}
   return React.createElement('div',{className:'card lflist-card'},
     React.createElement('div',{className:'lflist-head'},
       React.createElement('h3',null,'Learning Form ล่าสุด'),
@@ -65,19 +66,26 @@ function RecentList({year,setYear}){
         window.LFO_YEARS.map(y=>React.createElement('button',{key:y,className:'lfyear-btn'+(y===year?' is-active':''),onClick:()=>setYear(y)},'ปี '+y))
       )
     ),
-    React.createElement('div',{className:'lflist-rows'},
-      items.length===0?React.createElement('div',{className:'lflist-empty'},'ไม่มี Learning Form ในปีที่เลือก'):
-      items.map((it,i)=>{
-        const s=window.LFO_STATUS_MAP[it.status];
-        return React.createElement('div',{key:i,className:'lflist-row'},
-          React.createElement('div',{className:'lflist-row-main'},
-            React.createElement('div',{className:'lflist-row-process'},it.process),
-            React.createElement('div',{className:'lflist-row-unit'},it.unit)
-          ),
-          React.createElement('span',{className:'ba-tag'},window.LFO_LEVEL_LABEL[it.level]),
-          React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'})
-        );
-      })
+    items.length===0?React.createElement('div',{className:'lflist-empty'},'ไม่มี Learning Form ในปีที่เลือก'):
+    React.createElement('div',{className:'lftable-wrap'},
+      React.createElement('table',{className:'lftable'},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['ชื่อฟอร์ม','หน่วยงานที่รับผิดชอบ','วันที่ดำเนินการ','สถานะ'].map((h,i)=>React.createElement('th',{key:i},h))
+          )
+        ),
+        React.createElement('tbody',null,
+          items.map((it,i)=>{
+            const s=window.LFO_STATUS_MAP[it.status];
+            return React.createElement('tr',{key:i,className:'lftable-row',tabIndex:0,onClick:openForm,onKeyDown:e=>{if(e.key==='Enter')openForm();}},
+              React.createElement('td',null,it.process),
+              React.createElement('td',null,it.unit),
+              React.createElement('td',null,it.date),
+              React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'}))
+            );
+          })
+        )
+      )
     )
   );
 }

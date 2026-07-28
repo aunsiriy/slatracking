@@ -43,6 +43,7 @@ button{font-family:inherit}
 .ltitle-card{padding:20px 24px;display:flex;flex-direction:column;gap:6px}
 .ltitle-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .ltitle-top h1{font-size:22px;font-weight:700}
+.ltitle-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ltitle-actions{display:flex;align-items:center;gap:10px}
 .ltitle-sub{font-size:13.5px;color:var(--pea-text-tertiary);margin:0}
 .lyear-filter{display:flex;gap:6px}
