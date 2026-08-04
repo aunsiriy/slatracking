@@ -328,28 +328,6 @@ function RoleInfoCard({role}){
   );
 }
 
-function QuickAccess({items}){
-  return React.createElement('div',{className:'card side-card quick-access'},
-    React.createElement('div',{className:'side-card-head'},
-      React.createElement(Icon,{name:'sparkles',size:18}),
-      React.createElement('h3',null,'Quick Access')
-    ),
-    React.createElement('ul',{className:'quick-list'},
-      items.map((it,i)=>React.createElement('li',{key:i},
-        React.createElement('a',{href:'#',className:'quick-item'},
-          React.createElement('span',{className:'quick-icon'},React.createElement(Icon,{name:it.icon,size:18})),
-          React.createElement('span',{className:'quick-text'},
-            React.createElement('span',{className:'quick-label'},it.label),
-            React.createElement('span',{className:'quick-sub'},it.sub)
-          ),
-          it.count!=null&&React.createElement('span',{className:'quick-count'},it.count),
-          React.createElement(Icon,{name:'chevron-right',size:16,className:'quick-chevron'})
-        )
-      ))
-    )
-  );
-}
-
 function App(){
   const [roleKey,setRoleKey]=React.useState('manager');
   const [bannerOpen,setBannerOpen]=React.useState(true);
@@ -370,8 +348,7 @@ function App(){
         ),
         React.createElement('aside',{className:'layout-side'},
           React.createElement(PeriodWidget,null),
-          React.createElement(RoleInfoCard,{role}),
-          React.createElement(QuickAccess,{items:role.quickAccess})
+          React.createElement(RoleInfoCard,{role})
         )
       ),
       React.createElement(SectionHeader,{title:'ช่วยเหลือ',className:'section-header-help'}),

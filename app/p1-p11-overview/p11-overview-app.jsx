@@ -40,7 +40,7 @@ function App(){
   const [month,setMonth]=React.useState('กรกฎาคม');
   const [year,setYear]=React.useState('2569');
   const [search,setSearch]=React.useState('');
-  const filters=['สายงานดิจิทัลและการสื่อสาร','ผู้ช่วยผู้ว่าการดิจิทัลและการสื่อสาร (ดิจิทัล)','ฝ่ายพัฒนาระบบดิจิทัล','กองออกแบบและพัฒนาระบบดิจิทัล 2'];
+  const filters=['สายงานดิจิทัลและการสื่อสาร','ผู้ช่วยผู้ว่าการดิจิทัลและการสื่อสาร (ดิจิทัล)','กองออกแบบและพัฒนาระบบดิจิทัล 2'];
   const [activeFilters,setActiveFilters]=React.useState(filters);
   function removeFilter(f){setActiveFilters(activeFilters.filter(x=>x!==f));}
   function goToQir(node){window.location.href='/qir-annual-form';}

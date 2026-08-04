@@ -40,12 +40,6 @@ const ROLES = {
       {value:28,label:'QIR รอดำเนินการทั่วองค์กร',cta:'ดูรายละเอียด',color:'blue'},
       {value:35,label:'SLA ตกเกณฑ์ที่ต้องติดตาม',cta:'ไปที่รายงาน',color:'success'}
     ],
-    quickAccess:[
-      {icon:'alert-triangle',label:'หน่วยงานที่เกินกำหนดส่ง',sub:'ต้องติดตามด่วน',count:12},
-      {icon:'shield-check',label:'รออนุมัติปิดรอบ',sub:'รายงานรับรองครบแล้ว',count:3},
-      {icon:'building',label:'BA Master ที่รอตรวจสอบ',sub:'รายการนำเข้าใหม่',count:5},
-      {icon:'help-circle',label:'คู่มือการใช้งาน',sub:'FAQ และเอกสารระบบ',count:null}
-    ],
     cards:{
       ba:{enabled:true,badge:'จัดการได้',cta:'จัดการ BA Master',ctaVariant:'primary',stat:'5 รายการรอตรวจสอบ'},
       sla:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดูรายงานทั้งหมด',ctaVariant:'secondary',stat:'96 ส่งแล้ว · 21 ถูกคืน'},
@@ -62,12 +56,6 @@ const ROLES = {
       {value:5,label:'QIR รอดำเนินการ',cta:'ดูรายละเอียด',color:'blue'},
       {value:3,label:'SLA ตกเกณฑ์ที่ต้องรายงานผล',cta:'ไปที่รายงาน',color:'error'}
     ],
-    quickAccess:[
-      {icon:'file-text',label:'รายงานที่ฉันต้องกรอก',sub:'ร่างค้างและยังไม่เริ่ม',count:4},
-      {icon:'list-check',label:'งานที่รอฉันตรวจสอบ/อนุมัติ',sub:'จากหน่วยงานในสังกัด',count:7},
-      {icon:'book',label:'Learning Form ที่ได้รับมอบหมาย',sub:'ปีงบประมาณ 2569',count:2},
-      {icon:'building',label:'ดูโครงสร้าง BA',sub:'Hierarchy แบบ Read-only',count:null}
-    ],
     cards:{
       ba:{enabled:false,badge:'View only',cta:'ดูโครงสร้าง BA',ctaVariant:'secondary',stat:'อ้างอิงเท่านั้น'},
       sla:{enabled:true,badge:'ต้องดำเนินการ',cta:'ไปที่รายงาน SLA',ctaVariant:'primary',stat:'4 ต้องกรอก · 2 ถูกคืน',href:'/sla-overview'},
@@ -83,12 +71,6 @@ const ROLES = {
       {value:2,label:'งานที่ต้องทำวันนี้',cta:'ดูงานของฉัน',color:'success'},
       {value:1,label:'Learning Form รอดำเนินการ',cta:'ไปที่ Learning Form',color:'blue'},
       {value:1,label:'SLA ของฉันที่ต้องติดตาม',cta:'ดูผลของฉัน',color:'error'}
-    ],
-    quickAccess:[
-      {icon:'trending-up',label:'SLA ของฉันเดือนนี้',sub:'ผลการดำเนินงานส่วนตัว',count:null},
-      {icon:'book',label:'Learning Form ที่ได้รับมอบหมาย',sub:'กรุณากรอกภายใน 20 ก.ค.',count:1},
-      {icon:'building',label:'ดูโครงสร้าง BA',sub:'Hierarchy แบบ Read-only',count:null},
-      {icon:'help-circle',label:'คู่มือการใช้งาน',sub:'FAQ และเอกสารระบบ',count:null}
     ],
     cards:{
       ba:{enabled:false,badge:'View only',cta:'ดูโครงสร้าง BA',ctaVariant:'secondary',stat:'อ้างอิงเท่านั้น'},

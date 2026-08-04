@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,InputField,Textarea,Badge,Checkbox}=window.DesignSystem_cbd181;
+const {Button,InputField,Textarea,Checkbox,FeaturedIcon}=window.DesignSystem_cbd181;
 
 function TopBar(){
   return React.createElement('header',{className:'lfctop'},
@@ -25,7 +25,7 @@ function Breadcrumb(){
   );
 }
 
-function PersonRow({label,person,onChange}){
+function PersonRow({label,person,onChange,required}){
   function set(field,value){onChange({...person,[field]:value});}
   function setEmpId(v){
     const digits=v.replace(/[^0-9]/g,'').slice(0,6);
@@ -36,7 +36,7 @@ function PersonRow({label,person,onChange}){
     set('empId',digits);
   }
   return React.createElement('div',{className:'lfc-person-row'},
-    React.createElement('div',{className:'lfc-person-label'},label),
+    React.createElement('div',{className:'lfc-person-label'},label,required&&React.createElement('span',{className:'lfc-required'},' *')),
     React.createElement('div',{className:'lfc-person-fields'},
       React.createElement(InputField,{fieldType:'default',size:'md',label:'รหัสพนักงาน',placeholder:'รหัสพนักงาน',leadingIcon:React.createElement(Icon,{name:'search',size:16}),value:person.empId,onChange:setEmpId}),
       React.createElement(InputField,{fieldType:'default',size:'md',label:'ชื่อ-สกุล',placeholder:'ชื่อ-สกุล',value:person.name,onChange:v=>set('name',v)}),
@@ -77,39 +77,67 @@ function ParticipantsRow({people,onChange}){
   );
 }
 
-function UnitCombobox({units,levelLabel,selected,onToggle}){
-  const [query,setQuery]=React.useState('');
+function UnitPicker({units,selected,onToggle,onToggleAll}){
   const [open,setOpen]=React.useState(false);
-  const wrapRef=React.useRef(null);
-
+  const [query,setQuery]=React.useState('');
+  const pickerRef=React.useRef(null);
   React.useEffect(()=>{
-    function onDocClick(e){if(wrapRef.current&&!wrapRef.current.contains(e.target))setOpen(false);}
+    function onDocClick(e){if(pickerRef.current&&!pickerRef.current.contains(e.target))setOpen(false);}
     document.addEventListener('mousedown',onDocClick);
-    return ()=>document.removeEventListener('mousedown',onDocClick);
+    return()=>document.removeEventListener('mousedown',onDocClick);
   },[]);
-
-  const selectedUnits=units.filter(u=>selected.has(u.key));
   const filtered=units.filter(u=>u.name.toLowerCase().includes(query.trim().toLowerCase()));
-
-  return React.createElement('div',{className:'lfc-combobox',ref:wrapRef},
-    React.createElement('div',{className:'lfc-combobox-box',onClick:()=>setOpen(true)},
-      selectedUnits.map(u=>React.createElement(Badge,{key:u.key,label:u.name,type:'pill-color',color:'gray',size:'sm',icon:'x-close',onDismiss:e=>{e.stopPropagation();onToggle(u.key);}})),
-      React.createElement('input',{
-        className:'lfc-combobox-input',
-        placeholder:selectedUnits.length?'':'ค้นหาหน่วยงานจากโครงสร้างองค์กร',
-        value:query,
-        onFocus:()=>setOpen(true),
-        onChange:e=>{setQuery(e.target.value);setOpen(true);}
-      })
-    ),
-    open&&React.createElement('div',{className:'lfc-combobox-dropdown'},
-      filtered.length===0
-        ?React.createElement('div',{className:'lfc-combobox-empty'},'ไม่พบหน่วยงาน')
-        :filtered.map(u=>React.createElement('label',{key:u.key,className:'lfc-unit-row'},
-            React.createElement(Checkbox,{isChecked:selected.has(u.key),onChange:()=>onToggle(u.key),size:'sm'}),
-            React.createElement('span',{className:'lfc-unit-name'},u.name),
-            React.createElement('span',{className:'ba-tag'},levelLabel[u.level])
+  const allChecked=filtered.length>0&&filtered.every(u=>selected.has(u.key));
+  return React.createElement('div',{className:'lfc-picker',ref:pickerRef},
+    React.createElement('div',{className:'lfc-picker-trigger'+(open?' is-open':''),onClick:()=>setOpen(v=>!v)},
+      React.createElement(Icon,{name:'search',size:17}),
+      selected.size===0?
+        React.createElement('span',{className:'lfc-picker-trigger-text'},'ค้นหาและเลือกหน่วยงาน'):
+        React.createElement('div',{className:'lfc-picker-chips'},
+          units.filter(u=>selected.has(u.key)).map(u=>React.createElement('span',{key:u.key,className:'lfc-chip'},
+            u.name,
+            React.createElement('button',{type:'button',className:'lfc-chip-remove',onClick:e=>{e.stopPropagation();onToggle(u.key);}},React.createElement(Icon,{name:'x',size:12}))
           ))
+        ),
+      React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:16})
+    ),
+    open&&React.createElement('div',{className:'lfc-picker-panel'},
+      React.createElement('input',{className:'lfc-picker-search',autoFocus:true,placeholder:'ค้นหา...',value:query,onChange:e=>setQuery(e.target.value)}),
+      React.createElement('div',{className:'lfc-picker-list'},
+        React.createElement('label',{className:'lfc-unit-row lfc-unit-row-all'},
+          React.createElement(Checkbox,{size:'sm',isChecked:allChecked,onChange:()=>onToggleAll(filtered.map(u=>u.key),!allChecked)}),
+          React.createElement('span',{className:'lfc-unit-name'},`ทั้งหมด (${filtered.length})`)
+        ),
+        filtered.length===0?React.createElement('div',{className:'lfc-unit-empty'},'ไม่พบหน่วยงาน'):
+        filtered.map(u=>React.createElement('label',{key:u.key,className:'lfc-unit-row'},
+          React.createElement(Checkbox,{size:'sm',isChecked:selected.has(u.key),onChange:()=>onToggle(u.key)}),
+          React.createElement('span',{className:'lfc-unit-name'},u.name),
+          React.createElement('span',{className:'ba-tag'},window.LFC_LEVEL_LABEL[u.level])
+        ))
+      )
+    )
+  );
+}
+
+function ValidationModal({missing,onClose}){
+  return React.createElement('div',{className:'lfc-modal-overlay',onClick:onClose},
+    React.createElement('div',{className:'lfc-modal-card',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'lfc-modal-rings'},
+        React.createElement('span',{className:'lfc-modal-ring',style:{width:150,height:150,opacity:.5}}),
+        React.createElement('span',{className:'lfc-modal-ring',style:{width:260,height:260,opacity:.35}}),
+        React.createElement('span',{className:'lfc-modal-ring',style:{width:370,height:370,opacity:.2}}),
+        React.createElement('span',{className:'lfc-modal-ring',style:{width:480,height:480,opacity:.1}})
+      ),
+      React.createElement('button',{type:'button',className:'lfc-modal-close','aria-label':'ปิด',onClick:onClose},React.createElement(Icon,{name:'x',size:18})),
+      React.createElement(FeaturedIcon,{size:'lg',color:'warning',icon:React.createElement(Icon,{name:'alert-triangle',size:22})}),
+      React.createElement('h3',{className:'lfc-modal-title'},'ข้อมูลยังไม่สมบูรณ์'),
+      React.createElement('p',{className:'lfc-modal-desc'},'กรุณาตรวจสอบและระบุข้อมูลดังต่อไปนี้ให้ครบถ้วน :'),
+      React.createElement('div',{className:'lfc-modal-list'},
+        missing.map((m,i)=>React.createElement('div',{key:i,className:'lfc-modal-list-item'},'- '+m))
+      ),
+      React.createElement('div',{className:'lfc-modal-actions'},
+        React.createElement(Button,{variant:'primary',size:'md',onClick:onClose},'ยืนยัน')
+      )
     )
   );
 }
@@ -126,17 +154,28 @@ function App(){
   const [participants,setParticipants]=React.useState([{name:'',position:'',empId:'',tel:''}]);
   const [year,setYear]=React.useState(window.LFC_YEARS[0]);
   const [selected,setSelected]=React.useState(()=>new Set());
+  const [toast,setToast]=React.useState(null);
+  const [validationMissing,setValidationMissing]=React.useState(null);
 
   function toggleUnit(key){setSelected(s=>{const n=new Set(s);n.has(key)?n.delete(key):n.add(key);return n;});}
+  function toggleAllUnits(keys,checked){setSelected(s=>{const n=new Set(s);keys.forEach(k=>checked?n.add(k):n.delete(k));return n;});}
 
-  const isValid=processCode.trim().length>0&&selected.size>0;
+  const isValid=processCode.trim().length>0&&year&&objectives.some(o=>o.trim().length>0)&&
+    recorder.name.trim().length>0&&recorder.empId.trim().length>0&&
+    reviewer.name.trim().length>0&&reviewer.empId.trim().length>0&&
+    approver.name.trim().length>0&&approver.empId.trim().length>0&&
+    selected.size>0;
 
   function handleSubmit(){
     if(!isValid){
       const missing=[];
       if(!processCode.trim())missing.push('ชื่อกระบวนการ');
+      if(!objectives.some(o=>o.trim().length>0))missing.push('วัตถุประสงค์ของกระบวนการ');
+      if(!recorder.name.trim()||!recorder.empId.trim())missing.push('ผู้บันทึกข้อมูล');
+      if(!reviewer.name.trim()||!reviewer.empId.trim())missing.push('ผู้ตรวจสอบข้อมูล');
+      if(!approver.name.trim()||!approver.empId.trim())missing.push('ผู้อนุมัติข้อมูล');
       if(selected.size===0)missing.push('หน่วยงานผู้รับผิดชอบ');
-      window.alert('กรุณากรอกข้อมูลให้ครบถ้วน: '+missing.join(', '));
+      setValidationMissing(missing);
       return;
     }
     const node=window.BA_LEVELS.l1.find(n=>n.code===processCode);
@@ -147,8 +186,8 @@ function App(){
       return {id:Date.now()+idx,process:processName,unit:u.name,level:u.level,year,status:'pending'};
     });
     sessionStorage.setItem('lfoa_pending_assign',JSON.stringify({items:newItems,year,count:unitKeys.length}));
-    window.alert('บันทึกและมอบหมายเรียบร้อยแล้ว');
-    window.location.href='/learning-form-overview-admin';
+    setToast('บันทึกและมอบหมายเรียบร้อยแล้ว');
+    setTimeout(()=>{window.location.href='/learning-form-overview-admin';},1600);
   }
 
   return React.createElement(React.Fragment,null,
@@ -176,12 +215,13 @@ function App(){
         ),
         React.createElement('div',{className:'lfc-section'},
           React.createElement('span',{className:'lfc-label'},'มอบหมายให้หน่วยงานผู้รับผิดชอบ',React.createElement('span',{className:'lfc-required'},' *')),
-          React.createElement(UnitCombobox,{units:window.LFC_UNITS,levelLabel:window.LFC_LEVEL_LABEL,selected,onToggle:toggleUnit})
+          React.createElement(UnitPicker,{units:window.LFC_UNITS,selected,onToggle:toggleUnit,onToggleAll:toggleAllUnits}),
+          selected.size>0&&React.createElement('div',{className:'lfc-unit-selected-count'},`เลือกแล้ว ${selected.size} หน่วยงาน`)
         ),
         React.createElement('div',{className:'lfc-section'},
           React.createElement('div',{className:'lfc-label-row'},
-            React.createElement('span',{className:'lfc-label'},'วัตถุประสงค์ของกระบวนการ'),
-            React.createElement(Button,{variant:'tertiary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addObjective},'เพิ่มข้อ')
+            React.createElement('span',{className:'lfc-label'},'วัตถุประสงค์ของกระบวนการ',React.createElement('span',{className:'lfc-required'},' *')),
+            React.createElement(Button,{variant:'tertiary',size:'sm',className:'lfc-btn-purple',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addObjective},'เพิ่มข้อ')
           ),
           objectives.map((o,i)=>React.createElement('div',{key:i,className:'lfc-objective-row'},
             React.createElement('span',{className:'lfc-objective-num'},(i+1)+'.'),
@@ -189,16 +229,18 @@ function App(){
             objectives.length>1&&React.createElement('button',{className:'lfc-objective-remove',onClick:()=>removeObjective(i)},React.createElement(Icon,{name:'x',size:15}))
           ))
         ),
-        React.createElement(PersonRow,{label:'ผู้บันทึกข้อมูล',person:recorder,onChange:setRecorder}),
-        React.createElement(PersonRow,{label:'ผู้ตรวจสอบข้อมูล',person:reviewer,onChange:setReviewer}),
-        React.createElement(PersonRow,{label:'ผู้อนุมัติข้อมูล',person:approver,onChange:setApprover}),
+        React.createElement(PersonRow,{label:'ผู้บันทึกข้อมูล',person:recorder,onChange:setRecorder,required:true}),
+        React.createElement(PersonRow,{label:'ผู้ตรวจสอบข้อมูล',person:reviewer,onChange:setReviewer,required:true}),
+        React.createElement(PersonRow,{label:'ผู้อนุมัติข้อมูล',person:approver,onChange:setApprover,required:true}),
         React.createElement(ParticipantsRow,{people:participants,onChange:setParticipants})
       ),
       React.createElement('div',{className:'lfc-actions'},
         React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/learning-form-overview-admin';}},'ยกเลิก'),
         React.createElement(Button,{variant:'primary',size:'md',onClick:handleSubmit},'บันทึกและมอบหมาย')
-      )
-    )
+      ),
+      toast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),toast)
+    ),
+    validationMissing&&React.createElement(ValidationModal,{missing:validationMissing,onClose:()=>setValidationMissing(null)})
   );
 }
 
