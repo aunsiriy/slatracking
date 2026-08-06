@@ -1,16 +1,21 @@
 const LF_YEARS=['2568','2567','2566'];
+const LF_BA_PROCESS_OPTIONS=[
+{key:'s131',label:'S1.3.1 งานพัฒนาระบบงาน/กระบวนการ'},
+{key:'s132',label:'S1.3.2 งานบริหารโครงสร้างองค์กร'},
+{key:'s133',label:'S1.3.3 งานบริหารการเปลี่ยนแปลง (Change Management)'}
+];
 const LF_META={year:'2568',ba:'S1.3',baLabel:'กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
- processName:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
+ processName:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2569',
  objective:'เพื่อพัฒนาโครงสร้างองค์กรและบริหารการเปลี่ยนแปลงให้สอดคล้องกับแผนยุทธศาสตร์ขององค์กร',
  division:'ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
+ createdDate:'15 กรกฎาคม 2568',
  recorder:{name:'ธนพร เสมาไชย',role:'ผู้บันทึกข้อมูล',position:'หผ.พร.(ภ)',empId:'498230',tel:'9527'},
  reviewer:{name:'สวิชญา พฤกษหิรัญ',role:'ผู้ตรวจสอบข้อมูล',position:'อก.นอ.',empId:'489717',tel:'9520'},
  approver:{name:'ธงชัย มีนวล',role:'ผู้อนุมัติข้อมูล',position:'อฝ.พป.',empId:'327575',tel:'6844'},
  participants:[
   {name:'พรศักดิ์ รอดรักษา',position:'รก.นอ.',empId:'261517',tel:'9521'},
   {name:'รวี ว่องวีระยุทธ์',position:'รก.นอ.',empId:'491667',tel:'9522'}
- ],
- formName:'ทดสอบ กนอ.'};
+ ]};
 
 const LF_ANALYSIS_OPTIONS=[
 {key:'on_target',label:'ผลการดำเนินงานเป็นไปตาม/ดีกว่าเป้าหมาย/ดีกว่าอดีต'},
@@ -97,4 +102,21 @@ const LF_QIR_ANNUAL_REPORT=[
 {division:'สายงานบริการและการตลาด',process:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',improvement:'ปรับปรุงขั้นตอนอนุมัติให้ใช้ระบบดิจิทัลทั้งหมด',ba:'S1.3',progress:78},
 {division:'เขต 1 (ภาคเหนือ)',process:'S2.1 กระบวนการบำรุงรักษาระบบจำหน่าย',improvement:'จัดทำแผนบำรุงรักษาเชิงป้องกันแบบพยากรณ์',ba:'S2.1',progress:65}
 ];
-Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA});
+const LF_CURRENT_USER={empId:'602385',name:'วิภาวี ศรีสุข',position:'วิศวกร 6',tel:'9515'};
+const LF_EMPLOYEES={
+'602385':{name:'วิภาวี ศรีสุข',position:'วิศวกร 6',tel:'9515'},
+'498230':{name:'ธนพร เสมาไชย',position:'หผ.พร.(ภ)',tel:'9527'},
+'489717':{name:'สวิชญา พฤกษหิรัญ',position:'อก.นอ.',tel:'9520'},
+'327575':{name:'ธงชัย มีนวล',position:'อฝ.พป.',tel:'6844'},
+'261517':{name:'พรศักดิ์ รอดรักษา',position:'รก.นอ.',tel:'9521'},
+'491667':{name:'รวี ว่องวีระยุทธ์',position:'รก.นอ.',tel:'9522'},
+'514286':{name:'ปิยวัฒน์ อนุกูลสวัสดิ์',position:'วิศวกรไฟฟ้า 5',tel:'8801'},
+'514287':{name:'ญาณิศา อุ่นศิริ',position:'นักวิเคราะห์นโยบายและแผน 5',tel:'8802'},
+'514288':{name:'นภวรรณ สายเชื้อ',position:'เจ้าหน้าที่บริหารงานทั่วไป 4',tel:'8803'},
+'542561':{name:'ชัยวัฒน์ ดำรงกิจ',position:'วิศวกรไฟฟ้า 4',tel:'8811'},
+'542567':{name:'อัจฉรา บุญมาก',position:'นักบัญชี 5',tel:'8812'},
+'542570':{name:'ทศพร แก้วมณี',position:'ช่างเทคนิค 4',tel:'8813'},
+'542580':{name:'พิมพ์ใจ วงศ์สวัสดิ์',position:'หัวหน้าแผนกบุคคล',tel:'8814'}
+};
+function lfLookupEmployee(empId){return LF_EMPLOYEES[empId]||null;}
+Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,lfLookupEmployee});
