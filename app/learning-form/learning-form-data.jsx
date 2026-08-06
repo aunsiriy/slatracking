@@ -26,13 +26,16 @@ const LF_FOLLOWUP_OPTIONS=[
 
 const LF_LEADING_METRICS=[
 {id:1,step:'S1.3.1 งานพัฒนาระบบงาน/กระบวนการ',metric:'มีอนุมัติสถาปัตยกรรมธุรกิจ (BA) ที่ทบทวนตามแผนยุทธศาสตร์ และมีการประเมินความพึงพอใจในการทบทวน BA ภายใน พ.ย. ของทุกปี',
+ isCritical:false,isControl:false,
  target:'ภายในระยะเวลาที่กำหนด',result2568:'ดำเนินการได้ตามกำหนด',result2567:'ดำเนินการได้ตามกำหนด',result2566:'ดำเนินการได้ตามกำหนด',
  analysis:'on_target',followup:['km'],analysisDetail:'ผลการดำเนินงานของ SLA ในทุกขั้นตอนเป็นไปตามเป้าหมาย',
  improvementDetail:'ปรับตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการและครอบคลุมกระบวนการทำงาน'},
 {id:2,step:'S1.3.2 งานบริหารโครงสร้างองค์กร',metric:'มีการสื่อสารการจัดทำโครงสร้างองค์กรให้ครบทุก กฟฟ. และมีการประเมินผลความเข้าใจในการเปลี่ยนแปลงโครงสร้างองค์กรภายในไตรมาสที่ 3',
+ isCritical:true,isControl:false,
  target:'ภายในระยะเวลาที่กำหนด',result2568:'ดำเนินการได้ตามกำหนด',result2567:'ดำเนินการได้ตามกำหนด',result2566:'ดำเนินการได้ตามกำหนด',
  analysis:'on_target',followup:[],analysisDetail:'ผลการดำเนินงานของ SLA ในทุกขั้นตอนเป็นไปตามเป้าหมาย',improvementDetail:'ไม่มี'},
 {id:3,step:'S1.3.3 งานบริหารการเปลี่ยนแปลง (Change Management)',metric:'ความสำเร็จในการดำเนินงานตามแผนกิจกรรม Change Management และมีการประเมินความพึงพอใจในกิจกรรมทุกปี',
+ isCritical:false,isControl:true,
  target:'ร้อยละ 100',result2568:'ร้อยละ 100',result2567:'ร้อยละ 100',result2566:'ร้อยละ 100',
  analysis:'on_target',followup:['km'],analysisDetail:'ผลการดำเนินงานของ SLA ในทุกขั้นตอนเป็นไปตามเป้าหมาย',
  improvementDetail:'ปรับตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการและครอบคลุมกระบวนการทำงาน'}
@@ -40,8 +43,18 @@ const LF_LEADING_METRICS=[
 
 const LF_LAGGING_METRICS=[
 {id:4,step:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',metric:'ความสำเร็จในการพัฒนาระบบงานและกระบวนการกำหนดแนวทางการเตรียมความพร้อมโครงสร้างองค์กรและบุคลากร เพื่อรองรับการปรับเปลี่ยนอุตสาหกรรมธุรกิจไฟฟ้า',
+ isCritical:false,isControl:false,
  target:'ภายในระยะเวลาที่กำหนด',result2568:'ภายในระยะเวลาที่กำหนด',result2567:'ภายในระยะเวลาที่กำหนด',result2566:'ภายในระยะเวลาที่กำหนด',
  analysis:'on_target',followup:['km'],analysisDetail:'การเตรียมความพร้อมโครงสร้างองค์กรและบุคลากร/การออกแบบกระบวนการทางธุรกิจ เป็นไปตามเป้าหมาย',improvementDetail:'ไม่มี'}
+];
+
+const LF_CONTROL_CRITERIA=[
+{key:'oversight',label:'ไม่มีการกำกับดูแลให้ปฏิบัติตามแนวทาง / มาตรฐาน / ข้อกำหนด',tag:'O,C'},
+{key:'tools',label:'เครื่องมือ วัสดุ อุปกรณ์ ยานพาหนะไม่เพียงพอ / ไม่ตรงความต้องการ / ไม่พร้อมใช้',tag:'O'},
+{key:'staff',label:'บุคลากรไม่เพียงพอ / ไม่มีความชำนาญ',tag:'O'},
+{key:'criteria',label:'หลักเกณฑ์ / แนวทาง / วิธีปฏิบัติ ไม่ครอบคลุม ไม่ชัดเจน',tag:'O'},
+{key:'system',label:'ไม่มีระบบสารสนเทศ / ระบบสารสนเทศไม่สามารถสนับสนุนการดำเนินงานได้อย่างมีประสิทธิภาพ',tag:'O'},
+{key:'data',label:'ข้อมูลผิดพลาด ไม่ตรงกับการดำเนินงานจริง',tag:'R'}
 ];
 
 const LF_ISSUES=[
@@ -84,5 +97,4 @@ const LF_QIR_ANNUAL_REPORT=[
 {division:'สายงานบริการและการตลาด',process:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',improvement:'ปรับปรุงขั้นตอนอนุมัติให้ใช้ระบบดิจิทัลทั้งหมด',ba:'S1.3',progress:78},
 {division:'เขต 1 (ภาคเหนือ)',process:'S2.1 กระบวนการบำรุงรักษาระบบจำหน่าย',improvement:'จัดทำแผนบำรุงรักษาเชิงป้องกันแบบพยากรณ์',ba:'S2.1',progress:65}
 ];
-
-Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT});
+Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA});

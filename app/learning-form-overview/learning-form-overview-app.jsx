@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Badge}=window.DesignSystem_cbd181;
+const {Button,Badge,FeaturedIcon}=window.DesignSystem_cbd181;
 
 function TopBar(){
   return React.createElement('header',{className:'lftop'},
@@ -38,6 +38,63 @@ function KpiCards({year}){
         React.createElement('div',{className:'lfkpi-label'},c.label)
       )
     ))
+  );
+}
+
+function GuideItem({item}){
+  return React.createElement('li',{className:'fd-item'},
+    React.createElement('span',{className:(item.bold?'fd-strong':'')+(item.underline?' fd-underline':'')},item.text),
+    item.children&&React.createElement('ul',{className:'fd-sublist'},
+      item.children.map((c,i)=>React.createElement(GuideItem,{key:i,item:c}))
+    )
+  );
+}
+
+function GuideBlock({block}){
+  if(block.type==='p')return React.createElement('p',{className:'fd-p'+(block.bold?' fd-strong':'')},block.text);
+  if(block.type==='list'){
+    const Tag=block.ordered?'ol':'ul';
+    return React.createElement(Tag,{className:'fd-list'+(block.ordered?' fd-list--ordered':'')},
+      block.items.map((it,i)=>React.createElement(GuideItem,{key:i,item:it}))
+    );
+  }
+  return null;
+}
+
+function FormGuideSection(){
+  const [sectionOpen,setSectionOpen]=React.useState(false);
+  const [openSet,setOpenSet]=React.useState(new Set());
+  function toggle(i){
+    setOpenSet(prev=>{
+      const next=new Set(prev);
+      if(next.has(i))next.delete(i);else next.add(i);
+      return next;
+    });
+  }
+  return React.createElement('div',{className:'card lfguide-card'},
+    React.createElement('button',{type:'button',className:'lfguide-header',onClick:()=>setSectionOpen(v=>!v),'aria-expanded':sectionOpen},
+      React.createElement(FeaturedIcon,{size:'md',color:'brand',variant:'light',icon:React.createElement(Icon,{name:'help-circle',size:20})}),
+      React.createElement('div',{className:'lfguide-header-text'},
+        React.createElement('h3',null,'คำอธิบายแบบฟอร์ม'),
+        React.createElement('p',null,'แต่ละส่วนของ Learning Form คืออะไร กดเพื่อดูคำอธิบายแต่ละส่วน')
+      ),
+      React.createElement(Icon,{name:sectionOpen?'chevron-down':'chevron-right',size:20,className:'lfguide-header-chevron'})
+    ),
+    sectionOpen&&React.createElement('div',{className:'lfguide-acc'},
+      window.LFO_FORM_GUIDE.map((s,i)=>{
+        const isOpen=openSet.has(i);
+        return React.createElement('div',{key:i,className:'lfguide-acc-item'+(isOpen?' is-open':'')},
+          React.createElement('button',{type:'button',className:'lfguide-acc-head',onClick:()=>toggle(i),'aria-expanded':isOpen},
+            React.createElement('span',{className:'lfguide-num-badge'},s.part),
+            React.createElement('span',{className:'lfguide-acc-title'},s.title),
+            React.createElement(Icon,{name:isOpen?'chevron-down':'chevron-right',size:18,className:'lfguide-acc-chevron'})
+          ),
+          isOpen&&React.createElement('div',{className:'lfguide-acc-body'},
+            s.blocks.map((b,bi)=>React.createElement(GuideBlock,{key:bi,block:b}))
+          )
+        );
+      })
+    )
   );
 }
 
@@ -101,6 +158,7 @@ function App(){
         React.createElement('p',null,'สรุปจำนวน Learning Form ของคุณ และเลือกระดับหน่วยงานเพื่อเริ่มกรอกหรือทบทวนข้อมูล')
       ),
       React.createElement(KpiCards,{year}),
+      React.createElement(FormGuideSection),
       React.createElement(MenuCards),
       React.createElement(RecentList,{year,setYear})
     )

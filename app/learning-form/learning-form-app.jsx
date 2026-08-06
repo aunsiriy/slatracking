@@ -53,9 +53,50 @@ function PersonBlock({p}){
   );
 }
 
+function DiagramUploadSection({title,hint,redNote}){
+  const [files,setFiles]=React.useState([]);
+  function onPick(e){
+    const list=Array.from(e.target.files||[]).map(f=>({name:f.name,url:URL.createObjectURL(f)}));
+    setFiles(prev=>[...prev,...list]);
+    e.target.value='';
+  }
+  function removeFile(i){setFiles(files.filter((_,idx)=>idx!==i));}
+  return React.createElement(SectionCard,{title,hint},
+    redNote&&React.createElement('p',{className:'ldiagram-rednote'},React.createElement(Icon,{name:'alert-triangle',size:16}),redNote),
+    React.createElement('label',{className:'ldiagram-drop'},
+      React.createElement(Icon,{name:'upload',size:22}),
+      React.createElement('span',null,'อัปโหลดรูปภาพแผนภาพกระบวนการ'),
+      React.createElement('span',{className:'ldiagram-drop-hint'},'รองรับ PNG, JPG (คลิกเพื่อเลือกไฟล์)'),
+      React.createElement('input',{type:'file',accept:'image/*',multiple:true,onChange:onPick,style:{display:'none'}})
+    ),
+    files.length>0&&React.createElement('div',{className:'ldiagram-preview-grid'},
+      files.map((f,i)=>React.createElement('div',{key:i,className:'ldiagram-preview'},
+        React.createElement('img',{src:f.url,alt:f.name}),
+        React.createElement('div',{className:'ldiagram-preview-name'},f.name),
+        React.createElement('button',{className:'ldiagram-preview-remove',onClick:()=>removeFile(i)},React.createElement(Icon,{name:'x',size:14}))
+      ))
+    )
+  );
+}
+
+function DiagramBeforeSection(){
+  return React.createElement(DiagramUploadSection,{
+    title:'ส่วนที่ 1 — แผนภาพกระบวนการก่อนการปรับปรุงประจำปี',
+    hint:'แผนภาพรวมทั้งกระบวนการก่อนการปรับปรุง อาจอยู่ในรูปแบบ Work Flow หรือ SIPOC (ถ้ามี)',
+    redNote:'สำหรับหน่วยงานที่ใช้ตอบเกณฑ์ Core Business Enabler ของ กฟภ. ให้แสดงภาพกระบวนการในส่วนนี้'
+  });
+}
+
+function DiagramAfterSection(){
+  return React.createElement(DiagramUploadSection,{
+    title:'ส่วนที่ 5 — ผลการปรับปรุงกระบวนการประจำปี',
+    hint:'แผนภาพกระบวนการหลังการปรับปรุงและนำมาใช้ในการดำเนินการประจำปีถัดไป ซึ่งเกิดจากการกำหนดการพัฒนา/ปรับปรุงในส่วนที่ 4 (ถ้ามี)'
+  });
+}
+
 function MetaSection(){
   const m=window.LF_META;
-  return React.createElement(SectionCard,{title:'ส่วนที่ 0 — ข้อมูลพื้นฐานของกระบวนการ'},
+  return React.createElement(SectionCard,{title:'ส่วนที่ 0 — ข้อมูลพื้นฐานการประเมินและปรับปรุงกระบวนการ'},
     React.createElement('div',{className:'lmeta-grid'},
       React.createElement('div',{className:'lmeta-field lmeta-field--wide'},
         React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการ (ตาม BA)'),
@@ -85,41 +126,81 @@ function MetaSection(){
 }
 
 function MetricCard({item,onChange}){
-  const [open,setOpen]=React.useState(false);
   function set(field,value){onChange({...item,[field]:value});}
   function toggleFollowup(key){
     const has=item.followup.includes(key);
     set('followup',has?item.followup.filter(k=>k!==key):[...item.followup,key]);
   }
+  function toggleControlCriteria(key){
+    const list=item.controlCriteria||[];
+    const has=list.includes(key);
+    set('controlCriteria',has?list.filter(k=>k!==key):[...list,key]);
+  }
+  const pointType=item.isControl?'control':'critical';
+  function setPointType(next){
+    if(next==='control')onChange({...item,isCritical:false,isControl:true});
+    else onChange({...item,isCritical:true,isControl:false});
+  }
   return React.createElement('div',{className:'card lmetric-card'},
-    React.createElement('button',{className:'lmetric-head',onClick:()=>setOpen(v=>!v)},
-      React.createElement('div',{className:'lmetric-head-main'},
-        React.createElement('span',{className:'ba-tag'},item.step),
-        React.createElement('span',{className:'lmetric-name'},item.metric)
-      ),
-      React.createElement(Icon,{name:'chevron-down',size:18,className:'lmetric-chevron'+(open?' is-open':'')})
+    React.createElement('div',{className:'lmetric-head'},
+      React.createElement('span',{className:'lmetric-step'},item.step)
     ),
-    open&&React.createElement('div',{className:'lmetric-body'},
+    React.createElement('div',{className:'lmetric-metric-block'},
+      React.createElement('span',{className:'lfield-label'},'ตัวชี้วัด'),
+      React.createElement('p',{className:'lmetric-name'},item.metric)
+    ),
+    React.createElement('div',{className:'lmetric-body'},
+      React.createElement('div',{className:'lmetric-section'},
+        React.createElement('span',{className:'lfield-label lfield-label-lg'},'ประเภท'),
+        React.createElement('div',{className:'lmetric-point-tags'},
+          React.createElement(Radio,{size:'sm',name:'point-type-'+item.id,label:'Critical Point',isChecked:pointType==='critical',onChange:()=>setPointType('critical')}),
+          React.createElement(Radio,{size:'sm',name:'point-type-'+item.id,label:'Control Point',isChecked:pointType==='control',onChange:()=>setPointType('control')})
+        )
+      ),
       React.createElement('div',{className:'lmetric-stats'},
-        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label'},'เป้าหมายปี '+window.LF_META.year),React.createElement('span',{className:'lstat-value'},item.target)),
-        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label'},'ผล '+window.LF_META.year),React.createElement('span',{className:'lstat-value'},item.result2568)),
-        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label'},'ผล 2567'),React.createElement('span',{className:'lstat-value'},item.result2567)),
-        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label'},'ผล 2566'),React.createElement('span',{className:'lstat-value'},item.result2566))
+        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'เป้าหมายปี '+window.LF_META.year,React.createElement('span',{className:'lc-required'},' *')),React.createElement(InputField,{fieldType:'default',size:'sm',value:item.target,onChange:v=>set('target',v)})),
+        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'ผล '+window.LF_META.year,React.createElement('span',{className:'lc-required'},' *')),React.createElement(InputField,{fieldType:'default',size:'sm',value:item.result2568,onChange:v=>set('result2568',v)})),
+        React.createElement('div',{className:'lstat lstat-readonly'},React.createElement('span',{className:'lstat-label'},'ผล 2567'),React.createElement('span',{className:'lstat-value'},item.result2567)),
+        React.createElement('div',{className:'lstat lstat-readonly'},React.createElement('span',{className:'lstat-label'},'ผล 2566'),React.createElement('span',{className:'lstat-value'},item.result2566))
       ),
-      React.createElement('div',{className:'lmetric-section'},
-        React.createElement('span',{className:'lfield-label'},'ประเด็นพิจารณาผลการดำเนินงาน'),
-        React.createElement('div',{className:'lradio-group'},
-          window.LF_ANALYSIS_OPTIONS.map(o=>React.createElement(Radio,{key:o.key,size:'sm',name:'analysis-'+item.id,value:o.key,label:o.label,isChecked:item.analysis===o.key,onChange:()=>set('analysis',o.key)}))
+      React.createElement('div',{className:'lissue-parent-label'},'ประเด็นพิจารณาผลการดำเนินงาน',React.createElement('span',{className:'lc-required'},' *')),
+      pointType==='critical'?
+      React.createElement('div',{className:'lmetric-analysis-grid'},
+        React.createElement('div',{className:'lmetric-pbar'},
+          React.createElement('div',{className:'lmetric-pbar-head'},'ผลการวิเคราะห์'),
+          React.createElement('div',{className:'lmetric-pbar-body'},
+            React.createElement('div',{className:'lradio-group'},
+              window.LF_ANALYSIS_OPTIONS.map(o=>React.createElement(Radio,{key:o.key,size:'sm',name:'analysis-'+item.id,label:o.label,isChecked:item.analysis===o.key,onChange:()=>set('analysis',o.key)}))
+            ),
+            React.createElement(Textarea,{label:'รายละเอียดการวิเคราะห์',placeholder:'ระบุรายละเอียดการวิเคราะห์',value:item.analysisDetail,onChange:v=>set('analysisDetail',v)})
+          )
+        ),
+        React.createElement('div',{className:'lmetric-pbar'},
+          React.createElement('div',{className:'lmetric-pbar-head'},'แนวทางการพัฒนา/ปรับปรุง'),
+          React.createElement('div',{className:'lmetric-pbar-body'},
+            React.createElement('div',{className:'lcheck-group'},
+              window.LF_FOLLOWUP_OPTIONS.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:item.followup.includes(o.key),onChange:()=>toggleFollowup(o.key)}))
+            ),
+            React.createElement(Textarea,{label:'รายละเอียดการพัฒนา/ปรับปรุง',placeholder:'ระบุแนวทางการพัฒนา/ปรับปรุง',value:item.improvementDetail,onChange:v=>set('improvementDetail',v)})
+          )
         )
-      ),
-      React.createElement('div',{className:'lmetric-section'},
-        React.createElement('span',{className:'lfield-label'},'แนวทางที่เกี่ยวข้อง'),
-        React.createElement('div',{className:'lcheck-group'},
-          window.LF_FOLLOWUP_OPTIONS.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:item.followup.includes(o.key),onChange:()=>toggleFollowup(o.key)}))
+      ):
+      React.createElement('div',{className:'lmetric-analysis-grid'},
+        React.createElement('div',{className:'lmetric-pbar'},
+          React.createElement('div',{className:'lmetric-pbar-head'},'หลักเกณฑ์การประเมิน'),
+          React.createElement('div',{className:'lmetric-pbar-body'},
+            React.createElement('div',{className:'lcheck-group'},
+              window.LF_CONTROL_CRITERIA.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label+' ('+o.tag+')',isChecked:(item.controlCriteria||[]).includes(o.key),onChange:()=>toggleControlCriteria(o.key)}))
+            )
+          )
+        ),
+        React.createElement('div',{className:'lmetric-pbar'},
+          React.createElement('div',{className:'lmetric-pbar-head'},'แนวทางการแก้ไข'),
+          React.createElement('div',{className:'lmetric-pbar-body'},
+            React.createElement(Textarea,{label:'รายละเอียดแนวทางการแก้ไข',placeholder:'ระบุแนวทางการแก้ไข',value:item.controlFix||'',onChange:v=>set('controlFix',v)})
+          )
         )
-      ),
-      React.createElement(Textarea,{label:'รายละเอียดการวิเคราะห์',value:item.analysisDetail,onChange:v=>set('analysisDetail',v)}),
-      React.createElement(Textarea,{label:'รายละเอียดการพัฒนา/ปรับปรุง',value:item.improvementDetail,onChange:v=>set('improvementDetail',v)})
+      )
     )
   );
 }
@@ -131,7 +212,7 @@ function EffectivenessSection(){
   function updateLeading(next){setLeading(leading.map(i=>i.id===next.id?next:i));}
   function updateLagging(next){setLagging(lagging.map(i=>i.id===next.id?next:i));}
   return React.createElement(SectionCard,{title:'ส่วนที่ 2 — ผลการดำเนินงานตามตัวชี้วัด (ย้อนหลัง 3 ปี)',
-    hint:'แตะที่รายการเพื่อดูรายละเอียดและกรอกผลการวิเคราะห์'},
+    hint:'ระบุผลการดำเนินงานและเลือก Critical/Control Point สำหรับแต่ละตัวชี้วัด'},
     React.createElement('div',{className:'lmetric-tabs'},
       React.createElement('button',{type:'button',className:'lmetric-tab'+(tab==='leading'?' is-active':''),onClick:()=>setTab('leading')},'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)'),
       React.createElement('button',{type:'button',className:'lmetric-tab'+(tab==='lagging'?' is-active':''),onClick:()=>setTab('lagging')},'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)')
@@ -156,37 +237,41 @@ function IssueCard({item,onChange}){
   );
 }
 
-function IssuesSection(){
+function IssuesPrioritiesSection(){
   const [issues,setIssues]=React.useState(window.LF_ISSUES);
-  function update(next){setIssues(issues.map(i=>i.key===next.key?next:i));}
-  return React.createElement(SectionCard,{title:'ส่วนที่ 3 — ประเด็นพิจารณาสำหรับการประเมินและปรับปรุงกระบวนการ'},
-    issues.map(item=>React.createElement(IssueCard,{key:item.key,item,onChange:update}))
-  );
-}
-
-function PrioritiesSection(){
-  const [rows,setRows]=React.useState(window.LF_PRIORITIES);
-  function update(id,field,value){setRows(rows.map(r=>r.id===id?{...r,[field]:value}:r));}
-  function addRow(){setRows([...rows,{id:Date.now(),rank:rows.length+1,direction:'',process:'',method:'',duration:'y1'}]);}
-  return React.createElement(SectionCard,{title:'ส่วนที่ 4 — การจัดลำดับความสำคัญของประเด็นการพัฒนา/ปรับปรุง',
-    hint:'เลือกระยะเวลาที่สามารถดำเนินการได้ตามความซับซ้อนของการปรับปรุง',
-    action:React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addRow},'เพิ่มลำดับ')},
-    rows.map((r,i)=>React.createElement('div',{key:r.id,className:'card lpriority-card'},
-      React.createElement('div',{className:'lpriority-rank'},'ลำดับ '+(i+1)),
-      React.createElement('div',{className:'lpriority-grid'},
-        React.createElement(InputField,{fieldType:'default',label:'แนวทางการพัฒนา/ปรับปรุง',size:'md',value:r.direction,onChange:v=>update(r.id,'direction',v)}),
-        React.createElement(InputField,{fieldType:'default',label:'ชื่อกระบวนการที่ปรับปรุง',size:'md',value:r.process,onChange:v=>update(r.id,'process',v)}),
-        React.createElement(InputField,{fieldType:'default',label:'วิธีการปรับปรุงการดำเนินงาน',size:'md',value:r.method,onChange:v=>update(r.id,'method',v)})
+  const [qirRows,setQirRows]=React.useState(window.LF_QIR_ACTIVITIES);
+  const qirTotal=qirRows.reduce((s,r)=>s+(Number(r.weight)||0),0);
+  function updateIssue(next){setIssues(issues.map(i=>i.key===next.key?next:i));}
+  function updateQir(id,field,value){setQirRows(qirRows.map(r=>r.id===id?{...r,[field]:value}:r));}
+  function addQirRow(){setQirRows([...qirRows,{id:Date.now(),activity:'',weight:0,saved:false}]);}
+  function removeQirRow(id){setQirRows(qirRows.filter(r=>r.id!==id));}
+  return React.createElement(React.Fragment,null,
+    React.createElement(SectionCard,{title:'ส่วนที่ 3 — ประเด็นพิจารณาสำหรับการประเมินและปรับปรุงกระบวนการ'},
+      issues.map(item=>React.createElement(IssueCard,{key:item.key,item,onChange:updateIssue}))
+    ),
+    React.createElement(SectionCard,{title:'QIR — บันทึกกิจกรรมที่จะดำเนินการ',hint:'ผลรวมน้ำหนักของทุกกิจกรรมต้องเท่ากับ 100',
+      action:React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addQirRow},'เพิ่มกิจกรรมที่จะดำเนินการ')},
+      React.createElement('table',{className:'ltable'},
+        React.createElement('thead',null,React.createElement('tr',null,['รายการ','กิจกรรมที่จะดำเนินการ','น้ำหนัก',''].map((h,i)=>React.createElement('th',{key:i},h)))),
+        React.createElement('tbody',null,qirRows.map((r,i)=>React.createElement('tr',{key:r.id},
+          React.createElement('td',null,i+1),
+          React.createElement('td',null,React.createElement(InputField,{fieldType:'default',size:'sm',value:r.activity,onChange:v=>updateQir(r.id,'activity',v)})),
+          React.createElement('td',{className:'lqir-weight'},React.createElement(InputField,{fieldType:'default',size:'sm',value:String(r.weight),onChange:v=>updateQir(r.id,'weight',v.replace(/[^0-9]/g,''))})),
+          React.createElement('td',null,
+            React.createElement(Button,{variant:'secondary',size:'sm',onClick:()=>updateQir(r.id,'saved',true)},'บันทึก'),
+            React.createElement('button',{className:'lqir-remove',onClick:()=>removeQirRow(r.id)},React.createElement(Icon,{name:'x',size:15}))
+          )
+        )))
       ),
-      React.createElement('div',{className:'lduration-group'},
-        React.createElement('span',{className:'lfield-label'},'ปีที่ดำเนินการ'),
-        React.createElement('div',{className:'lduration-options'},
-          window.LF_PRIORITY_DURATIONS.map(d=>React.createElement('div',{key:d.key,className:'lduration-option'+(r.duration===d.key?' is-active':'')},
-            React.createElement(Radio,{size:'sm',name:'duration-'+r.id,value:d.key,label:d.label,hint:d.hint,isChecked:r.duration===d.key,onChange:()=>update(r.id,'duration',d.key)})
-          ))
-        )
+      React.createElement('div',{className:'lqir-footer'},
+        React.createElement('span',null,'Info :: น้ำหนักรวมกัน ไม่เกิน 100'),
+        React.createElement('span',{className:'lqir-total'},qirTotal)
+      ),
+      React.createElement('div',{className:'lqir-status'+(qirTotal===100?' is-ok':qirTotal>100?' is-error':'')},
+        React.createElement(Icon,{name:qirTotal===100?'check':'alert-triangle',size:14}),
+        qirTotal===100?'น้ำหนักรวมครบ 100 — สามารถบันทึกได้':qirTotal>100?'น้ำหนักรวมเกิน 100 — กรุณาปรับแก้':'น้ำหนักรวมยังไม่ครบ 100'
       )
-    ))
+    )
   );
 }
 
@@ -208,37 +293,6 @@ function NextYearMetricsSection(){
         React.createElement('td',null,r.step),React.createElement('td',null,r.metric),React.createElement('td',null,r.target),
         React.createElement('td',null,React.createElement(Button,{variant:'tertiary',size:'sm',leadingIcon:React.createElement(Icon,{name:'trash',size:14})},'ลบ'))
       )))
-    )
-  );
-}
-
-function QirActivitiesSection(){
-  const [rows,setRows]=React.useState(window.LF_QIR_ACTIVITIES);
-  const total=rows.reduce((s,r)=>s+(Number(r.weight)||0),0);
-  function update(id,field,value){setRows(rows.map(r=>r.id===id?{...r,[field]:value}:r));}
-  function addRow(){setRows([...rows,{id:Date.now(),activity:'',weight:0,saved:false}]);}
-  function removeRow(id){setRows(rows.filter(r=>r.id!==id));}
-  return React.createElement(SectionCard,{title:'QIR — บันทึกกิจกรรมที่จะดำเนินการ',hint:'ผลรวมน้ำหนักของทุกกิจกรรมต้องเท่ากับ 100',
-    action:React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addRow},'เพิ่มกิจกรรมที่จะดำเนินการ')},
-    React.createElement('table',{className:'ltable'},
-      React.createElement('thead',null,React.createElement('tr',null,['รายการ','กิจกรรมที่จะดำเนินการ','น้ำหนัก',''].map((h,i)=>React.createElement('th',{key:i},h)))),
-      React.createElement('tbody',null,rows.map((r,i)=>React.createElement('tr',{key:r.id},
-        React.createElement('td',null,i+1),
-        React.createElement('td',null,React.createElement(InputField,{fieldType:'default',size:'sm',value:r.activity,onChange:v=>update(r.id,'activity',v)})),
-        React.createElement('td',{className:'lqir-weight'},React.createElement(InputField,{fieldType:'default',size:'sm',value:String(r.weight),onChange:v=>update(r.id,'weight',v.replace(/[^0-9]/g,''))})),
-        React.createElement('td',null,
-          React.createElement(Button,{variant:'secondary',size:'sm',onClick:()=>update(r.id,'saved',true)},'บันทึก'),
-          React.createElement('button',{className:'lqir-remove',onClick:()=>removeRow(r.id)},React.createElement(Icon,{name:'x',size:15}))
-        )
-      )))
-    ),
-    React.createElement('div',{className:'lqir-footer'},
-      React.createElement('span',null,'Info :: น้ำหนักรวมกัน ไม่เกิน 100'),
-      React.createElement('span',{className:'lqir-total'},total)
-    ),
-    React.createElement('div',{className:'lqir-status'+(total===100?' is-ok':total>100?' is-error':'')},
-      React.createElement(Icon,{name:total===100?'check':'alert-triangle',size:14}),
-      total===100?'น้ำหนักรวมครบ 100 — สามารถบันทึกได้':total>100?'น้ำหนักรวมเกิน 100 — กรุณาปรับแก้':'น้ำหนักรวมยังไม่ครบ 100'
     )
   );
 }
@@ -290,23 +344,24 @@ function QirReportsSection(){
 
 const LF_STEPS=[
 {key:'meta',label:'ข้อมูลพื้นฐาน',hint:'กรอกข้อมูลพื้นฐานของกระบวนการและผู้เกี่ยวข้อง',Component:MetaSection},
+{key:'diagram-before',label:'แผนภาพก่อนปรับปรุง',hint:'แนบแผนภาพกระบวนการก่อนการปรับปรุง (Work Flow/SIPOC)',Component:DiagramBeforeSection},
 {key:'effectiveness',label:'ผลการดำเนินงานตามตัวชี้วัด',hint:'ทบทวนผลการดำเนินงานตามตัวชี้วัดย้อนหลัง 3 ปี',Component:EffectivenessSection},
-{key:'issues',label:'ประเด็นพิจารณา',hint:'ระบุประเด็นพิจารณาสำหรับการปรับปรุงกระบวนการ',Component:IssuesSection},
-{key:'priorities',label:'จัดลำดับความสำคัญ',hint:'จัดลำดับความสำคัญของประเด็นที่จะพัฒนา',Component:PrioritiesSection},
+{key:'issues',label:'ประเด็นพิจารณา',hint:'ระบุประเด็นพิจารณาสำหรับการปรับปรุงกระบวนการ และบันทึกกิจกรรม QIR',Component:IssuesPrioritiesSection},
+{key:'diagram-after',label:'ผลการปรับปรุงกระบวนการ',hint:'แนบแผนภาพกระบวนการหลังการปรับปรุง',Component:DiagramAfterSection},
 {key:'nextyear',label:'ตัวชี้วัดปีถัดไป',hint:'กำหนดตัวชี้วัดและเป้าหมายสำหรับปีถัดไป',Component:NextYearMetricsSection},
-{key:'qir',label:'กิจกรรม QIR',hint:'บันทึกกิจกรรม QIR ที่จะดำเนินการ',Component:QirActivitiesSection},
 {key:'knowledge',label:'องค์ความรู้',hint:'บันทึกองค์ความรู้เดิมและองค์ความรู้ใหม่',Component:KnowledgeSection},
 {key:'reports',label:'ออก Report',hint:'ออกรายงาน QIR สำหรับนำเสนอคณะกรรมการ',Component:QirReportsSection}
 ];
 
-function ProgressRing({current,total,size=56}){
+function ProgressRing({current,total}){
+  const size=56;
   const pct=current/total;
   const stroke=6;
   const radius=(size-stroke)/2;
   const circumference=2*Math.PI*radius;
   const offset=circumference*(1-pct);
-  return React.createElement('div',{className:'lstepper-ring-wrap',style:{width:size,height:size}},
-    React.createElement('svg',{className:'lstepper-ring',width:size,height:size,viewBox:`0 0 ${size} ${size}`},
+  return React.createElement('div',{className:'lstepper-ring-wrap'},
+    React.createElement('svg',{className:'lstepper-ring',viewBox:`0 0 ${size} ${size}`},
       React.createElement('circle',{cx:size/2,cy:size/2,r:radius,fill:'none',stroke:'var(--pea-border-tertiary)',strokeWidth:stroke}),
       React.createElement('circle',{cx:size/2,cy:size/2,r:radius,fill:'none',stroke:'var(--pea-border-brand)',strokeWidth:stroke,strokeDasharray:circumference,strokeDashoffset:offset,strokeLinecap:'round',transform:`rotate(-90 ${size/2} ${size/2})`})
     ),
@@ -373,11 +428,33 @@ function ConfirmModal({title,description,confirmLabel,cancelLabel,onConfirm,onCa
   );
 }
 
+function FormGuideModal({onClose}){
+  const [open,setOpen]=React.useState(0);
+  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
+    React.createElement('div',{className:'modal-card lfguide-modal',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'modal-head'},
+        React.createElement('h3',null,'คำอธิบายแบบฟอร์ม'),
+        React.createElement('button',{className:'lfa-modal-close',onClick:onClose},React.createElement(Icon,{name:'x',size:18}))
+      ),
+      React.createElement('div',{className:'lfguide-list'},
+        window.LFO_FORM_GUIDE.map((g,i)=>React.createElement('div',{key:i,className:'lfguide-item'+(open===i?' is-open':'')},
+          React.createElement('button',{type:'button',className:'lfguide-item-head',onClick:()=>setOpen(o=>o===i?-1:i)},
+            React.createElement('span',{className:'lfguide-item-part'},g.part),
+            React.createElement('span',{className:'lfguide-item-title'},g.title),
+            React.createElement(Icon,{name:open===i?'chevron-down':'chevron-right',size:16})
+          ),
+          open===i&&React.createElement('p',{className:'lfguide-item-desc'},g.desc)
+        ))
+      )
+    )
+  );
+}
+
 function App(){
-  const [year,setYear]=React.useState(window.LF_META.year);
   const [step,setStep]=React.useState(0);
   const [savedSteps,setSavedSteps]=React.useState(()=>new Set());
   const [modal,setModal]=React.useState(null);
+  const [guideOpen,setGuideOpen]=React.useState(false);
   const m=window.LF_META;
   const StepComponent=LF_STEPS[step].Component;
   const statusInfo=LF_STATUS_MAP[computeLfStatus(savedSteps.size,LF_STEPS.length)];
@@ -411,11 +488,7 @@ function App(){
             React.createElement('h1',null,m.formName),
             React.createElement(Badge,{label:statusInfo.label,type:'pill-color',color:statusInfo.color,size:'sm'})
           ),
-          React.createElement('div',{className:'ltitle-actions'},
-            React.createElement('div',{className:'lyear-filter'},
-              window.LF_YEARS.map(y=>React.createElement('button',{key:y,className:'lyear-btn'+(y===year?' is-active':''),onClick:()=>setYear(y)},'ปี '+y))
-            )
-          )
+          React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายแบบฟอร์ม')
         ),
         React.createElement('p',{className:'ltitle-sub'},m.processName)
       ),
@@ -435,7 +508,8 @@ function App(){
         )
       )
     ),
-    modal&&React.createElement(ConfirmModal,{...modal,onCancel:()=>setModal(null)})
+    modal&&React.createElement(ConfirmModal,{...modal,onCancel:()=>setModal(null)}),
+    guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)})
   );
 }
 
