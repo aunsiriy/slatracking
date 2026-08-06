@@ -47,9 +47,15 @@ function SectionCard({title,hint,action,children}){
 
 function PersonBlock({p}){
   return React.createElement('div',{className:'lperson-block'},
-    React.createElement('span',{className:'lperson-role'},p.role),
     React.createElement('span',{className:'lperson-name2'},p.name),
     React.createElement('span',{className:'lperson-meta'},p.position+' · รหัส '+p.empId+' · โทร '+p.tel)
+  );
+}
+
+function PersonField({p}){
+  return React.createElement('div',{className:'lperson-field'},
+    React.createElement('span',{className:'lperson-role'},p.role),
+    React.createElement(PersonBlock,{p})
   );
 }
 
@@ -112,14 +118,17 @@ function MetaSection(){
       )
     ),
     React.createElement('div',{className:'lpeople-grid'},
-      React.createElement(PersonBlock,{p:m.recorder}),
-      React.createElement(PersonBlock,{p:m.reviewer}),
-      React.createElement(PersonBlock,{p:m.approver})
+      React.createElement(PersonField,{p:m.recorder}),
+      React.createElement(PersonField,{p:m.reviewer}),
+      React.createElement(PersonField,{p:m.approver})
     ),
     m.participants.length>0&&React.createElement('div',{className:'lparticipants'},
       React.createElement('span',{className:'lfield-label'},'ผู้เข้าร่วมจัดทำ'),
-      React.createElement('div',{className:'lparticipants-list'},
-        m.participants.map((p,i)=>React.createElement('span',{key:i,className:'lparticipant-chip'},p.name+' · '+p.position))
+      React.createElement('div',{className:'lpeople-grid'},
+        m.participants.map((p,i)=>React.createElement('div',{key:i,className:'lperson-block'},
+          React.createElement('span',{className:'lperson-name2'},p.name),
+          React.createElement('span',{className:'lperson-meta'},p.position+' · โทร '+p.tel)
+        ))
       )
     )
   );
@@ -130,6 +139,11 @@ function MetricCard({item,onChange}){
   function toggleFollowup(key){
     const has=item.followup.includes(key);
     set('followup',has?item.followup.filter(k=>k!==key):[...item.followup,key]);
+  }
+  function toggleAnalysis(key){
+    const list=item.analysisList||(item.analysis?[item.analysis]:[]);
+    const has=list.includes(key);
+    set('analysisList',has?list.filter(k=>k!==key):[...list,key]);
   }
   function toggleControlCriteria(key){
     const list=item.controlCriteria||[];
@@ -157,20 +171,21 @@ function MetricCard({item,onChange}){
           React.createElement(Radio,{size:'sm',name:'point-type-'+item.id,label:'Control Point',isChecked:pointType==='control',onChange:()=>setPointType('control')})
         )
       ),
+      React.createElement('span',{className:'lfield-label lfield-label-lg'},'ผลการดำเนินงานตามตัวชี้วัด'),
       React.createElement('div',{className:'lmetric-stats'},
         React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'เป้าหมายปี '+window.LF_META.year,React.createElement('span',{className:'lc-required'},' *')),React.createElement(InputField,{fieldType:'default',size:'sm',value:item.target,onChange:v=>set('target',v)})),
         React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'ผล '+window.LF_META.year,React.createElement('span',{className:'lc-required'},' *')),React.createElement(InputField,{fieldType:'default',size:'sm',value:item.result2568,onChange:v=>set('result2568',v)})),
         React.createElement('div',{className:'lstat lstat-readonly'},React.createElement('span',{className:'lstat-label'},'ผล 2567'),React.createElement('span',{className:'lstat-value'},item.result2567)),
         React.createElement('div',{className:'lstat lstat-readonly'},React.createElement('span',{className:'lstat-label'},'ผล 2566'),React.createElement('span',{className:'lstat-value'},item.result2566))
       ),
-      React.createElement('div',{className:'lissue-parent-label'},'ประเด็นพิจารณาผลการดำเนินงาน',React.createElement('span',{className:'lc-required'},' *')),
+      React.createElement('div',{className:'lissue-parent-label'},'ประเด็นพิจารณาผลการดำเนินงาน'),
       pointType==='critical'?
       React.createElement('div',{className:'lmetric-analysis-grid'},
         React.createElement('div',{className:'lmetric-pbar'},
           React.createElement('div',{className:'lmetric-pbar-head'},'ผลการวิเคราะห์'),
           React.createElement('div',{className:'lmetric-pbar-body'},
-            React.createElement('div',{className:'lradio-group'},
-              window.LF_ANALYSIS_OPTIONS.map(o=>React.createElement(Radio,{key:o.key,size:'sm',name:'analysis-'+item.id,label:o.label,isChecked:item.analysis===o.key,onChange:()=>set('analysis',o.key)}))
+            React.createElement('div',{className:'lcheck-group'},
+              window.LF_ANALYSIS_OPTIONS.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:(item.analysisList||(item.analysis?[item.analysis]:[])).includes(o.key),onChange:()=>toggleAnalysis(o.key)}))
             ),
             React.createElement(Textarea,{label:'รายละเอียดการวิเคราะห์',placeholder:'ระบุรายละเอียดการวิเคราะห์',value:item.analysisDetail,onChange:v=>set('analysisDetail',v)})
           )
@@ -187,7 +202,7 @@ function MetricCard({item,onChange}){
       ):
       React.createElement('div',{className:'lmetric-analysis-grid'},
         React.createElement('div',{className:'lmetric-pbar'},
-          React.createElement('div',{className:'lmetric-pbar-head'},'หลักเกณฑ์การประเมิน'),
+          React.createElement('div',{className:'lmetric-pbar-head'},'หลักเกณฑ์การประเมิน',React.createElement('span',{className:'lc-required'},' *')),
           React.createElement('div',{className:'lmetric-pbar-body'},
             React.createElement('div',{className:'lcheck-group'},
               window.LF_CONTROL_CRITERIA.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label+' ('+o.tag+')',isChecked:(item.controlCriteria||[]).includes(o.key),onChange:()=>toggleControlCriteria(o.key)}))
@@ -195,7 +210,7 @@ function MetricCard({item,onChange}){
           )
         ),
         React.createElement('div',{className:'lmetric-pbar'},
-          React.createElement('div',{className:'lmetric-pbar-head'},'แนวทางการแก้ไข'),
+          React.createElement('div',{className:'lmetric-pbar-head'},'แนวทางการแก้ไข',React.createElement('span',{className:'lc-required'},' *')),
           React.createElement('div',{className:'lmetric-pbar-body'},
             React.createElement(Textarea,{label:'รายละเอียดแนวทางการแก้ไข',placeholder:'ระบุแนวทางการแก้ไข',value:item.controlFix||'',onChange:v=>set('controlFix',v)})
           )

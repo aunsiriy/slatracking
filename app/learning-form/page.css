@@ -66,12 +66,12 @@ button{font-family:inherit}
 .lfield-static{font-size:14px;color:var(--pea-text-primary);padding:9px 12px;background:var(--pea-bg-secondary);border-radius:8px;border:1px solid var(--pea-border-tertiary)}
 .lpeople-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-top:14px;border-top:1px solid var(--pea-border-tertiary)}
 .lperson-block{display:flex;flex-direction:column;gap:2px;background:var(--pea-bg-secondary);border-radius:10px;padding:12px 14px}
-.lperson-role{font-size:11px;font-weight:700;color:var(--pea-fg-brand-primary);text-transform:uppercase;letter-spacing:.03em}
+.lperson-field{display:flex;flex-direction:column;gap:6px}
+.lperson-role{font-size:13px;font-weight:600;color:var(--pea-text-secondary);text-transform:none;letter-spacing:normal}
 .lperson-name2{font-size:14px;font-weight:600;color:var(--pea-text-primary)}
 .lperson-meta{font-size:12px;color:var(--pea-text-tertiary)}
 .lparticipants{display:flex;flex-direction:column;gap:8px}
-.lparticipants-list{display:flex;gap:8px;flex-wrap:wrap}
-.lparticipant-chip{font-size:12.5px;font-weight:600;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary);padding:6px 12px;border-radius:20px}
+.lparticipants .lpeople-grid{padding-top:0;border-top:none}
 
 .lmetric-group-label{font-size:12.5px;font-weight:700;color:var(--pea-fg-brand-primary);text-transform:uppercase;letter-spacing:.03em;margin-top:6px}
 .lmetric-list{display:flex;flex-direction:column;gap:10px}
@@ -87,6 +87,7 @@ button{font-family:inherit}
 .lstat-readonly{background:var(--pea-bg-secondary);border-radius:8px;padding:8px 10px}
 .lstat-readonly .lstat-value{color:var(--pea-text-tertiary)}
 .lmetric-metric-block{display:flex;flex-direction:column;gap:4px}
+.lmetric-metric-block .lfield-label{padding-top:10px;font-size:15px;font-weight:700;color:var(--pea-text-primary)}
 .lfield-label-lg{font-size:15px;font-weight:700;color:var(--pea-text-primary)}
 .lissue-parent-label{font-size:14px;font-weight:700;color:var(--pea-text-primary);padding-top:10px}
 .lmetric-analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
