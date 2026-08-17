@@ -1,13 +1,12 @@
 const LF_YEARS=['2568','2567','2566'];
 const LF_BA_PROCESS_OPTIONS=[
-{key:'s131',label:'S1.3.1 งานพัฒนาระบบงาน/กระบวนการ',objective:'เพื่อพัฒนาและปรับปรุงระบบงาน/กระบวนการให้สอดคล้องกับแผนยุทธศาสตร์และความต้องการของหน่วยงาน'},
-{key:'s132',label:'S1.3.2 งานบริหารโครงสร้างองค์กร',objective:'เพื่อทบทวนและออกแบบโครงสร้างองค์กรให้เหมาะสมกับภารกิจและทิศทางการดำเนินงานในอนาคต'},
-{key:'s133',label:'S1.3.3 งานบริหารการเปลี่ยนแปลง (Change Management)',objective:'เพื่อขับเคลื่อนการบริหารการเปลี่ยนแปลงในองค์กรอย่างเป็นระบบ และสร้างการยอมรับจากบุคลากรทุกระดับ'}
+{key:'s131',label:'E6.2 กระบวนการบริหารจัดการโครงการ',objective:'เพื่อพัฒนาและปรับปรุงระบบงาน/กระบวนการให้สอดคล้องกับแผนยุทธศาสตร์และความต้องการของหน่วยงาน'},
+{key:'s132',label:'E6.3 กระบวนการพัฒนาระบบดิจิทัล',objective:'เพื่อทบทวนและออกแบบโครงสร้างองค์กรให้เหมาะสมกับภารกิจและทิศทางการดำเนินงานในอนาคต'}
 ];
 const LF_META={year:'2568',ba:'S1.3',baLabel:'กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
  processName:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2569',
  objective:'เพื่อพัฒนาโครงสร้างองค์กรและบริหารการเปลี่ยนแปลงให้สอดคล้องกับแผนยุทธศาสตร์ขององค์กร',
- division:'ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
+ division:'ฝ่ายพัฒนาระบบดิจิทัล (ฝพจ.)',
  createdDate:'15 กรกฎาคม 2568',
  recorder:{name:'ธนพร เสมาไชย',role:'ผู้บันทึกข้อมูล',position:'หผ.พร.(ภ)',empId:'498230',tel:'9527'},
  reviewer:{name:'สวิชญา พฤกษหิรัญ',role:'ผู้ตรวจสอบข้อมูล',position:'อก.นอ.',empId:'489717',tel:'9520'},
@@ -30,16 +29,16 @@ const LF_FOLLOWUP_OPTIONS=[
 ];
 
 const LF_LEADING_METRICS=[
-{id:1,step:'S1.3.1 งานพัฒนาระบบงาน/กระบวนการ',metric:'มีอนุมัติสถาปัตยกรรมธุรกิจ (BA) ที่ทบทวนตามแผนยุทธศาสตร์ และมีการประเมินความพึงพอใจในการทบทวน BA ภายใน พ.ย. ของทุกปี',
+{id:1,subProcess:'E6.2.1 งานบริหารจัดการโครงการ',step:'E6.2 กระบวนการบริหารจัดการโครงการ',metric:'ความสำเร็จในการเบิกจ่ายงบประมาณได้ตามเป้าหมายโครงการไม่น้อยกว่าร้อยละ 80 ของจำนวนโครงการทั้งหมด โดยใช้ข้อมูลจากระบบรายงานผล DTO dashboard',
  isCritical:false,isControl:false,
  target:'ภายในระยะเวลาที่กำหนด',result2568:'ดำเนินการได้ตามกำหนด',result2567:'ดำเนินการได้ตามกำหนด',result2566:'ดำเนินการได้ตามกำหนด',
  analysis:'on_target',followup:['km'],analysisDetail:'ผลการดำเนินงานของ SLA ในทุกขั้นตอนเป็นไปตามเป้าหมาย',
  improvementDetail:'ปรับตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการและครอบคลุมกระบวนการทำงาน'},
-{id:2,step:'S1.3.2 งานบริหารโครงสร้างองค์กร',metric:'มีการสื่อสารการจัดทำโครงสร้างองค์กรให้ครบทุก กฟฟ. และมีการประเมินผลความเข้าใจในการเปลี่ยนแปลงโครงสร้างองค์กรภายในไตรมาสที่ 3',
+{id:2,subProcess:'E6.2.2 งานบริหารสัญญา',step:'E6.2 กระบวนการบริหารจัดการโครงการ',metric:'ความสำเร็จในการบริหารสัญญาให้เป็นไปตามข้อกำหนดของสัญญา',
  isCritical:true,isControl:false,
  target:'ภายในระยะเวลาที่กำหนด',result2568:'ดำเนินการได้ตามกำหนด',result2567:'ดำเนินการได้ตามกำหนด',result2566:'ดำเนินการได้ตามกำหนด',
  analysis:'on_target',followup:[],analysisDetail:'ผลการดำเนินงานของ SLA ในทุกขั้นตอนเป็นไปตามเป้าหมาย',improvementDetail:'ไม่มี'},
-{id:3,step:'S1.3.3 งานบริหารการเปลี่ยนแปลง (Change Management)',metric:'ความสำเร็จในการดำเนินงานตามแผนกิจกรรม Change Management และมีการประเมินความพึงพอใจในกิจกรรมทุกปี',
+{id:3,subProcess:'E6.3.2 งานพัฒนาระบบดิจิทัล',step:'E6.3 กระบวนการพัฒนาระบบดิจิทัล',metric:'ความสำเร็จของการดำเนินงานตามแผนงาน ไม่น้อยกว่าร้อยละ 70',
  isCritical:false,isControl:true,
  target:'ร้อยละ 100',result2568:'ร้อยละ 100',result2567:'ร้อยละ 100',result2566:'ร้อยละ 100',
  analysis:'on_target',followup:['km'],analysisDetail:'ผลการดำเนินงานของ SLA ในทุกขั้นตอนเป็นไปตามเป้าหมาย',
@@ -47,10 +46,14 @@ const LF_LEADING_METRICS=[
 ];
 
 const LF_LAGGING_METRICS=[
-{id:4,step:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',metric:'ความสำเร็จในการพัฒนาระบบงานและกระบวนการกำหนดแนวทางการเตรียมความพร้อมโครงสร้างองค์กรและบุคลากร เพื่อรองรับการปรับเปลี่ยนอุตสาหกรรมธุรกิจไฟฟ้า',
+{id:4,subProcess:'E6.2 กระบวนการบริหารจัดการโครงการ',step:'E6.2 กระบวนการบริหารจัดการโครงการ',metric:'ความสำเร็จของการดำเนินงานตามแผนปฏิบัติการดิจิทัล',
  isCritical:false,isControl:false,
  target:'ภายในระยะเวลาที่กำหนด',result2568:'ภายในระยะเวลาที่กำหนด',result2567:'ภายในระยะเวลาที่กำหนด',result2566:'ภายในระยะเวลาที่กำหนด',
- analysis:'on_target',followup:['km'],analysisDetail:'การเตรียมความพร้อมโครงสร้างองค์กรและบุคลากร/การออกแบบกระบวนการทางธุรกิจ เป็นไปตามเป้าหมาย',improvementDetail:'ไม่มี'}
+ analysis:'on_target',followup:['km'],analysisDetail:'การเตรียมความพร้อมโครงสร้างองค์กรและบุคลากร/การออกแบบกระบวนการทางธุรกิจ เป็นไปตามเป้าหมาย',improvementDetail:'ไม่มี'},
+{id:5,subProcess:'E6.3 กระบวนการพัฒนาระบบดิจิทัล',step:'E6.3 กระบวนการพัฒนาระบบดิจิทัล',metric:'ความสำเร็จของการดำเนินงานตามแผนปฏิบัติการดิจิทัล',
+ isCritical:false,isControl:false,
+ target:'ภายในระยะเวลาที่กำหนด',result2568:'ภายในระยะเวลาที่กำหนด',result2567:'ภายในระยะเวลาที่กำหนด',result2566:'ภายในระยะเวลาที่กำหนด',
+ analysis:'on_target',followup:['km'],analysisDetail:'การพัฒนาระบบดิจิทัลเป็นไปตามแผนปฏิบัติการที่กำหนด',improvementDetail:'ไม่มี'}
 ];
 
 const LF_CONTROL_CRITERIA=[
@@ -82,7 +85,7 @@ const LF_PRIORITIES=[
 {id:1,rank:1,direction:'ปรับตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการ และครอบคลุมกระบวนการทำงาน',process:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',method:'ปรับปรุงตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการ และครอบคลุมกระบวนการทำงาน',duration:'y1'}
 ];
 
-const LF_NEXT_LEADING=[{id:1,step:'S1.3.1 งานพัฒนาระบบงาน/กระบวนการ',metric:'มีอนุมัติสถาปัตยกรรมธุรกิจ (BA) ที่ทบทวนตามแผนยุทธศาสตร์',target:'ภายในระยะเวลาที่กำหนด'}];
+const LF_NEXT_LEADING=[{id:1,subProcess:'E6.2.1 งานบริหารจัดการโครงการ',step:'E6.2 กระบวนการบริหารจัดการโครงการ',metric:'มีอนุมัติสถาปัตยกรรมธุรกิจ (BA) ที่ทบทวนตามแผนยุทธศาสตร์',target:'ภายในระยะเวลาที่กำหนด'}];
 const LF_NEXT_LAGGING=[{id:2,step:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',metric:'ความสำเร็จในการพัฒนาระบบงานและกระบวนการ',target:'ภายในระยะเวลาที่กำหนด'}];
 
 const LF_QIR_ACTIVITIES=[
@@ -118,5 +121,12 @@ const LF_EMPLOYEES={
 '542570':{name:'ทศพร แก้วมณี',position:'ช่างเทคนิค 4',tel:'8813'},
 '542580':{name:'พิมพ์ใจ วงศ์สวัสดิ์',position:'หัวหน้าแผนกบุคคล',tel:'8814'}
 };
+const LF_AVATARS={
+'602385':'/assets/avatars/avatar-602385.jpg',
+'489717':'/assets/avatars/avatar-489717.jpg',
+'327575':'/assets/avatars/avatar-327575.jpg',
+'261517':'/assets/avatars/avatar-261517.jpg',
+'491667':'/assets/avatars/avatar-491667.jpg'
+};
 function lfLookupEmployee(empId){return LF_EMPLOYEES[empId]||null;}
-Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,lfLookupEmployee});
+Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee});
