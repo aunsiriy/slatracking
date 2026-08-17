@@ -127,20 +127,20 @@ function ParticipantsEditRow({people,onChange}){
   );
 }
 
-function ObjectiveList(){
-  const [objectives,setObjectives]=React.useState([window.LF_META.objective]);
+function ProcessObjectiveList(){
+  const [objectives,setObjectives]=React.useState(window.LF_BA_PROCESS_OPTIONS.map(o=>o.objective||''));
   function update(i,v){setObjectives(objectives.map((o,idx)=>idx===i?v:o));}
-  function addItem(){setObjectives([...objectives,'']);}
-  function removeItem(i){setObjectives(objectives.filter((_,idx)=>idx!==i));}
   return React.createElement('div',{className:'lmeta-field lmeta-field--wide'},
-    React.createElement('div',{className:'lfield-label-row'},
-      React.createElement('span',{className:'lfield-label'},'วัตถุประสงค์ของกระบวนการ'),
-      React.createElement(Button,{variant:'tertiary',size:'sm',className:'lfc-btn-purple',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addItem},'เพิ่มข้อ')
+    React.createElement('div',{className:'lprocobj-headrow'},
+      React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการ'),
+      React.createElement('span',{className:'lfield-label'},'วัตถุประสงค์ของกระบวนการ')
     ),
-    objectives.map((o,i)=>React.createElement('div',{key:i,className:'lobjective-row'},
-      React.createElement('span',{className:'lobjective-num'},(i+1)+'.'),
-      React.createElement(InputField,{fieldType:'default',size:'md',placeholder:'ระบุวัตถุประสงค์',value:o,onChange:v=>update(i,v)}),
-      objectives.length>1&&React.createElement('button',{type:'button',className:'lobjective-remove',onClick:()=>removeItem(i)},React.createElement(Icon,{name:'x',size:15}))
+    window.LF_BA_PROCESS_OPTIONS.map((o,i)=>React.createElement('div',{key:o.key,className:'lprocobj-row'},
+      React.createElement('div',{className:'lprocobj-name'},
+        React.createElement('span',{className:'lba-process-num'},i+1),
+        React.createElement('span',null,o.label)
+      ),
+      React.createElement(Textarea,{size:'md',placeholder:'ระบุวัตถุประสงค์',value:objectives[i],onChange:v=>update(i,v),rows:2})
     ))
   );
 }
@@ -195,16 +195,7 @@ function MetaSection(){
   const [participants,setParticipants]=React.useState(m.participants);
   return React.createElement(SectionCard,{title:'ส่วนที่ 0 — ข้อมูลพื้นฐานการประเมินและปรับปรุงกระบวนการ'},
     React.createElement('div',{className:'lmeta-grid'},
-      React.createElement('div',{className:'lmeta-field lmeta-field--wide'},
-        React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการ'),
-        React.createElement('div',{className:'lba-process-list'},
-          window.LF_BA_PROCESS_OPTIONS.map((o,idx)=>React.createElement('div',{key:o.key,className:'lba-process-item'},
-            React.createElement('span',{className:'lba-process-num'},idx+1),
-            React.createElement('span',null,o.label)
-          ))
-        )
-      ),
-      React.createElement(ObjectiveList),
+      React.createElement(ProcessObjectiveList),
       React.createElement('div',{className:'lmeta-field lmeta-field--wide'},
         React.createElement('span',{className:'lfield-label'},'หน่วยงานผู้รับผิดชอบ'),
         React.createElement('div',{className:'lfield-static'},m.division)
@@ -319,9 +310,17 @@ function EffectivenessSection(){
       React.createElement('button',{type:'button',className:'lmetric-tab'+(tab==='leading'?' is-active':''),onClick:()=>setTab('leading')},'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)'),
       React.createElement('button',{type:'button',className:'lmetric-tab'+(tab==='lagging'?' is-active':''),onClick:()=>setTab('lagging')},'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)')
     ),
-    tab==='leading'?
-      React.createElement('div',{className:'lmetric-list'},leading.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLeading}))):
-      React.createElement('div',{className:'lmetric-list'},lagging.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLagging})))
+    React.createElement('div',{className:'lmetric-list'},
+      tab==='leading'?
+        React.createElement('div',{className:'lmetric-group lmetric-group--leading'},
+          React.createElement('div',{className:'lmetric-group-label'},'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)'),
+          leading.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLeading}))
+        ):
+        React.createElement('div',{className:'lmetric-group lmetric-group--lagging'},
+          React.createElement('div',{className:'lmetric-group-label'},'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)'),
+          lagging.map(item=>React.createElement(MetricCard,{key:item.id,item,onChange:updateLagging}))
+        )
+    )
   );
 }
 
@@ -539,7 +538,7 @@ function KnowledgeCard({item,onChange}){
     {key:'innovation',label:'ชิ้นงานนวัตกรรม'}
   ];
   return React.createElement('div',{className:'card lknow-card2'},
-    React.createElement('div',{className:'lknow-section'},
+    React.createElement('div',{className:'lknow-section lknow-section--fill'},
       React.createElement('span',{className:'lknow-section-head'},'1. หัวข้อองค์ความรู้'),
       React.createElement('div',{className:'lmetric-point-tags'},
         React.createElement(Radio,{size:'sm',label:'องค์ความรู้เดิม',isChecked:item.knowType==='existing',onChange:()=>set('knowType','existing')}),
@@ -564,13 +563,13 @@ function KnowledgeCard({item,onChange}){
         )
       )
     ),
-    React.createElement('div',{className:'lknow-section'},
+    React.createElement('div',{className:'lknow-section lknow-section--fill'},
       React.createElement('span',{className:'lknow-section-head'},'2. รูปแบบ/วิธีการในการแลกเปลี่ยนเรียนรู้'),
       React.createElement('div',{className:'lcheck-group lcheck-group--2col'},
         METHODS.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:(item.methods||[]).includes(o.key),onChange:()=>toggleList('methods',o.key)}))
       )
     ),
-    React.createElement('div',{className:'lknow-section'},
+    React.createElement('div',{className:'lknow-section lknow-section--fill'},
       React.createElement('span',{className:'lknow-section-head'},'3. ผลลัพธ์การแลกเปลี่ยนเรียนรู้'),
       React.createElement('div',{className:'lcheck-group--2col-row'},
         OUTCOMES.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:(item.outcomes||[]).includes(o.key),onChange:()=>toggleList('outcomes',o.key)})),
