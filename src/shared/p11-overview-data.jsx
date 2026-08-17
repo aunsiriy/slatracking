@@ -11,12 +11,15 @@ const P11_STATUS_LEGEND=[
 ];
 
 const P11_TREE=[
-{id:'u1',name:'สายงานดิจิทัลและการสื่อสาร',level:0,qir:'approved',children:[
-  {id:'u2',name:'ผู้ช่วยผู้ว่าการดิจิทัลและการสื่อสาร (ดิจิทัล)',level:1,qir:null,children:[
-    {id:'u3',name:'ฝ่ายพัฒนาระบบดิจิทัล',level:2,qir:'submitted',children:[
-      {id:'u4',name:'กองออกแบบและพัฒนาระบบดิจิทัล 2',level:3,qir:'overdue_sent',children:[]}
-    ]}
-  ]}
+{id:'u1',name:'การไฟฟ้าส่วนภูมิภาคจังหวัดพิษณุโลก',level:0,qir:'approved',children:[
+  {id:'u2',name:'การไฟฟ้าส่วนภูมิภาคสาขาบางระกำ',level:1,qir:'approved',children:[
+    {id:'u3',name:'การไฟฟ้าส่วนภูมิภาคสาขาบ้านทุ่งอ้ายโห้',level:2,qir:'submitted',children:[]}
+  ]},
+  {id:'u4',name:'การไฟฟ้าส่วนภูมิภาคสาขานครไทย',level:1,qir:'approved',children:[
+    {id:'u5',name:'การไฟฟ้าส่วนภูมิภาคสาขาบ้านแยง',level:2,qir:'overdue_sent',children:[]},
+    {id:'u6',name:'การไฟฟ้าส่วนภูมิภาคสาขาชาติตระการ',level:2,qir:'not_reported',children:[]}
+  ]},
+  {id:'u7',name:'การไฟฟ้าส่วนภูมิภาคสาขาวัดโบสถ์',level:1,qir:'submitted',children:[]}
 ]}
 ];
 

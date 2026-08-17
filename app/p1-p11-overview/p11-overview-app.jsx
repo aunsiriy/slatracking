@@ -4,8 +4,8 @@ const {Button,Badge}=window.DesignSystem_cbd181;
 
 function TopBar(){
   return React.createElement('header',{className:'ptop'},
+    React.createElement(Link,{className:'ptop-back',href:'/learning-form-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
     React.createElement('div',{className:'ptop-left'},
-      React.createElement(Link,{className:'ptop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
       React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ptop-word'},
         React.createElement('span',{className:'ptop-title'},'PEA-SLA Tracking System'),
@@ -22,15 +22,17 @@ function StatusIcon({color}){
 function TreeRow({node,depth,onQirClick}){
   const [open,setOpen]=React.useState(true);
   const hasChildren=node.children&&node.children.length>0;
+  let approved=false;
+  try{approved=localStorage.getItem('p11_unit_approved_'+encodeURIComponent(node.name))==='1';}catch(e){}
   return React.createElement(React.Fragment,null,
     React.createElement('tr',{className:'ptree-row'},
       React.createElement('td',{className:'ptree-name',style:{paddingLeft:(20+depth*28)+'px'}},
         hasChildren?React.createElement('button',{className:'ptree-toggle',onClick:()=>setOpen(v=>!v)},React.createElement(Icon,{name:open?'minus-circle':'plus-circle',size:16})):React.createElement('span',{className:'ptree-toggle-spacer'}),
         React.createElement('span',null,node.name)
       ),
-      React.createElement('td',null),
-      window.P11_COLUMNS.map(c=>React.createElement('td',{key:c})),
-      React.createElement('td',{className:'ptree-qir'},node.qir&&React.createElement('button',{className:'pqir-btn',onClick:()=>onQirClick(node)},React.createElement(Icon,{name:'file-text',size:15})))
+      React.createElement('td',{className:'ptree-qir'},React.createElement('button',{className:'pqir-btn'+(approved?' pqir-btn--success':''),onClick:()=>{window.location.href='/p1-p11-summary?unit='+encodeURIComponent(node.name)+'&year=2569';}},React.createElement(Icon,{name:'file-search-02',size:15}))),
+      window.P11_COLUMNS.map(c=>React.createElement('td',{key:c,className:'ptree-qir'},React.createElement('button',{className:'pqir-btn',onClick:()=>onQirClick(node)},React.createElement(Icon,{name:'file-search-02',size:15})))),
+      React.createElement('td',{className:'ptree-qir'},React.createElement('button',{className:'pqir-btn',onClick:()=>onQirClick(node)},React.createElement(Icon,{name:'file-search-02',size:15})))
     ),
     open&&hasChildren&&node.children.map(ch=>React.createElement(TreeRow,{key:ch.id,node:ch,depth:depth+1,onQirClick}))
   );
@@ -40,8 +42,8 @@ function App(){
   const [month,setMonth]=React.useState('กรกฎาคม');
   const [year,setYear]=React.useState('2569');
   const [search,setSearch]=React.useState('');
-  const filters=['สายงานดิจิทัลและการสื่อสาร','ผู้ช่วยผู้ว่าการดิจิทัลและการสื่อสาร (ดิจิทัล)','กองออกแบบและพัฒนาระบบดิจิทัล 2'];
-  const [activeFilters,setActiveFilters]=React.useState(filters);
+  const filters=[];
+  const [activeFilters,setActiveFilters]=React.useState([]);
   function removeFilter(f){setActiveFilters(activeFilters.filter(x=>x!==f));}
   function goToQir(node){window.location.href='/qir-annual-form';}
   return React.createElement(React.Fragment,null,
@@ -72,6 +74,7 @@ function App(){
       ),
       React.createElement('div',{className:'pfilter-chips'},
         React.createElement('span',{className:'pfilter-label'},'ตัวกรอง :'),
+        activeFilters.length===0&&React.createElement('span',{className:'pfilter-empty'},'ไม่มีตัวกรอง'),
         activeFilters.map(f=>React.createElement('span',{key:f,className:'pchip'},f,React.createElement('button',{onClick:()=>removeFilter(f)},React.createElement(Icon,{name:'x',size:13}))))
       ),
       React.createElement('div',{className:'plegend-row'},
