@@ -85,7 +85,6 @@ function OrgTreeNode({node,depth,allOpen,onEdit,onDelete}){
   return React.createElement('div',{className:'org-node'},
     React.createElement('div',{className:'org-row',style:{paddingLeft:depth*24}},
       hasChildren?React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'org-caret',onClick:()=>setOpen(v=>!v),leadingIcon:React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:15})}):React.createElement('span',{className:'org-caret-spacer'}),
-      React.createElement(Badge,{label:node.level,type:'pill-color',color:levelColor(node.level),size:'sm'}),
       node.code&&React.createElement('span',{className:'org-code'},node.code),
       React.createElement('span',{className:'org-name'},node.name),
       React.createElement(Badge,{label:node.status==='active'?'ใช้งาน':'ปิดใช้งาน',type:'pill-color',color:node.status==='active'?'success':'gray',size:'sm'}),
@@ -122,9 +121,7 @@ function AddOrgModal({onClose,onSubmit}){
   const [parent,setParent]=React.useState('');
   const [code,setCode]=React.useState('');
   const [name,setName]=React.useState('');
-  const [group,setGroup]=React.useState('');
   const [status,setStatus]=React.useState('active');
-  const GROUP_OPTIONS=['กลุ่มสนับสนุน','ผู้ช่วยผู้ว่าการ','ฝ่าย/สำนัก','กอง/ร.ร.ช่าง กฟภ./สนง.','แผนก/ส่วนงาน'];
   const divisionOptions=React.useMemo(getDivisionOptions,[]);
   const florOptions=React.useMemo(getFlorOptions,[]);
   const LEVEL_LABELS={'สายงาน':{nameLabel:'ชื่อสายงาน',codePlaceholder:'เช่น กพอ.',submitLabel:'เพิ่มสายงาน',title:'เพิ่มสายงานใหม่'},
@@ -159,13 +156,6 @@ function AddOrgModal({onClose,onSubmit}){
           React.createElement('select',{className:'modal-select',value:parent,onChange:e=>setParent(e.target.value)},
             React.createElement('option',{value:''},'เลือกหน่วยงาน...'),
             florOptions.map(o=>React.createElement('option',{key:o,value:o},o))
-          )
-        ),
-        React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'กลุ่ม'),
-          React.createElement('select',{className:'modal-select',value:group,onChange:e=>setGroup(e.target.value)},
-            React.createElement('option',{value:''},'เลือกกลุ่ม...'),
-            GROUP_OPTIONS.map(o=>React.createElement('option',{key:o,value:o},o))
           )
         ),
         React.createElement(InputField,{fieldType:'default',label:'ตัวย่อ',placeholder:cfg.codePlaceholder,size:'md',value:code,onChange:setCode}),
