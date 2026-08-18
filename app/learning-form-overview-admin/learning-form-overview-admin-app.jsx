@@ -68,7 +68,7 @@ function FormGuideModal({onClose}){
 function MenuCards({onGuide}){
   const cards=[
     {icon:'help-circle',title:'คำอธิบายแบบฟอร์ม',desc:'รายละเอียดการกรอกข้อมูลส่วนที่ 0-7 ของ Learning Form พร้อมคำนิยามแต่ละหัวข้อ',cta:'ดูคำอธิบาย',onClick:onGuide},
-    {icon:'download-01',title:'Export Learning Form',desc:'ดาวน์โหลดแบบฟอร์มของทุกหน่วยงานเป็นไฟล์ PDF / Excel เพื่อจัดเก็บหรือรายงาน',cta:'Export',href:'#'},
+    {icon:'download-01',title:'Export Learning Form',desc:'ดาวน์โหลดแบบฟอร์มของทุกหน่วยงานเป็นไฟล์ PDF / Excel เพื่อจัดเก็บหรือรายงาน',cta:'Export',href:'/learning-form-export'},
     {icon:'map-pin',title:'QIR การไฟฟ้าจังหวัด',desc:'ภาพรวมเกณฑ์ P1-P11 และแบบฟอร์ม QIR ประจำปี สำหรับหน่วยงาน กฟฟ.',cta:'ดู Overview P1-P11',href:'/p1-p11-overview'}
   ];
   return React.createElement('div',{className:'lfamenu-grid'},

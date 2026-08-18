@@ -49,7 +49,7 @@ function KpiCards({year,scope}){
 function MenuCards({onGuide}){
   const cards=[
     {icon:'help-circle',title:'คำอธิบายแบบฟอร์ม',desc:'รายละเอียดการกรอกข้อมูลส่วนที่ 0-7 ของ Learning Form พร้อมคำนิยามแต่ละหัวข้อ',cta:'ดูคำอธิบาย',variant:'secondary',onClick:onGuide},
-    {icon:'download-01',title:'Export Learning Form',desc:'ดาวน์โหลดแบบฟอร์มที่กรอกแล้วเป็นไฟล์ PDF / Excel เพื่อจัดเก็บหรือส่งต่อ',cta:'Export',href:'#',variant:'secondary'}
+    {icon:'download-01',title:'Export Learning Form',desc:'ดาวน์โหลดแบบฟอร์มที่กรอกแล้วเป็นไฟล์ PDF / Excel เพื่อจัดเก็บหรือส่งต่อ',cta:'Export',href:'/learning-form-export',variant:'secondary'}
   ];
   return React.createElement('div',{className:'lfmenu-grid'},
     cards.map((c,i)=>React.createElement('div',{key:i,className:'card lfmenu-card'},
