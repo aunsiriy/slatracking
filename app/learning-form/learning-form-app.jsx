@@ -1,6 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Lightbox from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import Download from 'yet-another-react-lightbox/plugins/download';
+import 'yet-another-react-lightbox/styles.css';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+pdfjs.GlobalWorkerOptions.workerSrc='https://unpkg.com/pdfjs-dist@'+pdfjs.version+'/build/pdf.worker.min.mjs';
 const {Button,Badge,InputField,Textarea,Radio,Checkbox,Avatar}=window.DesignSystem_cbd181;
+const MAX_DIAGRAM_FILE_SIZE=25*1024*1024;
 
 function TopBar(){
   return React.createElement('header',{className:'ltop'},
@@ -138,29 +147,79 @@ function ProcessObjectiveList(){
   );
 }
 
+function PdfPreviewModal({file,onClose}){
+  const [numPages,setNumPages]=React.useState(0);
+  const [pageNum,setPageNum]=React.useState(1);
+  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
+    React.createElement('div',{className:'modal-card lpdf-modal',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'lpdf-modal-head'},
+        React.createElement('span',{className:'lpdf-modal-title'},file.name),
+        React.createElement('div',{className:'lpdf-modal-actions'},
+          React.createElement('a',{className:'lpdf-modal-download',href:file.url,download:file.name,'aria-label':'ดาวน์โหลด'},React.createElement(Icon,{name:'download-01',size:16}),'ดาวน์โหลด'),
+          React.createElement('button',{className:'lpdf-modal-close',onClick:onClose,'aria-label':'ปิด'},React.createElement(Icon,{name:'x',size:18}))
+        )
+      ),
+      React.createElement('div',{className:'lpdf-modal-body'},
+        React.createElement(Document,{file:file.url,onLoadSuccess:info=>{setNumPages(info.numPages);setPageNum(1);},loading:React.createElement('div',{className:'lpdf-loading'},'กำลังโหลด PDF...'),error:React.createElement('div',{className:'lpdf-loading'},'ไม่สามารถแสดงไฟล์ PDF นี้ได้')},
+          React.createElement(Page,{pageNumber:pageNum,width:800})
+        )
+      ),
+      numPages>1&&React.createElement('div',{className:'lpdf-modal-nav'},
+        React.createElement(Button,{variant:'secondary',size:'sm',isDisabled:pageNum<=1,onClick:()=>setPageNum(p=>p-1)},'ก่อนหน้า'),
+        React.createElement('span',{className:'lpdf-modal-page'},'หน้า '+pageNum+' / '+numPages),
+        React.createElement(Button,{variant:'secondary',size:'sm',isDisabled:pageNum>=numPages,onClick:()=>setPageNum(p=>p+1)},'ถัดไป')
+      )
+    )
+  );
+}
+
 function DiagramUploadSection({title,hint,redNote}){
   const [files,setFiles]=React.useState([]);
+  const [error,setError]=React.useState('');
+  const [lightboxIndex,setLightboxIndex]=React.useState(-1);
+  const [pdfPreview,setPdfPreview]=React.useState(null);
   function onPick(e){
-    const list=Array.from(e.target.files||[]).map(f=>({name:f.name,url:URL.createObjectURL(f)}));
-    setFiles(prev=>[...prev,...list]);
+    const picked=Array.from(e.target.files||[]);
     e.target.value='';
+    const oversized=picked.filter(f=>f.size>MAX_DIAGRAM_FILE_SIZE);
+    const accepted=picked.filter(f=>f.size<=MAX_DIAGRAM_FILE_SIZE);
+    setError(oversized.length?'ไฟล์ขนาดเกิน 25 MB ไม่ถูกอัปโหลด: '+oversized.map(f=>f.name).join(', '):'');
+    const list=accepted.map(f=>({name:f.name,url:URL.createObjectURL(f),isPdf:f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')}));
+    setFiles(prev=>[...prev,...list]);
   }
   function removeFile(i){setFiles(files.filter((_,idx)=>idx!==i));}
+  const imageFiles=files.filter(f=>!f.isPdf);
+  function openPreview(f){
+    if(f.isPdf){setPdfPreview(f);}
+    else{
+      const imgIndex=imageFiles.indexOf(f);
+      setLightboxIndex(imgIndex<0?0:imgIndex);
+    }
+  }
   return React.createElement(SectionCard,{title,hint},
     redNote&&React.createElement('p',{className:'ldiagram-rednote'},React.createElement(Icon,{name:'alert-triangle',size:16}),redNote),
     React.createElement('label',{className:'ldiagram-drop'},
       React.createElement(Icon,{name:'upload',size:22}),
-      React.createElement('span',null,'อัปโหลดรูปภาพแผนภาพกระบวนการ'),
-      React.createElement('span',{className:'ldiagram-drop-hint'},'รองรับ PNG, JPG (คลิกเพื่อเลือกไฟล์)'),
-      React.createElement('input',{type:'file',accept:'image/*',multiple:true,onChange:onPick,style:{display:'none'}})
+      React.createElement('span',null,'อัปโหลดรูปภาพหรือเอกสารแผนภาพกระบวนการ'),
+      React.createElement('span',{className:'ldiagram-drop-hint'},'รองรับ PNG, JPG, PDF ขนาดไม่เกิน 25 MB ต่อไฟล์ (คลิกเพื่อเลือกไฟล์)'),
+      React.createElement('input',{type:'file',accept:'image/*,application/pdf',multiple:true,onChange:onPick,style:{display:'none'}})
     ),
+    error&&React.createElement('p',{className:'ldiagram-error'},React.createElement(Icon,{name:'alert-triangle',size:14}),error),
     files.length>0&&React.createElement('div',{className:'ldiagram-preview-grid'},
-      files.map((f,i)=>React.createElement('div',{key:i,className:'ldiagram-preview'},
-        React.createElement('img',{src:f.url,alt:f.name}),
+      files.map((f,i)=>React.createElement('div',{key:i,className:'ldiagram-preview',onClick:()=>openPreview(f)},
+        f.isPdf?React.createElement('div',{className:'ldiagram-preview-pdf'},React.createElement(Icon,{name:'file-text',size:28})):React.createElement('img',{src:f.url,alt:f.name}),
         React.createElement('div',{className:'ldiagram-preview-name'},f.name),
-        React.createElement('button',{className:'ldiagram-preview-remove',onClick:()=>removeFile(i)},React.createElement(Icon,{name:'x',size:14}))
+        React.createElement('button',{className:'ldiagram-preview-remove',onClick:e=>{e.stopPropagation();removeFile(i);}},React.createElement(Icon,{name:'x',size:14}))
       ))
-    )
+    ),
+    React.createElement(Lightbox,{
+      open:lightboxIndex>=0,
+      close:()=>setLightboxIndex(-1),
+      index:lightboxIndex<0?0:lightboxIndex,
+      slides:imageFiles.map(f=>({src:f.url,title:f.name})),
+      plugins:[Zoom,Download]
+    }),
+    pdfPreview&&React.createElement(PdfPreviewModal,{file:pdfPreview,onClose:()=>setPdfPreview(null)})
   );
 }
 
