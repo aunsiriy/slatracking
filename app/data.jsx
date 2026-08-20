@@ -43,7 +43,8 @@ const ROLES = {
     cards:{
       ba:{enabled:true,badge:'จัดการได้',cta:'จัดการ BA Master',ctaVariant:'primary',stat:'5 รายการรอตรวจสอบ'},
       sla:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดูรายงานทั้งหมด',ctaVariant:'secondary',stat:'96 ส่งแล้ว · 21 ถูกคืน'},
-      learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'จัดการ learning form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form-overview-admin'}
+      learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'จัดการ learning form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form-overview-admin'},
+      qirLine:{enabled:true,badge:'สายงาน',cta:'ไปที่ QIR สายงาน',ctaVariant:'secondary',stat:'1 กลุ่มรอคัดเลือก',href:'/qir-line-form'}
     }
   },
   manager:{
@@ -59,7 +60,8 @@ const ROLES = {
     cards:{
       ba:{enabled:false,badge:'View only',cta:'ดูโครงสร้าง BA',ctaVariant:'secondary',stat:'อ้างอิงเท่านั้น'},
       sla:{enabled:true,badge:'ต้องดำเนินการ',cta:'ไปที่รายงาน SLA',ctaVariant:'primary',stat:'4 ต้องกรอก · 2 ถูกคืน',href:'/sla-overview'},
-      learning:{enabled:true,badge:'ได้รับมอบหมาย',cta:'ไปที่ Learning Form',ctaVariant:'secondary',stat:'2 รายการรอดำเนินการ',href:'/learning-form-overview'}
+      learning:{enabled:true,badge:'ได้รับมอบหมาย',cta:'ไปที่ Learning Form',ctaVariant:'secondary',stat:'2 รายการรอดำเนินการ',href:'/learning-form-overview'},
+      qirLine:{enabled:true,badge:'สายงาน',cta:'ไปที่ QIR สายงาน',ctaVariant:'secondary',stat:'1 กลุ่มรอคัดเลือก',href:'/qir-line-form'}
     }
   },
   staff:{

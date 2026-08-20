@@ -90,6 +90,7 @@ button{font-family:inherit}
 
 /* ---- module cards v2 ---- */
 .module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.module-grid.is-4{grid-template-columns:repeat(4,1fr)}
 .module-card-v2{position:relative;min-height:300px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
 .module-card-v2.is-view-only{background:#155EEF;transition:transform .2s ease,box-shadow .2s ease;animation:moduleCardIn .5s ease both}
 .module-card-v2.is-view-only:hover{transform:translateY(-4px);box-shadow:0 16px 32px -12px rgba(21,94,239,.35)}
@@ -148,7 +149,7 @@ button{font-family:inherit}
 @media (max-width:1180px){
   .layout{grid-template-columns:1fr}
   .layout-side{position:static}
-  .module-grid{grid-template-columns:1fr 1fr}
+  .module-grid,.module-grid.is-4{grid-template-columns:1fr 1fr}
   .status-bar{grid-template-columns:repeat(4,1fr)}
   .today-overview-grid{grid-template-columns:repeat(2,1fr)}
   .kpi-grid,.feature-row,.help-row{grid-template-columns:1fr}
