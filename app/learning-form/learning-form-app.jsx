@@ -7,6 +7,8 @@ import 'yet-another-react-lightbox/styles.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 pdfjs.GlobalWorkerOptions.workerSrc='https://unpkg.com/pdfjs-dist@'+pdfjs.version+'/build/pdf.worker.min.mjs';
 const {Button,Badge,InputField,Textarea,Radio,Checkbox,Avatar}=window.DesignSystem_cbd181;
 const MAX_DIAGRAM_FILE_SIZE=25*1024*1024;
@@ -855,10 +857,46 @@ function App(){
   const [formName,setFormName]=React.useState(window.LF_META.processName);
   const [draftToast,setDraftToast]=React.useState(null);
   const [saveConfirmOpen,setSaveConfirmOpen]=React.useState(false);
+  const [exporting,setExporting]=React.useState(false);
+  const [exportToast,setExportToast]=React.useState(null);
+  const stepContentRef=React.useRef(null);
   React.useEffect(()=>{if(!draftToast)return;const t=setTimeout(()=>setDraftToast(null),2200);return()=>clearTimeout(t);},[draftToast]);
+  React.useEffect(()=>{if(!exportToast)return;const t=setTimeout(()=>setExportToast(null),3200);return()=>clearTimeout(t);},[exportToast]);
   function confirmSaveAll(){
     try{localStorage.setItem('lfo_just_saved','1');}catch(e){}
     window.location.href='/learning-form-overview';
+  }
+  async function handleExportPdf(){
+    if(exporting||!stepContentRef.current)return;
+    setExporting(true);
+    try{
+      const node=stepContentRef.current;
+      const canvas=await html2canvas(node,{scale:2,backgroundColor:'#ffffff',useCORS:true});
+      const imgData=canvas.toDataURL('image/jpeg',0.92);
+      const pdf=new jsPDF({orientation:'portrait',unit:'pt',format:'a4',compress:true});
+      const pageWidth=pdf.internal.pageSize.getWidth();
+      const pageHeight=pdf.internal.pageSize.getHeight();
+      const imgWidth=pageWidth;
+      const imgHeight=canvas.height*imgWidth/canvas.width;
+      let heightLeft=imgHeight;
+      let position=0;
+      pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+      heightLeft-=pageHeight;
+      while(heightLeft>0){
+        position=heightLeft-imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+        heightLeft-=pageHeight;
+      }
+      const fileName='LearningForm_ขั้นตอนที่'+(step+1)+'_'+LF_STEPS[step].label+'.pdf';
+      pdf.save(fileName);
+      setExportToast('สร้าง PDF สำเร็จ · '+fileName);
+    }catch(err){
+      console.error('export pdf failed',err);
+      setExportToast('สร้าง PDF ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+    }finally{
+      setExporting(false);
+    }
   }
   const m=window.LF_META;
   const StepComponent=LF_STEPS[step].Component;
@@ -872,7 +910,10 @@ function App(){
             React.createElement(EditableTitle,{value:formName,onChange:setFormName}),
             React.createElement(Badge,{label:'รอดำเนินการ',type:'pill-color',color:'warning',size:'sm'})
           ),
-          React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายแบบฟอร์ม')
+          React.createElement('div',{className:'ltitle-actions'},
+            React.createElement(Button,{variant:'secondary',size:'md',isDisabled:exporting,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:handleExportPdf},exporting?'กำลังสร้าง PDF...':'Export PDF'),
+            React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายแบบฟอร์ม')
+          )
         ),
         React.createElement('div',{className:'ltitle-meta'},
           React.createElement('span',{className:'ltitle-meta-item'},m.division),
@@ -883,7 +924,7 @@ function App(){
       React.createElement('div',{className:'lstep-layout'},
         React.createElement(Stepper,{step,setStep}),
         React.createElement('div',{className:'lstep-main'},
-          React.createElement(StepComponent),
+          React.createElement('div',{ref:stepContentRef,className:'lstep-content'},React.createElement(StepComponent)),
           React.createElement('div',{className:'lstep-nav'},
             React.createElement(Button,{variant:'secondary',size:'md',isDisabled:step===0,leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:()=>setStep(s=>Math.max(0,s-1))},'ย้อนกลับ'),
             React.createElement('span',{className:'lstep-nav-count'},'ขั้นตอน '+(step+1)+' / '+LF_STEPS.length),
@@ -898,7 +939,8 @@ function App(){
     ),
     guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)}),
     saveConfirmOpen&&React.createElement(SaveAllConfirmModal,{onClose:()=>setSaveConfirmOpen(false),onConfirm:confirmSaveAll}),
-    draftToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),draftToast)
+    draftToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),draftToast),
+    exportToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),exportToast)
   );
 }
 

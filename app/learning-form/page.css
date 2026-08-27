@@ -36,6 +36,7 @@ button{font-family:inherit}
 .ltitle-card{padding:20px 24px;display:flex;flex-direction:column;gap:6px}
 .ltitle-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .ltitle-top h1{font-size:22px;font-weight:700}
+.ltitle-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ltitle-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ltitle-sub{font-size:13.5px;color:var(--pea-text-tertiary);margin:0}
 .ltitle-editable{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border-radius:6px;padding:2px 8px;margin:-2px -8px;font-size:22px;font-weight:700}
@@ -106,10 +107,10 @@ button{font-family:inherit}
 .lnextyear-empty-text{max-width:480px;font-size:13px;color:var(--pea-text-tertiary);line-height:1.6}
 .lmetric-list{display:flex;flex-direction:column;gap:10px}
 .lmetric-group{display:flex;flex-direction:column;gap:10px;border-radius:12px;padding:16px;border:1px solid}
-.lmetric-group--leading{background:oklch(97.5% 0.015 250);border-color:oklch(88% 0.05 250)}
-.lmetric-group--leading .lmetric-group-label{color:oklch(42% 0.13 250)}
-.lmetric-group--lagging{background:oklch(97.5% 0.02 155);border-color:oklch(87% 0.06 155)}
-.lmetric-group--lagging .lmetric-group-label{color:oklch(40% 0.11 155)}
+.lmetric-group--leading{background:#eef2fb;border-color:#c7d3ef}
+.lmetric-group--leading .lmetric-group-label{color:#33478f}
+.lmetric-group--lagging{background:#eff9f3;border-color:#bfe4cc}
+.lmetric-group--lagging .lmetric-group-label{color:#1f6d43}
 .lmetric-card{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
 .lmetric-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .lmetric-step{font-size:16px;font-weight:700;color:var(--pea-text-brand-secondary);background:var(--pea-bg-brand-primary);padding:6px 14px;border-radius:8px}
