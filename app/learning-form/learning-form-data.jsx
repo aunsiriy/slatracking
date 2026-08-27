@@ -72,7 +72,7 @@ const LF_ISSUES=[
 {key:'seam',title:'2. ข้อสังเกตจากการประเมินผล SE-AM',hint:'ข้อสังเกตจากการประเมินผล SE-AM ในปีล่าสุดที่เกี่ยวข้องกับกระบวนการ',analysis:'ไม่มี',direction:''},
 {key:'integration',title:'3. การบูรณาการ',hint:'การบูรณาการที่สำคัญตามเกณฑ์การประเมินผล SE-AM',analysis:'ไม่มี',direction:''},
 {key:'practice',title:'4. แนวปฏิบัติที่ดีหรือมาตรฐาน',hint:'วิธีปฏิบัติที่ทำให้องค์กรประสบความสำเร็จ หรือข้อกำหนด/มาตรฐานที่ใช้เทียบ เช่น ISO',analysis:'ไม่มี',direction:''},
-{key:'other',title:'5. อื่นๆ',hint:'ข้อสังเกตของคณะกรรมการ กฟภ. คณะอนุกรรมการฯ ที่เกี่ยวข้องกับกระบวนการ',analysis:'คณะกรรมการและคณะอนุกรรมการฯ ไม่มีข้อสังเกตที่เกี่ยวข้องกับการดำเนินงานตามกระบวนการฯ',direction:''}
+{key:'other',title:'5. อื่นๆ',hint:'เช่น ข้อสังเกตของคณะกรรมการ คณะอนุกรรมการฯ เป็นต้น',analysis:'คณะกรรมการและคณะอนุกรรมการฯ ไม่มีข้อสังเกตที่เกี่ยวข้องกับการดำเนินงานตามกระบวนการฯ',direction:''}
 ];
 
 const LF_PRIORITY_DURATIONS=[
@@ -84,9 +84,6 @@ const LF_PRIORITY_DURATIONS=[
 const LF_PRIORITIES=[
 {id:1,rank:1,direction:'ปรับตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการ และครอบคลุมกระบวนการทำงาน',process:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',method:'ปรับปรุงตัวชี้วัด ให้แสดงผลลัพธ์ของกระบวนการ และครอบคลุมกระบวนการทำงาน',duration:'y1'}
 ];
-
-const LF_NEXT_LEADING=[{id:1,subProcess:'E6.2.1 งานบริหารจัดการโครงการ',step:'E6.2 กระบวนการบริหารจัดการโครงการ',metric:'มีอนุมัติสถาปัตยกรรมธุรกิจ (BA) ที่ทบทวนตามแผนยุทธศาสตร์',target:'ภายในระยะเวลาที่กำหนด'}];
-const LF_NEXT_LAGGING=[{id:2,step:'S1.3 กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',metric:'ความสำเร็จในการพัฒนาระบบงานและกระบวนการ',target:'ภายในระยะเวลาที่กำหนด'}];
 
 const LF_QIR_ACTIVITIES=[
 {id:1,activity:'จัดทำแนวทางปรับปรุงตัวชี้วัดกระบวนการ',weight:50,saved:true},
@@ -129,4 +126,4 @@ const LF_AVATARS={
 '491667':'/assets/avatars/avatar-491667.jpg'
 };
 function lfLookupEmployee(empId){return LF_EMPLOYEES[empId]||null;}
-Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_NEXT_LEADING,LF_NEXT_LAGGING,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee});
+Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee});
