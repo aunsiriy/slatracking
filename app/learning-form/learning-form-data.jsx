@@ -23,7 +23,7 @@ const LF_ANALYSIS_OPTIONS=[
 {key:'below_peer',label:'ผลการดำเนินงานต่ำกว่าคู่แข่ง/คู่เทียบ (ถ้ามี)'}
 ];
 const LF_FOLLOWUP_OPTIONS=[
-{key:'km',label:'จัดทำองค์ความรู้ (KM)'},
+{key:'km',label:'จัดทำองค์ความรู้ (KM) (โปรดระบุส่วนที่ 6)'},
 {key:'target',label:'ปรับปรุงค่าเป้าหมาย'},
 {key:'process',label:'ปรับปรุงกระบวนการ'}
 ];
