@@ -813,24 +813,34 @@ function FormGuideModal({onClose}){
   );
 }
 
-function EditableTitle({value,onChange}){
-  const [editing,setEditing]=React.useState(false);
-  const [draft,setDraft]=React.useState(value);
-  const ref=React.useRef(null);
-  React.useEffect(()=>{if(editing&&ref.current){ref.current.focus();ref.current.select();}},[editing]);
-  function commit(){
-    onChange(draft.trim()||value);
-    setEditing(false);
-  }
-  if(editing){
-    return React.createElement('input',{ref,className:'ltitle-edit-input',value:draft,
-      onChange:e=>setDraft(e.target.value),onBlur:commit,
-      onKeyDown:e=>{if(e.key==='Enter')commit();if(e.key==='Escape'){setDraft(value);setEditing(false);}}
-    });
-  }
-  return React.createElement('h1',{className:'ltitle-editable',onDoubleClick:()=>{setDraft(value);setEditing(true);},title:'ดับเบิลคลิกเพื่อแก้ไขชื่อฟอร์ม'},
-    value,
-    React.createElement(Icon,{name:'edit',size:15,className:'ltitle-edit-icon'})
+function ExportPdfModal({onClose,onConfirm}){
+  const [selected,setSelected]=React.useState(LF_STEPS.map(s=>s.key));
+  function toggle(key){setSelected(sel=>sel.includes(key)?sel.filter(k=>k!==key):[...sel,key]);}
+  const allChecked=selected.length===LF_STEPS.length;
+  function toggleAll(){setSelected(allChecked?[]:LF_STEPS.map(s=>s.key));}
+  const ordered=LF_STEPS.filter(s=>selected.includes(s.key)).map(s=>s.key);
+  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
+    React.createElement('div',{className:'modal-card lexport-modal',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'modal-head'},
+        React.createElement('h3',null,'เลือกขั้นตอนที่ต้องการ Export PDF'),
+        React.createElement('button',{className:'lfa-modal-close',onClick:onClose},React.createElement(Icon,{name:'x',size:18}))
+      ),
+      React.createElement('div',{className:'lmodal-body'},
+        React.createElement('p',{className:'lexport-modal-hint'},'ระบบจะรวมขั้นตอนที่เลือกเป็นไฟล์ PDF เดียว โดยแต่ละขั้นตอนจะขึ้นหน้าใหม่'),
+        React.createElement('div',{className:'lexport-check lexport-check--all'},
+          React.createElement(Checkbox,{size:'sm',label:'เลือกทั้งหมด',isChecked:allChecked,onChange:toggleAll})
+        ),
+        React.createElement('div',{className:'lexport-check-list'},
+          LF_STEPS.map((s,i)=>React.createElement('div',{key:s.key,className:'lexport-check'},
+            React.createElement(Checkbox,{size:'sm',label:(i+1)+'. '+s.label,isChecked:selected.includes(s.key),onChange:()=>toggle(s.key)})
+          ))
+        )
+      ),
+      React.createElement('div',{className:'lmodal-foot'},
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
+        React.createElement(Button,{variant:'primary',size:'md',isDisabled:ordered.length===0,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:()=>onConfirm(ordered)},'Export PDF ('+ordered.length+')')
+      )
+    )
   );
 }
 
@@ -854,50 +864,73 @@ function App(){
   const [year,setYear]=React.useState(window.LF_META.year);
   const [step,setStep]=React.useState(0);
   const [guideOpen,setGuideOpen]=React.useState(false);
-  const [formName,setFormName]=React.useState(window.LF_META.processName);
   const [draftToast,setDraftToast]=React.useState(null);
   const [saveConfirmOpen,setSaveConfirmOpen]=React.useState(false);
   const [exporting,setExporting]=React.useState(false);
   const [exportToast,setExportToast]=React.useState(null);
+  const [exportModalOpen,setExportModalOpen]=React.useState(false);
+  const [pendingExport,setPendingExport]=React.useState(null);
   const stepContentRef=React.useRef(null);
+  const exportRef=React.useRef(null);
   React.useEffect(()=>{if(!draftToast)return;const t=setTimeout(()=>setDraftToast(null),2200);return()=>clearTimeout(t);},[draftToast]);
   React.useEffect(()=>{if(!exportToast)return;const t=setTimeout(()=>setExportToast(null),3200);return()=>clearTimeout(t);},[exportToast]);
   function confirmSaveAll(){
     try{localStorage.setItem('lfo_just_saved','1');}catch(e){}
     window.location.href='/learning-form-overview';
   }
-  async function handleExportPdf(){
-    if(exporting||!stepContentRef.current)return;
+  function startExport(keys){
+    if(exporting||!keys.length)return;
+    setExportModalOpen(false);
     setExporting(true);
-    try{
-      const node=stepContentRef.current;
-      const canvas=await html2canvas(node,{scale:2,backgroundColor:'#ffffff',useCORS:true});
-      const imgData=canvas.toDataURL('image/jpeg',0.92);
-      const pdf=new jsPDF({orientation:'portrait',unit:'pt',format:'a4',compress:true});
-      const pageWidth=pdf.internal.pageSize.getWidth();
-      const pageHeight=pdf.internal.pageSize.getHeight();
-      const imgWidth=pageWidth;
-      const imgHeight=canvas.height*imgWidth/canvas.width;
-      let heightLeft=imgHeight;
-      let position=0;
-      pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
-      heightLeft-=pageHeight;
-      while(heightLeft>0){
-        position=heightLeft-imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
-        heightLeft-=pageHeight;
-      }
-      const fileName='LearningForm_ขั้นตอนที่'+(step+1)+'_'+LF_STEPS[step].label+'.pdf';
-      pdf.save(fileName);
-      setExportToast('สร้าง PDF สำเร็จ · '+fileName);
-    }catch(err){
-      console.error('export pdf failed',err);
-      setExportToast('สร้าง PDF ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
-    }finally{
-      setExporting(false);
-    }
+    setPendingExport(keys);
   }
+  React.useEffect(()=>{
+    if(!pendingExport)return;
+    let cancelled=false;
+    (async()=>{
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(e){}}
+      await new Promise(r=>setTimeout(r,150));
+      if(cancelled)return;
+      try{
+        const host=exportRef.current;
+        if(!host)throw new Error('export host missing');
+        const sections=Array.from(host.querySelectorAll('.lexport-section'));
+        const pdf=new jsPDF({orientation:'portrait',unit:'pt',format:'a4',compress:true});
+        const pageWidth=pdf.internal.pageSize.getWidth();
+        const pageHeight=pdf.internal.pageSize.getHeight();
+        for(let i=0;i<sections.length;i++){
+          const canvas=await html2canvas(sections[i],{scale:2,backgroundColor:'#ffffff',useCORS:true});
+          const imgData=canvas.toDataURL('image/jpeg',0.92);
+          const imgWidth=pageWidth;
+          const imgHeight=canvas.height*imgWidth/canvas.width;
+          let heightLeft=imgHeight;
+          let position=0;
+          if(i>0)pdf.addPage();
+          pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+          heightLeft-=pageHeight;
+          while(heightLeft>0){
+            position=heightLeft-imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+            heightLeft-=pageHeight;
+          }
+        }
+        const chosen=LF_STEPS.filter(s=>pendingExport.includes(s.key));
+        const fileName=chosen.length===LF_STEPS.length?'LearningForm_ทุกขั้นตอน.pdf'
+          :chosen.length===1?'LearningForm_'+chosen[0].label+'.pdf'
+          :'LearningForm_'+chosen.length+'ขั้นตอน.pdf';
+        pdf.save(fileName);
+        if(!cancelled)setExportToast('สร้าง PDF สำเร็จ · '+fileName);
+      }catch(err){
+        console.error('export pdf failed',err);
+        if(!cancelled)setExportToast('สร้าง PDF ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+      }finally{
+        if(!cancelled){setPendingExport(null);setExporting(false);}
+      }
+    })();
+    return()=>{cancelled=true;};
+  },[pendingExport]);
   const m=window.LF_META;
   const StepComponent=LF_STEPS[step].Component;
   return React.createElement(React.Fragment,null,
@@ -907,11 +940,11 @@ function App(){
       React.createElement('div',{className:'card ltitle-card'},
         React.createElement('div',{className:'ltitle-top'},
           React.createElement('div',{className:'ltitle-heading'},
-            React.createElement(EditableTitle,{value:formName,onChange:setFormName}),
+            React.createElement('h1',null,window.LF_META.processName),
             React.createElement(Badge,{label:'รอดำเนินการ',type:'pill-color',color:'warning',size:'sm'})
           ),
           React.createElement('div',{className:'ltitle-actions'},
-            React.createElement(Button,{variant:'secondary',size:'md',isDisabled:exporting,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:handleExportPdf},exporting?'กำลังสร้าง PDF...':'Export PDF'),
+            React.createElement(Button,{variant:'secondary',size:'md',isDisabled:exporting,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:()=>setExportModalOpen(true)},exporting?'กำลังสร้าง PDF...':'Export PDF'),
             React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายแบบฟอร์ม')
           )
         ),
@@ -937,7 +970,22 @@ function App(){
         )
       )
     ),
+    pendingExport&&React.createElement('div',{
+      ref:exportRef,
+      className:'lstep-content lexport-offscreen','aria-hidden':'true',
+      style:{width:((stepContentRef.current&&stepContentRef.current.offsetWidth)||900)+'px'}
+    },
+      pendingExport.map(key=>{
+        const s=LF_STEPS.find(x=>x.key===key);
+        const idx=LF_STEPS.indexOf(s);
+        return React.createElement('div',{key,className:'lexport-section'},
+          React.createElement('h2',{className:'lexport-section-title'},'ขั้นตอนที่ '+(idx+1)+' — '+s.label),
+          React.createElement(s.Component)
+        );
+      })
+    ),
     guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)}),
+    exportModalOpen&&React.createElement(ExportPdfModal,{onClose:()=>setExportModalOpen(false),onConfirm:startExport}),
     saveConfirmOpen&&React.createElement(SaveAllConfirmModal,{onClose:()=>setSaveConfirmOpen(false),onConfirm:confirmSaveAll}),
     draftToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),draftToast),
     exportToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),exportToast)

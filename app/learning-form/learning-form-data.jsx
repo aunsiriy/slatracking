@@ -3,8 +3,9 @@ const LF_BA_PROCESS_OPTIONS=[
 {key:'s131',label:'E6.2 กระบวนการบริหารจัดการโครงการ',objective:'เพื่อพัฒนาและปรับปรุงระบบงาน/กระบวนการให้สอดคล้องกับแผนยุทธศาสตร์และความต้องการของหน่วยงาน'},
 {key:'s132',label:'E6.3 กระบวนการพัฒนาระบบดิจิทัล',objective:'เพื่อทบทวนและออกแบบโครงสร้างองค์กรให้เหมาะสมกับภารกิจและทิศทางการดำเนินงานในอนาคต'}
 ];
-const LF_META={year:'2568',ba:'S1.3',baLabel:'กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
- processName:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2569',
+const LF_FORM_YEAR_FALLBACK='2569';
+const LF_META={year:'2568',formYear:LF_FORM_YEAR_FALLBACK,ba:'S1.3',baLabel:'กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
+ processName:(typeof window!=='undefined'&&window.lfFormTitle)?window.lfFormTitle(LF_FORM_YEAR_FALLBACK):'แบบฟอร์มการประเมินและปรับปรุงกระบวนการของ กฟภ. ประจำปี '+LF_FORM_YEAR_FALLBACK,
  objective:'เพื่อพัฒนาโครงสร้างองค์กรและบริหารการเปลี่ยนแปลงให้สอดคล้องกับแผนยุทธศาสตร์ขององค์กร',
  division:'ฝ่ายพัฒนาระบบดิจิทัล (ฝพจ.)',
  createdDate:'15 กรกฎาคม 2568',

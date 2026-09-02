@@ -38,11 +38,11 @@ function DueBanner(){
 function KpiCards({year,scope}){
   const items=window.LFO_ITEMS.filter(it=>it.scope===scope&&(scope!=='own'||it.year===year));
   const total=items.length;
-  const pendingCount=items.filter(it=>it.status==='pending').length;
+  const pendingCount=items.filter(it=>it.status!=='certified').length;
   const doneCount=items.filter(it=>it.status==='certified').length;
   const cards=[
     {icon:'book',label:'Learning Form ทั้งหมด',value:total,color:'brand'},
-    {icon:'clock',label:'รอดำเนินการ',value:pendingCount,color:'warning'},
+    {icon:'clock',label:'ยังไม่เสร็จสิ้น',value:pendingCount,color:'warning'},
     {icon:'calendar',label:'เสร็จสิ้น',value:doneCount,color:'success'}
   ];
   return React.createElement('div',{className:'lfkpi-grid'},
@@ -126,7 +126,7 @@ function RecentList({year,setYear,scope,setScope}){
           const s=window.LFO_STATUS_MAP[it.status];
           return React.createElement('tr',{key:i,className:scope==='other'?'':'lftable-row',onClick:scope==='other'?undefined:()=>{window.location.href='/learning-form';}},
             scope==='other'&&React.createElement('td',null,it.dept),
-            React.createElement('td',null,it.process),
+            React.createElement('td',null,it.scope==='own'&&window.lfoRowTitle?window.lfoRowTitle(it.formYear):it.process),
             React.createElement('td',null,it.unit),
             React.createElement('td',null,it.date),
             React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'}))
@@ -166,15 +166,21 @@ function App(){
   const [savedToast,setSavedToast]=React.useState(false);
   const [hasDraft,setHasDraft]=React.useState(false);
   React.useEffect(()=>{
-    try{setHasDraft(localStorage.getItem('lf_draft_started')==='1');}catch(e){}
+    let draft=false;
+    try{draft=localStorage.getItem('lf_draft_started')==='1';}catch(e){}
+    setHasDraft(draft);
+    if(draft){
+      const item=window.LFO_ITEMS.find(it=>it.scope==='own'&&it.status==='pending');
+      if(item)item.status='draft';
+    }
   },[]);
   React.useEffect(()=>{
     let saved=false;
     try{saved=localStorage.getItem('lfo_just_saved')==='1';}catch(e){}
     if(saved){
-      const item=window.LFO_ITEMS.find(it=>it.scope==='own'&&it.status==='pending');
+      const item=window.LFO_ITEMS.find(it=>it.scope==='own'&&(it.status==='pending'||it.status==='draft'));
       if(item)item.status='certified';
-      try{localStorage.removeItem('lfo_just_saved');}catch(e){}
+      try{localStorage.removeItem('lfo_just_saved');localStorage.removeItem('lf_draft_started');}catch(e){}
       setSavedToast(true);
       setTimeout(()=>setSavedToast(false),3500);
     }

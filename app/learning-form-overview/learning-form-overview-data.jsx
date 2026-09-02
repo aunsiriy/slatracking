@@ -1,21 +1,28 @@
 const LFO_YEARS=['2569','2568','2567'];
 const LFO_ITEMS=[
-{id:1,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2569',unit:'ธนพรเสมาไชย',year:'2569',status:'pending',date:'01/10/2569',scope:'own'},
-{id:2,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2568',unit:'ธนพร เสมาไชย',year:'2569',status:'certified',date:'08/10/2568',scope:'own'},
-{id:3,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2567',unit:'ธนพร เสมาไชย',year:'2569',status:'certified',date:'12/10/2567',scope:'own'},
+{id:1,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2569',formYear:'2569',unit:'ธนพรเสมาไชย',year:'2569',status:'pending',date:'01/10/2569',scope:'own'},
+{id:2,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2568',formYear:'2568',unit:'ธนพร เสมาไชย',year:'2569',status:'draft',date:'08/10/2568',scope:'own'},
+{id:3,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2567',formYear:'2567',unit:'ธนพร เสมาไชย',year:'2569',status:'certified',date:'12/10/2567',scope:'own'},
+{id:15,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2566',formYear:'2566',unit:'ธนพร เสมาไชย',year:'2569',status:'overdue',date:'15/10/2566',scope:'own'},
 {id:4,process:'ปี 2568',unit:'ปิยะพร โชติวัฒน์',year:'2568',status:'certified',date:'25/10/2568',scope:'other',dept:'ฝ่ายกลยุทธ์ดิจิทัลและบริหารจัดการข้อมูล (ฝดข.)',line:'สายงานดิจิทัลและการสื่อสาร'},
-{id:5,process:'ปี 2568',unit:'ศักดิ์ชัย เรืองศิริ',year:'2568',status:'certified',date:'18/10/2568',scope:'other',dept:'ฝ่ายปฏิบัติการและบำรุงรักษาระบบดิจิทัล (ฝปด.)',line:'สายงานดิจิทัลและการสื่อสาร'},
+{id:5,process:'ปี 2568',unit:'ศักดิ์ชัย เรืองศิริ',year:'2568',status:'draft',date:'18/10/2568',scope:'other',dept:'ฝ่ายปฏิบัติการและบำรุงรักษาระบบดิจิทัล (ฝปด.)',line:'สายงานดิจิทัลและการสื่อสาร'},
 {id:6,process:'ปี 2567',unit:'มณีรัตน์ ทองประเสริฐ',year:'2567',status:'certified',date:'30/09/2567',scope:'other',dept:'ฝ่ายโครงสร้างพื้นฐานเทคโนโลยีดิจิทัล (ฝสท.)',line:'สายงานดิจิทัลและการสื่อสาร'},
-{id:7,process:'ปี 2567',unit:'ภานุวัฒน์ แสงจันทร์',year:'2567',status:'certified',date:'22/09/2567',scope:'other',dept:'ฝ่ายระบบสื่อสาร (ฝรส.)',line:'สายงานดิจิทัลและการสื่อสาร'},
+{id:7,process:'ปี 2567',unit:'ภานุวัฒน์ แสงจันทร์',year:'2567',status:'overdue',date:'22/09/2567',scope:'other',dept:'ฝ่ายระบบสื่อสาร (ฝรส.)',line:'สายงานดิจิทัลและการสื่อสาร'},
 {id:8,process:'ปี 2568',unit:'สุนีย์ จันทร์เสง',year:'2568',status:'certified',date:'20/12/2568',scope:'other',dept:'ฝ่ายวิศวกรรมและบริการ',line:'สายงานภาคกลาง'},
 {id:9,process:'ปี 2568',unit:'กรชกร พิมลกุล',year:'2568',status:'certified',date:'15/11/2568',scope:'other',dept:'การไฟฟ้าส่วนภูมิภาคจังหวัดสระบุรี',line:'สายงานภาคกลาง'},
-{id:10,process:'ปี 2568',unit:'ดวงพร สุขสวรรค์',year:'2568',status:'certified',date:'02/10/2568',scope:'other',dept:'ฝ่ายปฏิบัติการและบำรุงรักษา',line:'สายงานภาคกลาง'},
+{id:10,process:'ปี 2568',unit:'ดวงพร สุขสวรรค์',year:'2568',status:'pending',date:'02/10/2568',scope:'other',dept:'ฝ่ายปฏิบัติการและบำรุงรักษา',line:'สายงานภาคกลาง'},
 {id:11,process:'ปี 2567',unit:'อนุชิต วิริยะกูล',year:'2567',status:'certified',date:'18/09/2567',scope:'other',dept:'การไฟฟ้าส่วนภูมิภาคจังหวัดกาญจนบุรี',line:'สายงานภาคกลาง'},
 {id:12,process:'ปี 2567',unit:'ปรีชา ศรีสุข',year:'2567',status:'certified',date:'25/08/2567',scope:'other',dept:'กองสนับสนุนงานเขต',line:'สายงานภาคกลาง'},
 {id:13,process:'ปี 2568',unit:'ดวงพร สุขสวรรค์',year:'2568',status:'certified',date:'02/10/2568',scope:'other',dept:'ฝ่ายวิศวกรรมและบริการ',line:'สายงานยุทธศาสตร์'},
 {id:14,process:'ปี 2567',unit:'อนุชิต วิริยะกูล',year:'2567',status:'certified',date:'18/09/2567',scope:'other',dept:'ฝ่ายบัญชีและการเงิน',line:'สายงานยุทธศาสตร์'}
 ];
-const LFO_STATUS_MAP={pending:{label:'รอดำเนินการ',color:'warning'},certified:{label:'เสร็จสิ้น',color:'success'}};
+const LFO_STATUS_MAP={
+  pending:{label:'ยังไม่รายงาน',color:'gray'},
+  draft:{label:'บันทึกร่าง',color:'warning'},
+  certified:{label:'เสร็จสิ้น',color:'success'},
+  overdue:{label:'รายงานเกินกำหนด',color:'error'}
+};
+const LFO_STATUS_ORDER=['pending','draft','certified','overdue'];
 
 const LFO_FORM_GUIDE=[
 {part:'ส่วนที่ 0',title:'ข้อมูลพื้นฐาน',desc:'ข้อมูลพื้นฐานของกระบวนการและผู้ที่เกี่ยวข้องกับการประเมินและปรับปรุงกระบวนการ ประกอบด้วย\n- ชื่อกระบวนการ หมายถึง กระบวนการที่จะดำเนินการประเมินและปรับปรุง ซึ่งเป็นกระบวนการตามเกณฑ์การประเมินการดำเนินงาน Core Business Enablers\n- วัตถุประสงค์ของกระบวนการ หมายถึง เป้าหมายที่ต้องการบรรลุจากการดำเนินงานตามกระบวนการ ซึ่งจะช่วยให้การปฏิบัติงานมีทิศทางที่ชัดเจน สามารถติดตาม ประเมินผล และปรับปรุงประสิทธิภาพ/ประสิทธิผลของกระบวนการได้อย่างต่อเนื่อง\n- กระบวนงานหลักตาม BA หมายถึง กระบวนงานหลัก/กระบวนการย่อยตาม BA ของ กฟภ. (โดยให้ระบุว่า กระบวนการที่จะดำเนินการประเมินและปรับปรุงตาม Bullet ที่ 1 ตรงกับกระบวนงานหลัก/กระบวนการย่อยใดตาม BA ของ กฟภ. หากไม่ตรงก็ไม่ต้องระบุ)\n- ผู้บันทึกข้อมูล หมายถึง ผู้ที่ได้รับมอบหมายให้บันทึกข้อมูลลงระบบ\n- ผู้ตรวจสอบข้อมูล หมายถึง ผู้อำนวยการกองที่เป็นเจ้าของกระบวนการที่ได้รับมอบหมายให้ตรวจสอบข้อมูล\n- ผู้อนุมัติข้อมูล หมายถึง ผู้อำนวยการฝ่ายที่เป็นเจ้าของกระบวนการ\n- ผู้เข้าร่วมจัดทำ หมายถึง ผู้ที่เกี่ยวข้องกับกระบวนการที่มีส่วนร่วมในการประเมินและปรับปรุงกระบวนการ\n- หน่วยงานผู้รับผิดชอบ หมายถึง หน่วยงานผู้รับผิดชอบกระบวนการ'},
@@ -28,4 +35,11 @@ const LFO_FORM_GUIDE=[
 {part:'ส่วนที่ 7',title:'องค์ความรู้',desc:'องค์ความรู้ที่ใช้/องค์ความรู้ใหม่ที่เกิดขึ้นจากการปรับปรุงกระบวนการ หมายถึง องค์ความรู้ที่ผู้เข้าร่วมจัดทำใช้ในการประเมินและปรับปรุงกระบวนการ ซึ่งมาจากระบบ KM-Si ของ กฟภ. และองค์ความรู้ใหม่ที่เกิดขึ้นจากการประเมินและปรับปรุงร่วมกัน (ถ้ามี)'}
 ];
 
-Object.assign(window,{LFO_YEARS,LFO_ITEMS,LFO_STATUS_MAP,LFO_FORM_GUIDE});
+// Shared naming between the Learning Form page and this overview.
+// The same record shows a full form title on /learning-form and a short
+// "PEA Learning Form ประจำปี <ปี>" label in the overview table.
+const LF_FORM_YEAR='2569';
+function lfFormTitle(year){return 'แบบฟอร์มการประเมินและปรับปรุงกระบวนการของ กฟภ. ประจำปี '+(year||LF_FORM_YEAR);}
+function lfoRowTitle(year){return 'PEA Learning Form ประจำปี '+(year||LF_FORM_YEAR);}
+
+Object.assign(window,{LFO_YEARS,LFO_ITEMS,LFO_STATUS_MAP,LFO_STATUS_ORDER,LFO_FORM_GUIDE,LF_FORM_YEAR,lfFormTitle,lfoRowTitle});

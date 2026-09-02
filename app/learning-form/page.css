@@ -278,4 +278,13 @@ button{font-family:inherit}
 .ltoast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--pea-text-primary);color:#fff;padding:12px 20px;border-radius:10px;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;z-index:200;box-shadow:0 12px 28px rgba(0,0,0,.25)}
 .ltoast .icon{color:var(--pea-fg-success-primary)}
 
+.lexport-modal{width:520px}
+.lexport-modal-hint{font-size:13px;color:var(--pea-text-tertiary);margin:0}
+.lexport-check{display:flex;align-items:center}
+.lexport-check--all{padding-bottom:12px;margin-bottom:2px;border-bottom:1px solid var(--pea-border-tertiary)}
+.lexport-check-list{display:flex;flex-direction:column;gap:12px}
+.lexport-offscreen{position:fixed;left:-100000px;top:0;z-index:-1;background:#fff;pointer-events:none}
+.lexport-section{background:#fff;padding:24px}
+.lexport-section-title{font-size:17px;font-weight:700;color:var(--pea-text-brand,#5b21b6);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--pea-border-tertiary)}
+
 @media (max-width:720px){.ltable{display:block;overflow-x:auto}}
