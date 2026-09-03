@@ -105,6 +105,17 @@ button{font-family:inherit}
 .lnextyear-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:32px 24px;border:1px dashed var(--pea-border-secondary);border-radius:10px;background:#fff}
 .lnextyear-empty-icon{opacity:.9}
 .lnextyear-empty-text{max-width:480px;font-size:13px;color:var(--pea-text-tertiary);line-height:1.6}
+.lnextyear-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lnextyear-choice-btn{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:14px 16px;border:1px solid var(--pea-border-secondary);border-radius:12px;background:#fff;cursor:pointer;transition:border-color .12s,box-shadow .12s,background .12s}
+.lnextyear-choice-btn:hover{border-color:var(--pea-border-brand)}
+.lnextyear-choice-btn.is-active{border-color:var(--pea-border-brand);background:var(--pea-bg-brand-primary);box-shadow:0 0 0 2px var(--pea-bg-brand-primary)}
+.lnextyear-choice-icon{display:inline-flex;color:var(--pea-fg-brand-primary)}
+.lnextyear-choice-title{font-size:13.5px;font-weight:700;color:var(--pea-text-primary)}
+.lnextyear-choice-desc{font-size:12px;color:var(--pea-text-tertiary);line-height:1.5}
+.lnextyear-result{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.lnextyear-note{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--pea-text-tertiary);margin:0}
+.lnextyear-edit-table td{vertical-align:top}
+@media (max-width:720px){.lnextyear-choice{grid-template-columns:1fr}}
 .lmetric-list{display:flex;flex-direction:column;gap:10px}
 .lmetric-group{display:flex;flex-direction:column;gap:10px;border-radius:12px;padding:16px;border:1px solid}
 .lmetric-group--leading{background:#eef2fb;border-color:#c7d3ef}
@@ -122,6 +133,7 @@ button{font-family:inherit}
 .lmetric-subproc{font-size:15px;font-weight:700;color:var(--pea-text-primary);background:var(--pea-bg-secondary);border-radius:8px;padding:10px 14px;margin-bottom:12px}
 .lmetric-body{padding:0;display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--pea-border-tertiary);padding-top:16px}
 .lmetric-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.lmetric-stats--single{grid-template-columns:minmax(0,520px)}
 .lstat{padding:0;display:flex;flex-direction:column;gap:6px}
 .lstat-readonly{background:var(--pea-bg-secondary);border-radius:8px;padding:8px 10px}
 .lstat-readonly .lstat-value{color:var(--pea-text-tertiary)}
@@ -177,7 +189,9 @@ button{font-family:inherit}
 .lissue-hint{font-size:12.5px;color:var(--pea-text-tertiary)}
 .lissue-body{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .lissue-meta-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lissue-meta-stack{display:flex;flex-direction:column;gap:14px}
 .lissue-meta-field{display:flex;flex-direction:column;gap:6px}
+.lissue-meta-field--year .lqir-issue-select{width:100%}
 
 .lpriority-card{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
 .lpriority-rank{font-size:12px;font-weight:700;color:var(--pea-fg-brand-primary);text-transform:uppercase;letter-spacing:.03em}
@@ -266,7 +280,11 @@ button{font-family:inherit}
 .lqir-group:first-of-type{border-top:none;padding-top:0}
 .lqir-group-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .lqir-group-select{display:flex;flex-direction:column;gap:6px;flex:1;min-width:220px}
-.lqir-group-select--process{max-width:320px}
+.lqir-group-select--process{max-width:560px}
+.lqir-process-inline{display:flex;gap:10px;align-items:center}
+.lqir-process-inline .lqir-issue-select{flex-shrink:0;min-width:260px}
+.lqir-process-inline>*:last-child{flex:1}
+@media (max-width:720px){.lqir-process-inline{flex-direction:column;align-items:stretch}.lqir-process-inline .lqir-issue-select{min-width:0}}
 .lqir-issue-select{height:40px;padding:8px 36px 8px 12px;border:1px solid var(--pea-border-secondary);border-radius:8px;font-size:13.5px;color:var(--pea-text-primary);background:#fff;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
 .lqir-group-actions{display:flex;gap:8px;flex-shrink:0}
 .lprocess-multiselect{position:relative}

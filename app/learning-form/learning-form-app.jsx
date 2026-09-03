@@ -279,9 +279,10 @@ function MetricCard({item,onChange,slaLabel}){
   const [open,setOpen]=React.useState(true);
   const hasTarget=String(item.target||'').trim()!=='';
   const hasResult=String(item.result2568||'').trim()!=='';
+  const hasCompetitorTarget=String(item.competitorTarget||'').trim()!=='';
   const isComplete=pointType==='control'
-    ?hasTarget&&hasResult&&(item.controlCriteria||[]).length>0&&String(item.controlFix||'').trim()!==''
-    :hasTarget&&hasResult;
+    ?hasTarget&&hasResult&&hasCompetitorTarget&&(item.controlCriteria||[]).length>0&&String(item.controlFix||'').trim()!==''
+    :hasTarget&&hasResult&&hasCompetitorTarget;
   return React.createElement('div',{className:'card lmetric-card'},
     React.createElement('button',{type:'button',className:'lmetric-toggle',onClick:()=>setOpen(!open)},
       React.createElement('div',{className:'lmetric-toggle-text'},
@@ -304,10 +305,9 @@ function MetricCard({item,onChange,slaLabel}){
         React.createElement('div',{className:'lstat lstat-readonly'},React.createElement('span',{className:'lstat-label'},'ผล 2568'),React.createElement('span',{className:'lstat-value'},item.result2567)),
         React.createElement('div',{className:'lstat lstat-readonly'},React.createElement('span',{className:'lstat-label'},'ผล 2567'),React.createElement('span',{className:'lstat-value'},item.result2566))
       ),
-      React.createElement('span',{className:'lfield-label lfield-label-lg'},'ผลการดำเนินของคู่แข่ง/คู่เทียบ'),
-      React.createElement('div',{className:'lmetric-stats'},
-        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'เป้าหมายปี 2569'),React.createElement(InputField,{fieldType:'default',size:'sm',value:item.competitorTarget||'',onChange:v=>set('competitorTarget',v)})),
-        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'ผล 2569'),React.createElement(InputField,{fieldType:'default',size:'sm',value:item.competitorResult||'',onChange:v=>set('competitorResult',v)}))
+      React.createElement('span',{className:'lfield-label lfield-label-lg'},'ผลการดำเนินงานของคู่แข่ง/คู่เทียบ'),
+      React.createElement('div',{className:'lmetric-stats lmetric-stats--single'},
+        React.createElement('div',{className:'lstat'},React.createElement('span',{className:'lstat-label lstat-label-purple'},'เป้าหมายปี 2569',React.createElement('span',{className:'lc-required'},' *')),React.createElement(InputField,{fieldType:'default',size:'sm',isRequired:true,value:item.competitorTarget||'',onChange:v=>set('competitorTarget',v)}))
       ),
       React.createElement('div',{className:'lissue-parent-label'},'ประเด็นพิจารณาผลการดำเนินงานตามตัวชี้วัด'),
       pointType!=='control'?
@@ -427,21 +427,31 @@ function PointSection(){
 
 function CheckDropdown({options,value,onChange,placeholder}){
   const [open,setOpen]=React.useState(false);
+  const [rect,setRect]=React.useState(null);
   const ref=React.useRef(null);
+  const triggerRef=React.useRef(null);
   React.useEffect(()=>{
     function onDocClick(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false);}
     document.addEventListener('mousedown',onDocClick);
     return ()=>document.removeEventListener('mousedown',onDocClick);
   },[]);
+  React.useEffect(()=>{
+    if(!open)return;
+    function reposition(){if(triggerRef.current)setRect(triggerRef.current.getBoundingClientRect());}
+    reposition();
+    window.addEventListener('scroll',reposition,true);
+    window.addEventListener('resize',reposition);
+    return ()=>{window.removeEventListener('scroll',reposition,true);window.removeEventListener('resize',reposition);};
+  },[open]);
   const selected=value||[];
   function toggle(key){onChange(selected.includes(key)?selected.filter(k=>k!==key):[...selected,key]);}
   const labelText=selected.length?options.filter(o=>selected.includes(o.key)).map(o=>o.label).join(', '):(placeholder||'เลือก');
   return React.createElement('div',{className:'lprocess-multiselect',ref},
-    React.createElement('button',{type:'button',className:'lprocess-multiselect-trigger',onClick:()=>setOpen(o=>!o)},
+    React.createElement('button',{type:'button',ref:triggerRef,className:'lprocess-multiselect-trigger',onClick:()=>setOpen(o=>!o)},
       React.createElement('span',{className:'lprocess-multiselect-label'},labelText),
       React.createElement(Icon,{name:open?'chevron-up':'chevron-down',size:16})
     ),
-    open&&React.createElement('div',{className:'lprocess-multiselect-panel'},
+    open&&rect&&React.createElement('div',{className:'lprocess-multiselect-panel',style:{position:'fixed',top:rect.bottom+4,left:rect.left,right:'auto',width:Math.max(rect.width,220)}},
       options.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:selected.includes(o.key),onChange:()=>toggle(o.key)}))
     )
   );
@@ -459,17 +469,23 @@ function IssueCard({item,onChange}){
       React.createElement(Textarea,{label:'ผลการวิเคราะห์',value:item.analysis,onChange:v=>set('analysis',v)}),
       React.createElement(Textarea,{label:'แนวทางการพัฒนา/ปรับปรุง',value:item.direction,onChange:v=>set('direction',v)})
     ),
-    React.createElement('div',{className:'lissue-meta-row'},
-      React.createElement('div',{className:'lissue-meta-field'},
-        React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการที่ปรับปรุง'),
-        React.createElement(CheckDropdown,{options:[...window.LF_BA_PROCESS_OPTIONS.map(o=>({key:o.key,label:o.label})),{key:'other',label:'อื่นๆ'}],value:item.improveProcesses,onChange:v=>set('improveProcesses',v),placeholder:'เลือกกระบวนการ'})
+    React.createElement('div',{className:'lissue-meta-stack'},
+      React.createElement('div',{className:'lissue-meta-row'},
+        React.createElement('div',{className:'lissue-meta-field'},
+          React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการที่ปรับปรุง'),
+          React.createElement(CheckDropdown,{options:[...window.LF_BA_PROCESS_OPTIONS.map(o=>({key:o.key,label:o.label})),{key:'other',label:'อื่นๆ'}],value:item.improveProcesses,onChange:v=>set('improveProcesses',v),placeholder:'เลือกกระบวนการ'})
+        ),
+        React.createElement('div',{className:'lissue-meta-field lissue-meta-field--year'},
+          React.createElement('span',{className:'lfield-label'},'ปีที่ดำเนินการ'),
+          React.createElement('select',{className:'lqir-issue-select',value:item.improveYear||'',onChange:e=>set('improveYear',e.target.value)},
+            React.createElement('option',{value:''},'เลือกปี'),
+            yearOptions.map(y=>React.createElement('option',{key:y,value:y},'พ.ศ. '+y))
+          )
+        )
       ),
       React.createElement('div',{className:'lissue-meta-field'},
-        React.createElement('span',{className:'lfield-label'},'ปีที่ดำเนินการ'),
-        React.createElement('select',{className:'lqir-issue-select',value:item.improveYear||'',onChange:e=>set('improveYear',e.target.value)},
-          React.createElement('option',{value:''},'เลือกปี'),
-          yearOptions.map(y=>React.createElement('option',{key:y,value:y},'พ.ศ. '+y))
-        )
+        React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการอื่นๆ'),
+        React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุชื่อกระบวนการอื่นๆ',value:item.improveOther||'',isDisabled:!(item.improveProcesses||[]).includes('other'),onChange:v=>set('improveOther',v)})
       )
     )
   );
@@ -477,19 +493,20 @@ function IssueCard({item,onChange}){
 
 function IssuesPrioritiesSection(){
   const [issues,setIssues]=React.useState(window.LF_ISSUES);
-  const [qirGroups,setQirGroups]=React.useState([{id:Date.now(),issueText:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,rows:window.LF_QIR_ACTIVITIES.map(r=>({...r}))}]);
+  const [qirGroups,setQirGroups]=React.useState([{id:Date.now(),issueText:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',rows:window.LF_QIR_ACTIVITIES.map(r=>({...r}))}]);
   function updateIssue(next){setIssues(issues.map(i=>i.key===next.key?next:i));}
   function setGroupIssueText(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,issueText:text}:g));}
   function setGroupProcess(gid,key){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,processKey:key}:g));}
+  function setGroupProcessOther(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,processOther:text}:g));}
   function updateQir(gid,rid,field,value){setQirGroups(qirGroups.map(g=>g.id!==gid?g:{...g,rows:g.rows.map(r=>r.id===rid?{...r,[field]:value}:r)}));}
   function addQirRow(gid){setQirGroups(qirGroups.map(g=>g.id!==gid?g:{...g,rows:[...g.rows,{id:Date.now(),activity:'',weight:0,saved:false}]}));}
   function removeQirRow(gid,rid){setQirGroups(qirGroups.map(g=>g.id!==gid?g:{...g,rows:g.rows.filter(r=>r.id!==rid)}));}
-  function addGroup(){setQirGroups([...qirGroups,{id:Date.now(),issueText:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,rows:[{id:Date.now()+1,activity:'',weight:0,saved:false}]}]);}
+  function addGroup(){setQirGroups([...qirGroups,{id:Date.now(),issueText:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',rows:[{id:Date.now()+1,activity:'',weight:0,saved:false}]}]);}
   function duplicateGroup(gid){
     const g=qirGroups.find(x=>x.id===gid);
     if(!g)return;
     const idx=qirGroups.findIndex(x=>x.id===gid);
-    const copy={id:Date.now(),issueText:g.issueText,processKey:g.processKey,rows:g.rows.map((r,i)=>({...r,id:Date.now()+i+1,saved:false}))};
+    const copy={id:Date.now(),issueText:g.issueText,processKey:g.processKey,processOther:g.processOther,rows:g.rows.map((r,i)=>({...r,id:Date.now()+i+1,saved:false}))};
     const next=[...qirGroups];
     next.splice(idx+1,0,copy);
     setQirGroups(next);
@@ -517,8 +534,12 @@ function IssuesPrioritiesSection(){
           ),
           React.createElement('div',{className:'lqir-group-select lqir-group-select--process'},
             React.createElement('span',{className:'lfield-label'},'สอดคล้องกับกระบวนการ'),
-            React.createElement('select',{className:'lqir-issue-select',value:g.processKey,onChange:e=>setGroupProcess(g.id,e.target.value)},
-              window.LF_BA_PROCESS_OPTIONS.map(o=>React.createElement('option',{key:o.key,value:o.key},o.label))
+            React.createElement('div',{className:'lqir-process-inline'},
+              React.createElement('select',{className:'lqir-issue-select',value:g.processKey,onChange:e=>setGroupProcess(g.id,e.target.value)},
+                window.LF_BA_PROCESS_OPTIONS.map(o=>React.createElement('option',{key:o.key,value:o.key},o.label)),
+                React.createElement('option',{value:'other'},'อื่นๆ')
+              ),
+              g.processKey==='other'&&React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุชื่อกระบวนการอื่นๆ',value:g.processOther||'',onChange:v=>setGroupProcessOther(g.id,v)})
             )
           ),
           React.createElement('table',{className:'ltable'},
@@ -549,76 +570,60 @@ function IssuesPrioritiesSection(){
   );
 }
 
-function AddMetricModal({onClose,onAdd}){
-  const [type,setType]=React.useState('leading');
-  const stepOptions=type==='leading'?window.LF_BA_PROCESS_OPTIONS.map(o=>o.label):[window.LF_META.ba+' '+window.LF_META.baLabel];
-  const [step,setStep]=React.useState(stepOptions[0]);
-  function findPrefill(t,s){
-    const src=t==='leading'?window.LF_LEADING_METRICS:window.LF_LAGGING_METRICS;
-    return src.find(m=>m.step===s);
-  }
-  const initial=findPrefill(type,stepOptions[0]);
-  const [metric,setMetric]=React.useState(initial?initial.metric:'');
-  const [target,setTarget]=React.useState(initial?initial.target:'');
-  function changeType(next){
-    const opts=next==='leading'?window.LF_BA_PROCESS_OPTIONS.map(o=>o.label):[window.LF_META.ba+' '+window.LF_META.baLabel];
-    setType(next);setStep(opts[0]);
-    const pre=findPrefill(next,opts[0]);
-    setMetric(pre?pre.metric:'');setTarget(pre?pre.target:'');
-  }
-  function changeStep(s){
-    setStep(s);
-    const pre=findPrefill(type,s);
-    setMetric(pre?pre.metric:'');setTarget(pre?pre.target:'');
-  }
-  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
-    React.createElement('div',{className:'modal-card',onClick:e=>e.stopPropagation()},
-      React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,'เพิ่มตัวชี้วัด'),
-        React.createElement('button',{className:'lfa-modal-close',onClick:onClose},React.createElement(Icon,{name:'x',size:18}))
-      ),
-      React.createElement('div',{className:'lmodal-body'},
-        React.createElement('div',{className:'lissue-meta-field'},
-          React.createElement('span',{className:'lfield-label'},'ประเภทตัวชี้วัด'),
-          React.createElement('div',{className:'lmetric-point-tags'},
-            React.createElement(Radio,{size:'sm',label:'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)',isChecked:type==='leading',onChange:()=>changeType('leading')}),
-            React.createElement(Radio,{size:'sm',label:'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)',isChecked:type==='lagging',onChange:()=>changeType('lagging')})
-          )
-        ),
-        React.createElement('div',{className:'lissue-meta-field'},
-          React.createElement('span',{className:'lfield-label'},'ขั้นตอน'),
-          React.createElement('select',{className:'lqir-issue-select',value:step,onChange:e=>changeStep(e.target.value)},
-            stepOptions.map(o=>React.createElement('option',{key:o,value:o},o))
-          )
-        ),
-        React.createElement(Textarea,{label:'ตัวชี้วัด',value:metric,onChange:setMetric}),
-        React.createElement(InputField,{fieldType:'default',size:'md',label:'เป้าหมายปีถัดไป',value:target,onChange:setTarget})
-      ),
-      React.createElement('div',{className:'lmodal-foot'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
-        React.createElement(Button,{variant:'primary',size:'md',onClick:()=>onAdd({type,step,metric,target})},'เพิ่มตัวชี้วัด')
-      )
+const NEXTYEAR_LEADING_STEPS=['E6.2.1 งานบริหารจัดการโครงการ','E6.2.2 งานบริหารสัญญา','E6.3.2 งานพัฒนาระบบดิจิทัล'];
+const NEXTYEAR_LAGGING_STEPS=['E6.2 กระบวนการบริหารจัดการโครงการ','E6.3 กระบวนการพัฒนาระบบดิจิทัล'];
+
+function NextYearReadonlyTable({label,rows}){
+  return React.createElement(React.Fragment,null,
+    React.createElement('div',{className:'lmetric-group-label'},label),
+    React.createElement('table',{className:'ltable'},
+      React.createElement('thead',null,React.createElement('tr',null,['ขั้นตอน','ตัวชี้วัด','เป้าหมายปีถัดไป'].map((h,i)=>React.createElement('th',{key:i},h)))),
+      React.createElement('tbody',null,rows.map(r=>React.createElement('tr',{key:r.id},
+        React.createElement('td',null,r.subProcess),React.createElement('td',null,r.metric),React.createElement('td',null,r.target)
+      )))
     )
   );
 }
 
-function NextYearMetricsSection(){
-  const [leading,setLeading]=React.useState([]);
-  const [lagging,setLagging]=React.useState([]);
-  const [modalOpen,setModalOpen]=React.useState(false);
-  const [addToast,setAddToast]=React.useState(false);
-  function removeLeading(id){setLeading(leading.filter(r=>r.id!==id));}
-  function removeLagging(id){setLagging(lagging.filter(r=>r.id!==id));}
-  function handleAdd(data){
-    const row={id:Date.now(),step:data.step,metric:data.metric,target:data.target};
-    if(data.type==='leading')setLeading([...leading,row]);else setLagging([...lagging,row]);
-    setModalOpen(false);
-    setAddToast(true);
-    setTimeout(()=>setAddToast(false),3000);
-  }
-  const hasNext=leading.length>0||lagging.length>0;
+function NextYearEditableTable({label,stepOptions,rows,setRows}){
+  function update(id,field,value){setRows(rows.map(r=>r.id===id?{...r,[field]:value}:r));}
+  function addRow(){setRows([...rows,{id:Date.now(),step:stepOptions[0],metric:'',target:''}]);}
+  function removeRow(id){setRows(rows.filter(r=>r.id!==id));}
   return React.createElement(React.Fragment,null,
-  React.createElement(SectionCard,{title:'ส่วนที่ 5 — การกำหนดตัวชี้วัดและเป้าหมายของกระบวนการ ประจำปี'},
+    React.createElement('div',{className:'lmetric-group-label'},label),
+    React.createElement('table',{className:'ltable lnextyear-edit-table'},
+      React.createElement('thead',null,React.createElement('tr',null,['ขั้นตอน','ตัวชี้วัด','เป้าหมายปีถัดไป',''].map((h,i)=>React.createElement('th',{key:i},h)))),
+      React.createElement('tbody',null,rows.map(r=>React.createElement('tr',{key:r.id},
+        React.createElement('td',null,
+          React.createElement('select',{className:'lqir-issue-select',value:r.step,onChange:e=>update(r.id,'step',e.target.value)},
+            stepOptions.map(o=>React.createElement('option',{key:o,value:o},o))
+          )
+        ),
+        React.createElement('td',null,React.createElement(Textarea,{size:'sm',rows:2,placeholder:'ระบุตัวชี้วัด',value:r.metric,onChange:v=>update(r.id,'metric',v)})),
+        React.createElement('td',{className:'lqir-weight'},React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุเป้าหมาย',value:r.target,onChange:v=>update(r.id,'target',v)})),
+        React.createElement('td',null,React.createElement('button',{className:'lqir-remove',onClick:()=>removeRow(r.id)},React.createElement(Icon,{name:'x',size:15})))
+      )))
+    ),
+    rows.length===0&&React.createElement('p',{className:'lnextyear-note'},'ยังไม่มีตัวชี้วัดในกลุ่มนี้ — กด "เพิ่มตัวชี้วัด" เพื่อเริ่มกรอก'),
+    React.createElement(Button,{variant:'tertiary',size:'sm',className:'lfc-btn-purple',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addRow},'เพิ่มตัวชี้วัด')
+  );
+}
+
+function NextYearMetricsSection(){
+  const [mode,setMode]=React.useState(null);
+  const [leadingRows,setLeadingRows]=React.useState([]);
+  const [laggingRows,setLaggingRows]=React.useState([]);
+  const [seeded,setSeeded]=React.useState(false);
+  function chooseReuse(){setMode('reuse');}
+  function chooseRevise(){
+    if(!seeded){
+      setLeadingRows(window.LF_LEADING_METRICS.map((r,i)=>({id:Date.now()+i,step:r.subProcess,metric:r.metric,target:r.target})));
+      setLaggingRows(window.LF_LAGGING_METRICS.map((r,i)=>({id:Date.now()+500+i,step:r.subProcess,metric:r.metric,target:r.target})));
+      setSeeded(true);
+    }
+    setMode('revise');
+  }
+  return React.createElement(SectionCard,{title:'ส่วนที่ 5 — การกำหนดตัวชี้วัดและเป้าหมายของกระบวนการ ประจำปี'},
     React.createElement('div',{className:'lnextyear-card'},
       React.createElement('div',{className:'lnextyear-block-head'},
         React.createElement('h4',{className:'lnextyear-block-title'},'ปีปัจจุบัน')
@@ -641,38 +646,32 @@ function NextYearMetricsSection(){
     React.createElement('div',{className:'lqir-spacer'}),
     React.createElement('div',{className:'lnextyear-card'},
       React.createElement('div',{className:'lnextyear-block-head'},
-        React.createElement('h4',{className:'lnextyear-block-title'},'ปีถัดไป'),
-        hasNext&&React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:()=>setModalOpen(true)},'เพิ่มตัวชี้วัด')
+        React.createElement('h4',{className:'lnextyear-block-title'},'ปีถัดไป')
       ),
-      !hasNext&&React.createElement('div',{className:'lnextyear-empty'},
-        React.createElement(Image,{src:'/assets/target.png',alt:'',width:56,height:56,className:'lnextyear-empty-icon'}),
-        React.createElement('span',{className:'lnextyear-empty-text'},'ยังไม่มีการกำหนดตัวชี้วัดปีถัดไป — จะเพิ่มหรือไม่เพิ่มก็ได้ หากไม่เพิ่ม ระบบจะใช้ตัวชี้วัดและเป้าหมายเดิมเหมือนปีปัจจุบัน'),
-        React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:()=>setModalOpen(true)},'เพิ่มตัวชี้วัด')
-      ),
-      leading.length>0&&React.createElement(React.Fragment,null,
-        React.createElement('div',{className:'lmetric-group-label'},'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)'),
-        React.createElement('table',{className:'ltable'},
-          React.createElement('thead',null,React.createElement('tr',null,['ขั้นตอน','ตัวชี้วัด','เป้าหมายปีถัดไป',''].map((h,i)=>React.createElement('th',{key:i},h)))),
-          React.createElement('tbody',null,leading.map(r=>React.createElement('tr',{key:r.id},
-            React.createElement('td',null,r.step),React.createElement('td',null,r.metric),React.createElement('td',null,r.target),
-            React.createElement('td',null,React.createElement(Button,{variant:'tertiary',size:'sm',leadingIcon:React.createElement(Icon,{name:'trash',size:14}),onClick:()=>removeLeading(r.id)},'ลบ'))
-          )))
+      React.createElement('p',{className:'lnextyear-empty-text',style:{margin:0}},'เลือกก่อนว่าจะใช้ตัวชี้วัดและเป้าหมายชุดเดิม หรือปรับปรุงใหม่สำหรับปีถัดไป'),
+      React.createElement('div',{className:'lnextyear-choice'},
+        React.createElement('button',{type:'button',className:'lnextyear-choice-btn'+(mode==='reuse'?' is-active':''),onClick:chooseReuse},
+          React.createElement('span',{className:'lnextyear-choice-icon'},React.createElement(Icon,{name:'copy-01',size:18})),
+          React.createElement('span',{className:'lnextyear-choice-title'},'ใช้ของเดิม (ปีปัจจุบัน)'),
+          React.createElement('span',{className:'lnextyear-choice-desc'},'ใช้ตัวชี้วัดและเป้าหมายชุดเดิมตาม BA master โดยไม่แก้ไข')
+        ),
+        React.createElement('button',{type:'button',className:'lnextyear-choice-btn'+(mode==='revise'?' is-active':''),onClick:chooseRevise},
+          React.createElement('span',{className:'lnextyear-choice-icon'},React.createElement(Icon,{name:'edit',size:18})),
+          React.createElement('span',{className:'lnextyear-choice-title'},'ปรับปรุงใหม่'),
+          React.createElement('span',{className:'lnextyear-choice-desc'},'ดึงตัวชี้วัดชุดเดิมมาแก้ไข เพิ่ม หรือลบ สำหรับปีถัดไป')
         )
       ),
-      lagging.length>0&&React.createElement(React.Fragment,null,
-        React.createElement('div',{className:'lmetric-group-label'},'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)'),
-        React.createElement('table',{className:'ltable'},
-          React.createElement('thead',null,React.createElement('tr',null,['ขั้นตอน','ตัวชี้วัด','เป้าหมายปีถัดไป',''].map((h,i)=>React.createElement('th',{key:i},h)))),
-          React.createElement('tbody',null,lagging.map(r=>React.createElement('tr',{key:r.id},
-            React.createElement('td',null,r.step),React.createElement('td',null,r.metric),React.createElement('td',null,r.target),
-            React.createElement('td',null,React.createElement(Button,{variant:'tertiary',size:'sm',leadingIcon:React.createElement(Icon,{name:'trash',size:14}),onClick:()=>removeLagging(r.id)},'ลบ'))
-          )))
-        )
+      mode==='reuse'&&React.createElement('div',{className:'lnextyear-result'},
+        React.createElement('p',{className:'lnextyear-note'},React.createElement(Icon,{name:'lock-01',size:14}),'ใช้ตัวชี้วัดและเป้าหมายเดิมตาม BA master — ไม่สามารถแก้ไขได้'),
+        React.createElement(NextYearReadonlyTable,{label:'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)',rows:window.LF_LEADING_METRICS}),
+        React.createElement(NextYearReadonlyTable,{label:'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)',rows:window.LF_LAGGING_METRICS})
+      ),
+      mode==='revise'&&React.createElement('div',{className:'lnextyear-result'},
+        React.createElement(NextYearEditableTable,{label:'ตัวชี้วัดประสิทธิภาพ / ตัวชี้วัดนำ (Leading)',stepOptions:NEXTYEAR_LEADING_STEPS,rows:leadingRows,setRows:setLeadingRows}),
+        React.createElement('div',{className:'lqir-spacer'}),
+        React.createElement(NextYearEditableTable,{label:'ตัวชี้วัดประสิทธิผล / ตัวชี้วัดตาม (Lagging)',stepOptions:NEXTYEAR_LAGGING_STEPS,rows:laggingRows,setRows:setLaggingRows})
       )
     )
-  ),
-  modalOpen&&React.createElement(AddMetricModal,{onClose:()=>setModalOpen(false),onAdd:handleAdd}),
-  addToast&&React.createElement('div',{className:'ltoast'},React.createElement(Icon,{name:'check-circle',size:16}),'เพิ่มตัวชี้วัดเรียบร้อยแล้ว')
   );
 }
 
@@ -682,7 +681,7 @@ function KnowledgeCard({item,onChange}){
     const list=item[field]||[];
     onChange({...item,[field]:list.includes(key)?list.filter(k=>k!==key):[...list,key]});
   }
-  const LOCATIONS=[{key:'kmsi',label:'KM-Si'},{key:'kmcs',label:'KMCS'},{key:'other',label:'อื่นๆ'}];
+  const LOCATIONS=[{key:'kmsi',label:'KM-Si'},{key:'kmcs',label:'KM-CS'},{key:'other',label:'อื่นๆ'}];
   const METHODS=[
     {key:'meeting',label:'การประชุม / บรรยาย / เสวนา'},
     {key:'story',label:'การเล่าประสบการณ์'},
