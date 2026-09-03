@@ -16,7 +16,7 @@ const EX_REPORTS=[
  note:null}
 ];
 
-const EX_SCOPES=[['org','ระดับองค์กร (ทุกหน่วยงาน)'],['line','เฉพาะสายงานของตัวเอง'],['own','เฉพาะหน่วยงานของตัวเอง']];
+const EX_SCOPES=[['line','เฉพาะสายงานของตัวเอง'],['own','เฉพาะหน่วยงานของตัวเอง']];
 const EX_FORMATS=[['xlsx','Excel (.xlsx)'],['pdf','PDF']];
 
 function TopBar(){
@@ -34,7 +34,7 @@ function TopBar(){
 function App(){
   const [years,setYears]=React.useState(['2569']);
   const [reports,setReports]=React.useState(['quarterly']);
-  const [scope,setScope]=React.useState('org');
+  const [scope,setScope]=React.useState('line');
   const [format,setFormat]=React.useState('xlsx');
   const [toast,setToast]=React.useState('');
   function toggle(list,setList,v){setList(list.includes(v)?list.filter(x=>x!==v):[...list,v]);}
@@ -83,7 +83,6 @@ function App(){
                     React.createElement('div',{className:'exreport-title'},r.title),
                     React.createElement('p',{className:'exreport-desc'},r.desc),
                     React.createElement('div',{className:'exreport-fields'},r.fields.map(f=>React.createElement('span',{key:f,className:'exfield'},f))),
-                    React.createElement('div',{className:'exsheets'},r.sheets.map(s=>React.createElement('span',{key:s,className:'exsheet'},React.createElement(Icon,{name:'file-05',size:12}),'ชีท: '+s))),
                     r.note&&React.createElement('div',{className:'exreport-note'},React.createElement(Icon,{name:'info-circle',size:14}),React.createElement('span',null,r.note))
                   )
                 );
@@ -95,11 +94,13 @@ function App(){
               React.createElement('span',{className:'exstep'},'3'),
               React.createElement('h3',null,'ขอบเขตข้อมูลและรูปแบบไฟล์')
             ),
-            React.createElement('div',{className:'exradio-row',style:{marginBottom:'12px'}},
+            React.createElement('span',{className:'exfield-label'},'เลือกขอบเขตข้อมูล'),
+            React.createElement('div',{className:'exradio-row',style:{marginBottom:'16px'}},
               EX_SCOPES.map(([k,label])=>React.createElement('button',{key:k,type:'button',className:'exradio'+(scope===k?' is-active':''),onClick:()=>setScope(k)},
                 React.createElement('span',{className:'exradio-dot'}),label
               ))
             ),
+            React.createElement('span',{className:'exfield-label'},'เลือกรูปแบบไฟล์'),
             React.createElement('div',{className:'exradio-row'},
               EX_FORMATS.map(([k,label])=>React.createElement('button',{key:k,type:'button',className:'exradio'+(format===k?' is-active':''),onClick:()=>setFormat(k)},
                 React.createElement('span',{className:'exradio-dot'}),label
