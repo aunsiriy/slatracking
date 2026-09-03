@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Checkbox,Textarea}=window.DesignSystem_cbd181;
+const {Button,Checkbox,Textarea,InputField}=window.DesignSystem_cbd181;
 
 function TopBar(){
   return React.createElement('header',{className:'qtop'},
@@ -55,40 +55,51 @@ function SuggestionList(){
   );
 }
 
+const QA_PROCESS_OPTIONS=['E6.2 กระบวนการบริหารจัดการโครงการ','E6.3 กระบวนการพัฒนาระบบดิจิทัล'];
+
 function ActivityTable(){
+  const [proposal,setProposal]=React.useState('');
+  const [processKey,setProcessKey]=React.useState(QA_PROCESS_OPTIONS[0]);
   const [rows,setRows]=React.useState([{id:1,activity:'',weight:''}]);
   const total=rows.reduce((s,r)=>s+(Number(r.weight)||0),0);
   function update(id,field,value){setRows(rows.map(r=>r.id===id?{...r,[field]:value}:r));}
   function addRow(){setRows([...rows,{id:Date.now(),activity:'',weight:''}]);}
   function removeRow(id){setRows(rows.length>1?rows.filter(r=>r.id!==id):rows);}
   return React.createElement('div',{className:'qactivity'},
-    React.createElement('div',{className:'qactivity-head'},
-      React.createElement('span',{className:'qactivity-title'},'กิจกรรม/ขั้นตอน ที่จะดำเนินการ ',React.createElement('span',{className:'qrequired'},'*')),
-      React.createElement('span',{className:'qactivity-sub'},'(ผลรวมน้ำหนักต้องเท่ากับ 100)')
+    React.createElement('div',{className:'qfield'},
+      React.createElement('span',{className:'qfield-label'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)'),
+      React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุข้อเสนอโอกาสในการปรับปรุงกระบวนการ',value:proposal,onChange:setProposal})
+    ),
+    React.createElement('div',{className:'qfield'},
+      React.createElement('span',{className:'qfield-label'},'สอดคล้องกับกระบวนการ'),
+      React.createElement('select',{className:'qir-select',value:processKey,onChange:e=>setProcessKey(e.target.value)},
+        QA_PROCESS_OPTIONS.map(o=>React.createElement('option',{key:o,value:o},o))
+      )
     ),
     rows.every(r=>!r.activity)&&React.createElement('div',{className:'qactivity-warn'},'กรุณาเพิ่มกิจกรรมอย่างน้อย 1 รายการ'),
     React.createElement('table',{className:'qtable'},
       React.createElement('thead',null,React.createElement('tr',null,
-        React.createElement('th',null,'ลำดับ'),React.createElement('th',null,'กิจกรรม/ขั้นตอน ที่จะดำเนินการ'),
-        React.createElement('th',null,'น้ำหนัก ',React.createElement(Icon,{name:'help-circle',size:12})),React.createElement('th',null)
+        React.createElement('th',null,'รายการ'),React.createElement('th',null,'กิจกรรมที่จะดำเนินการ'),
+        React.createElement('th',null,'น้ำหนัก'),React.createElement('th',null)
       )),
       React.createElement('tbody',null,rows.map((r,i)=>React.createElement('tr',{key:r.id},
         React.createElement('td',null,i+1),
         React.createElement('td',null,
-          React.createElement('input',{className:'qtext-input',placeholder:'กรุณาระบุกิจกรรม',value:r.activity,onChange:e=>update(r.id,'activity',e.target.value)})
+          React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'กรุณาระบุกิจกรรม',value:r.activity,onChange:v=>update(r.id,'activity',v)})
         ),
-        React.createElement('td',{className:'qweight-cell'},React.createElement('input',{className:'qweight-input',value:r.weight,onChange:e=>update(r.id,'weight',e.target.value.replace(/[^0-9]/g,''))})),
-        React.createElement('td',null,React.createElement('button',{className:'qrow-remove',onClick:()=>removeRow(r.id)},React.createElement(Icon,{name:'trash',size:16})))
+        React.createElement('td',{className:'qweight-cell'},React.createElement(InputField,{fieldType:'default',size:'sm',value:String(r.weight),onChange:v=>update(r.id,'weight',v.replace(/[^0-9]/g,''))})),
+        React.createElement('td',null,React.createElement('button',{className:'qrow-remove',onClick:()=>removeRow(r.id)},React.createElement(Icon,{name:'x',size:15})))
       )))
     ),
-    React.createElement('div',{className:'qactivity-add'},
-      React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:15}),onClick:addRow},'เพิ่ม')
-    ),
-    React.createElement('div',{className:'qactivity-total'},
-      React.createElement('span',null,'รวม'),
-      React.createElement('div',{className:'qactivity-total-num'},
-        React.createElement('span',{className:total===100?'is-ok':total>100?'is-error':''},total),
-        React.createElement('span',{className:'qactivity-total-note'},'น้ำหนักรวมกันต้องครบ 100')
+    React.createElement('button',{type:'button',className:'qactivity-add-link',onClick:addRow},React.createElement(Icon,{name:'plus',size:14}),'เพิ่มกิจกรรม'),
+    React.createElement('div',{className:'qactivity-footer'},
+      React.createElement('span',null,'Info :: น้ำหนักรวมกัน ไม่เกิน 100'),
+      React.createElement('div',{className:'qactivity-footer-total'},
+        React.createElement('span',{className:'qactivity-total-value'+(total===100?' is-ok':total>100?' is-error':'')},total),
+        React.createElement('span',{className:'qactivity-status'+(total===100?' is-ok':' is-error')},
+          React.createElement(Icon,{name:total===100?'check':'alert-triangle',size:14}),
+          total===100?'น้ำหนักรวมครบ 100':total>100?'กรุณาปรับแก้':'ยังไม่ครบ'
+        )
       )
     )
   );
@@ -107,7 +118,11 @@ function App(){
         ),
         React.createElement('button',{className:'qexport-btn'},'ส่งออกข้อมูล',React.createElement(Icon,{name:'chevron-down',size:14}))
       ),
-      React.createElement('div',{className:'card qform-card'},
+      React.createElement('div',{className:'card qsection'},
+        React.createElement('div',{className:'qsection-head'},
+          React.createElement('h3',null,'กระบวนงาน'),
+          React.createElement('p',{className:'qsection-hint'},'กระบวนงานและหลักเกณฑ์การพิจารณาคัดเลือก QIR')
+        ),
         React.createElement('div',{className:'qfield'},
           React.createElement('span',{className:'qfield-label'},'กระบวนงาน ',React.createElement('span',{className:'qrequired'},'*')),
           React.createElement('div',{className:'qfield-static'},m.process)
@@ -116,17 +131,25 @@ function App(){
           React.createElement('span',{className:'qfield-label'},'หลักเกณฑ์ (Criteria) การพิจารณาคัดเลือก QIR ดังนี้ ',React.createElement('span',{className:'qrequired'},'*')),
           React.createElement('span',{className:'qfield-hint'},'(เลือกอย่างน้อย 1 ข้อ)'),
           React.createElement(CriteriaList)
-        ),
-        React.createElement('div',{className:'qfield'},
-          React.createElement('span',{className:'qfield-label'},'ข้อเสนอแนะ'),
-          React.createElement('span',{className:'qfield-hint'},'(เสนอแนะอย่างน้อย 1 ด้าน)'),
-          React.createElement(SuggestionList)
-        ),
-        React.createElement(ActivityTable),
-        React.createElement('div',{className:'qform-footer'},
-          React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/p1-p11-overview';}},'ย้อนกลับ'),
-          React.createElement(Button,{variant:'primary',size:'md'},'บันทึก')
         )
+      ),
+      React.createElement('div',{className:'card qsection'},
+        React.createElement('div',{className:'qsection-head'},
+          React.createElement('h3',null,'ข้อเสนอแนะ'),
+          React.createElement('p',{className:'qsection-hint'},'เสนอแนะอย่างน้อย 1 ด้าน')
+        ),
+        React.createElement(SuggestionList)
+      ),
+      React.createElement('div',{className:'card qsection'},
+        React.createElement('div',{className:'qsection-head'},
+          React.createElement('h3',null,'กิจกรรม/ขั้นตอน ที่จะดำเนินการ ',React.createElement('span',{className:'qrequired'},'*')),
+          React.createElement('p',{className:'qsection-hint'},'ผลรวมน้ำหนักต้องเท่ากับ 100')
+        ),
+        React.createElement(ActivityTable)
+      ),
+      React.createElement('div',{className:'qform-footer'},
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/p1-p11-overview';}},'ย้อนกลับ'),
+        React.createElement(Button,{variant:'primary',size:'md'},'บันทึก')
       )
     )
   );
