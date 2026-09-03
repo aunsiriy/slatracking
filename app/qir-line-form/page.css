@@ -94,6 +94,14 @@ button{font-family:inherit}
 .qlf-dept-foot{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--pea-text-secondary);border-top:1px solid var(--pea-border-tertiary);padding-top:8px}
 .qlf-empty{font-size:13px;color:var(--pea-text-tertiary);padding:18px;text-align:center;border:1px dashed var(--pea-border-secondary);border-radius:10px}
 
+.qlf-modal-overlay{position:fixed;inset:0;background:rgba(16,24,40,.45);display:flex;align-items:center;justify-content:center;padding:24px;z-index:300}
+.qlf-modal{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:26px 24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 20px 48px rgba(0,0,0,.2)}
+.qlf-modal-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--pea-bg-success-primary);color:var(--pea-fg-success-primary)}
+.qlf-modal-title{font-size:17px;font-weight:700;color:var(--pea-text-primary)}
+.qlf-modal-text{font-size:13.5px;color:var(--pea-text-tertiary);line-height:1.6;margin:0}
+.qlf-modal-foot{display:flex;gap:10px;margin-top:14px;width:100%}
+.qlf-modal-foot>*{flex:1}
+
 .ltoast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--pea-text-primary);color:#fff;padding:12px 20px;border-radius:10px;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;z-index:200;box-shadow:0 12px 28px rgba(0,0,0,.25)}
 .ltoast .icon{color:var(--pea-fg-success-primary)}
 

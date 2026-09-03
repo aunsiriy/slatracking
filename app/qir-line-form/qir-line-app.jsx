@@ -47,7 +47,7 @@ const QLF_STEPS=['คัดเลือก QIR ของฝ่าย','สรุ
 function TopBar(){
   return React.createElement('header',{className:'ttb'},
     React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
+      React.createElement(Link,{href:'/qir-line-overview',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
       React.createElement('span',{className:'ttb-divider'}),
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
       React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
@@ -63,7 +63,9 @@ function Breadcrumb(){
   return React.createElement('div',{className:'lfbreadcrumb'},
     React.createElement(Link,{href:'/'},'หน้าหลัก'),
     React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'QIR สายงาน')
+    React.createElement(Link,{href:'/qir-line-overview'},'ภาพรวม QIR สายงาน'),
+    React.createElement(Icon,{name:'chevron-right',size:14}),
+    React.createElement('span',{className:'is-current'},'คัดเลือก QIR สายงาน')
   );
 }
 
@@ -203,7 +205,7 @@ function SelectStep({selectedIds,setSelectedIds,onNext}){
     ),
     React.createElement('div',{className:'qlf-actions'},
       React.createElement('span',{className:'qlf-count'},'เลือกแล้ว '+selectedIds.length+' ข้อเสนอ'),
-      React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/';}},'ยกเลิก'),
+      React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/qir-line-overview';}},'ยกเลิก'),
       React.createElement(Button,{variant:'primary',size:'md',isDisabled:selectedIds.length===0,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:onNext},'ถัดไป')
     )
   );
@@ -237,10 +239,25 @@ function ConfirmStep({selectedGroups,selectedCount,qirGroups,groupHandlers,addGr
   );
 }
 
+function ConfirmSaveModal({onCancel,onConfirm}){
+  return React.createElement('div',{className:'qlf-modal-overlay',onClick:onCancel},
+    React.createElement('div',{className:'qlf-modal',onClick:e=>e.stopPropagation()},
+      React.createElement('span',{className:'qlf-modal-icon'},React.createElement(Icon,{name:'check-circle',size:26})),
+      React.createElement('h3',{className:'qlf-modal-title'},'ยืนยันบันทึกผลการคัดเลือก'),
+      React.createElement('p',{className:'qlf-modal-text'},'คุณได้ทำการคัดเลือก QIR ของสายงานประจำปีนี้เรียบร้อยแล้ว ระบบจะบันทึกผลและส่งเข้าสู่การพิจารณาระดับสายงาน — สามารถกลับมาแก้ไขได้ภายหลัง'),
+      React.createElement('div',{className:'qlf-modal-foot'},
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:onCancel},'ยกเลิก'),
+        React.createElement(Button,{variant:'primary',size:'md',onClick:onConfirm},'ยืนยัน')
+      )
+    )
+  );
+}
+
 function App(){
   const [step,setStep]=React.useState(0);
   const [selectedIds,setSelectedIds]=React.useState([]);
   const [qirGroups,setQirGroups]=React.useState([]);
+  const [confirmOpen,setConfirmOpen]=React.useState(false);
   const [saveToast,setSaveToast]=React.useState(false);
   function setGroupProposal(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,proposal:text}:g));}
   function setGroupProcess(gid,key){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,processKey:key}:g));}
@@ -263,9 +280,11 @@ function App(){
     .map(s=>({id:s.id,dept:s.dept,proposals:s.proposals.filter(p=>selectedIds.includes(p.id))}))
     .filter(s=>s.proposals.length>0);
   const ownIncomplete=qirGroups.some(g=>g.rows.reduce((s,r)=>s+(Number(r.weight)||0),0)!==100);
-  function handleSave(){
+  function handleSave(){setConfirmOpen(true);}
+  function confirmSave(){
+    setConfirmOpen(false);
     setSaveToast(true);
-    setTimeout(()=>{window.location.href='/';},1500);
+    setTimeout(()=>{window.location.href='/qir-line-overview';},1500);
   }
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
@@ -286,6 +305,7 @@ function App(){
         )
       )
     ),
+    confirmOpen&&React.createElement(ConfirmSaveModal,{onCancel:()=>setConfirmOpen(false),onConfirm:confirmSave}),
     saveToast&&React.createElement('div',{className:'ltoast'},React.createElement(Icon,{name:'check-circle',size:16}),'บันทึกผลการคัดเลือก QIR เรียบร้อยแล้ว')
   );
 }
