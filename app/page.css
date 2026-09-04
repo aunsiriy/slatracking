@@ -19,6 +19,7 @@ button{font-family:inherit}
 .topnav-link{padding:8px 12px;border-radius:8px;font-size:14px;font-weight:500;color:var(--pea-text-secondary);text-decoration:none;white-space:nowrap}
 .topnav-link:hover{background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
 .topnav-link.active{background:var(--pea-bg-brand-primary);color:var(--pea-text-brand-primary)}
+.topnav-link.is-disabled,.dropdown-item.is-disabled{opacity:.4;pointer-events:none;cursor:not-allowed}
 .nav-menu{position:relative;display:none}
 .nav-dropdown{position:absolute;left:0;top:calc(100% + 6px);width:180px;background:#fff;border:1px solid var(--pea-border-secondary);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:6px;display:flex;flex-direction:column;z-index:30}
 @media (max-width:1300px){
@@ -91,7 +92,7 @@ button{font-family:inherit}
 /* ---- module cards v2 ---- */
 .module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .module-grid.is-4{grid-template-columns:repeat(4,1fr)}
-.module-card-v2{position:relative;min-height:300px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.module-card-v2{position:relative;min-height:300px;padding:22px;display:grid;grid-template-columns:63% 37%;grid-template-rows:1fr auto;column-gap:14px;overflow:hidden}
 .module-card-v2.is-view-only{background:#155EEF;transition:transform .2s ease,box-shadow .2s ease;animation:moduleCardIn .5s ease both}
 .module-card-v2.is-view-only:hover{transform:translateY(-4px);box-shadow:0 16px 32px -12px rgba(21,94,239,.35)}
 @keyframes moduleCardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -101,18 +102,23 @@ button{font-family:inherit}
 .module-card-v2:not(.is-view-only):not(.is-accent):hover{transform:translateY(-4px);box-shadow:0 16px 32px -12px rgba(16,24,40,.16)}
 .module-card-dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(currentColor 1px,transparent 1px);background-size:14px 14px;color:rgba(0,0,0,.05);-webkit-mask-image:linear-gradient(to bottom right,black,transparent 65%);mask-image:linear-gradient(to bottom right,black,transparent 65%)}
 .module-card-v2.is-accent .module-card-dots{color:rgba(255,255,255,.12)}
-.module-card-top{position:relative;z-index:1;max-width:70%}
+.module-card-top{position:relative;z-index:1;grid-column:1;grid-row:1;min-width:0}
 .module-card-title{font-size:19px;font-weight:700;color:var(--pea-text-primary);margin:10px 0 6px}
 .module-card-v2.is-accent .module-card-title{color:#fff}
 .module-card-v2.is-view-only .module-card-title{color:#fff}
-.module-card-desc{font-size:13px;color:var(--pea-text-tertiary);line-height:1.5;margin:0}
+.module-card-desc{font-size:13px;color:var(--pea-text-tertiary);line-height:1.5;margin:0;width:auto !important;height:auto !important}
 .module-card-v2.is-accent .module-card-desc{color:rgba(255,255,255,.85)}
 .module-card-v2.is-view-only .module-card-desc{color:rgba(255,255,255,.85)}
 .module-badge-onaccent{background:rgba(255,255,255,.18) !important;border-color:rgba(255,255,255,.3) !important;color:#fff !important}
-.module-card-art{position:absolute;right:16px;bottom:80px;width:104px;height:104px;opacity:.95}
+.module-card-art{position:relative;z-index:1;grid-column:2;grid-row:1;width:100%;max-width:120px;aspect-ratio:1/1;justify-self:end;align-self:start;opacity:.95;pointer-events:none}
 .module-card-art-img{object-fit:contain}
-.module-card-footer-v2{position:relative;z-index:1;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.module-card-footer-v2{position:relative;z-index:1;grid-column:1/-1;grid-row:2;display:flex;align-items:center;justify-content:flex-end;gap:8px}
 .module-card-stat-badge{position:absolute;top:20px;right:20px;z-index:2}
+@media (max-width:520px){
+  .module-card-v2{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .module-card-art{grid-column:1;grid-row:2;justify-self:start;max-width:92px;margin-top:10px}
+  .module-card-footer-v2{grid-row:3}
+}
 .module-cta-onaccent{background:#fff !important;color:var(--pea-text-brand-primary) !important;border-color:#fff !important}
 
 /* ---- activity ---- */

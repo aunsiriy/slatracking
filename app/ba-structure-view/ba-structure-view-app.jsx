@@ -86,23 +86,54 @@ function BbL1Row({l1}){
 function BbView(){
   const groups=window.BA_GROUPS;
   const [groupKey,setGroupKey]=React.useState(groups[0].key);
+  const [year,setYear]=React.useState('2569');
+  const [q,setQ]=React.useState('');
   const group=groups.find(g=>g.key===groupKey);
   const [selectedL0Id,setSelectedL0Id]=React.useState(group.children[0].id);
-  React.useEffect(()=>{setSelectedL0Id(group.children[0]&&group.children[0].id);},[groupKey]);
-  const l0=group.children.find(n=>n.id===selectedL0Id)||group.children[0];
+  React.useEffect(()=>{setSelectedL0Id(group.children[0]&&group.children[0].id);setQ('');},[groupKey]);
+  const query=q.trim().toLowerCase();
+  function matchNode(n){
+    if(!query)return true;
+    const hit=s=>String(s||'').toLowerCase().includes(query);
+    return hit(n.name)||hit(n.code)||(n.children||[]).some(matchNode);
+  }
+  const visibleL0=query?group.children.filter(matchNode):group.children;
+  const l0=visibleL0.find(n=>n.id===selectedL0Id)||visibleL0[0]||group.children[0];
+  const visibleL1=query?(l0.children||[]).filter(matchNode):(l0.children||[]);
   const l1Count=(l0.children||[]).length;
   const l2Count=(l0.children||[]).reduce((a,n1)=>a+(n1.children||[]).length,0);
-  return React.createElement(React.Fragment,null,
+  return React.createElement('div',{className:'bb-panel'},
+    React.createElement('div',{className:'bb-panel-head'},
+      React.createElement('div',null,
+        React.createElement('h2',null,'PEA สถาปัตยกรรมธุรกิจ (PEA Business Architecture)'),
+        React.createElement('p',null,'โครงสร้าง 3 ระดับ : LEVEL 0 กระบวนการสำคัญ (Key Work Process) ▸ LEVEL 1 กระบวนการทำงาน (Work Process) ▸ LEVEL 2 งาน (Job)')
+      ),
+      React.createElement('div',{className:'bb-panel-head-actions'},
+        React.createElement('select',{className:'bb-year-select',value:year,onChange:e=>setYear(e.target.value)},
+          ['2569','2568','2567'].map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))
+        ),
+        React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16})},'Export โครงสร้าง')
+      )
+    ),
+    React.createElement('div',{className:'bb-search-bar'},
+      React.createElement(InputField,{fieldType:'default',size:'md',placeholder:'กระบวนการสำคัญ, กระบวนการทำงาน, งาน...',value:q,onChange:setQ,leadingIcon:React.createElement(Icon,{name:'search',size:17})})
+    ),
     React.createElement('div',{className:'bb-group-tabs'},
       groups.map(g=>React.createElement('button',{key:g.key,type:'button',className:'bb-group-tab'+(g.key===groupKey?' is-active':''),onClick:()=>setGroupKey(g.key)},g.shortLabel))
     ),
-    React.createElement('p',{className:'bb-group-hint'},group.hint),
+    React.createElement('div',{className:'bb-group-banner'},
+      React.createElement(FeaturedIcon,{icon:React.createElement(Icon,{name:'building',size:20}),size:'md',color:'gray'}),
+      React.createElement('div',null,
+        React.createElement('div',{className:'bb-group-banner-title'},group.shortLabel),
+        React.createElement('div',{className:'bb-group-banner-desc'},group.hint)
+      )
+    ),
     React.createElement('div',{className:'bb-layout'},
       React.createElement('div',{className:'bb-sidebar'},
-        group.children.map(n0=>React.createElement('div',{key:n0.id,className:'bb-sidebar-item'+(n0.id===l0.id?' bb-sidebar-item--active':''),onClick:()=>setSelectedL0Id(n0.id)},
+        visibleL0.length?visibleL0.map(n0=>React.createElement('div',{key:n0.id,className:'bb-sidebar-item'+(n0.id===l0.id?' bb-sidebar-item--active':''),onClick:()=>setSelectedL0Id(n0.id)},
           React.createElement(Badge,{label:n0.code,type:'pill-color',color:'purple',size:'sm'}),
           React.createElement('span',null,n0.name)
-        ))
+        )):React.createElement('div',{className:'bb-l2-empty'},'ไม่พบผลลัพธ์')
       ),
       React.createElement('div',{className:'bb-detail'},
         React.createElement('div',{className:'bb-l0-card'},
@@ -113,7 +144,7 @@ function BbView(){
           React.createElement('p',{className:'bb-l0-sub'},'LEVEL 0 · กระบวนการสำคัญ (Key Work Process) · '+l1Count+' กระบวนการทำงาน · '+l2Count+' งาน')
         ),
         React.createElement('div',{className:'bb-l1-list'},
-          (l0.children||[]).map(l1=>React.createElement(BbL1Row,{key:l1.id,l1}))
+          visibleL1.length?visibleL1.map(l1=>React.createElement(BbL1Row,{key:l1.id,l1})):React.createElement('div',{className:'bb-l2-empty'},'ไม่พบผลลัพธ์ในกลุ่มนี้')
         )
       )
     )
@@ -147,9 +178,11 @@ function BaStructureView(){
       ),
       React.createElement(Badge,{label:'View only',type:'pill-color',color:'gray',size:'md'})
     ),
-    React.createElement('div',{className:'bv-page-tabs'},
-      React.createElement('button',{type:'button',className:'bv-page-tab'+(pageTab==='org'?' is-active':''),onClick:()=>setPageTab('org')},React.createElement(Icon,{name:'building',size:16}),'SLA ตามหน่วยงาน'),
-      React.createElement('button',{type:'button',className:'bv-page-tab'+(pageTab==='bb'?' is-active':''),onClick:()=>setPageTab('bb')},React.createElement(Icon,{name:'layout-grid',size:16}),'Building Block (Business Architecture)')
+    React.createElement('div',{className:'bv-page-tabs-wrap'},
+      React.createElement('nav',{className:'bv-page-tabs'},
+        React.createElement('button',{type:'button',className:'bv-page-tab'+(pageTab==='org'?' is-active':''),onClick:()=>setPageTab('org')},React.createElement(Icon,{name:'building',size:18}),'SLA ตามหน่วยงาน'),
+        React.createElement('button',{type:'button',className:'bv-page-tab'+(pageTab==='bb'?' is-active':''),onClick:()=>setPageTab('bb')},React.createElement(Icon,{name:'layout-grid',size:18}),'Building Block (Business Architecture)')
+      )
     ),
     React.createElement('main',{className:'bv-page'},
       pageTab==='bb'?React.createElement(BbView,null):

@@ -142,7 +142,23 @@ function TopBar({role,setRoleKey}){
   const [notifOpen,setNotifOpen]=React.useState(false);
   const [notifications,setNotifications]=React.useState(()=>window.NOTIFICATIONS.slice());
   const unreadCount=notifications.filter(n=>!n.read).length;
-  const navLinks=['Dashboard','BA & SLA Master','รายงาน SLA','Learning Form'];
+  const NAV_BY_ROLE={
+    admin:{ba:'/ba-sla-master',sla:null,learning:'/learning-form-overview-admin'},
+    manager:{ba:'/ba-structure-view',sla:'/sla-overview',learning:'/learning-form-overview'},
+    staff:{ba:'/ba-structure-view',sla:'/sla-status-tracking',learning:'/learning-form-overview-province'}
+  };
+  const nav=NAV_BY_ROLE[role.key]||NAV_BY_ROLE.manager;
+  const navLinks=[
+    {label:'Dashboard',href:'/'},
+    {label:'BA & SLA Master',href:nav.ba},
+    {label:'รายงาน SLA',href:nav.sla,disabled:!nav.sla},
+    {label:'Learning Form & QIR',href:nav.learning}
+  ];
+  function goNav(e,link){
+    e.preventDefault();
+    if(link.disabled||!link.href)return;
+    window.location.href=link.href;
+  }
   return React.createElement('header',{className:'topbar'},
     React.createElement('div',{className:'topbar-left'},
       React.createElement('div',{className:'brand-mark'},
@@ -154,13 +170,13 @@ function TopBar({role,setRoleKey}){
       ),
       React.createElement('nav',{className:'topnav'},
         navLinks.map(l=>
-          React.createElement('a',{key:l,href:'#',className:'topnav-link'+(l==='Dashboard'?' active':'')},l)
+          React.createElement('a',{key:l.label,href:l.disabled?undefined:(l.href||'#'),className:'topnav-link'+(l.label==='Dashboard'?' active':'')+(l.disabled?' is-disabled':''),'aria-disabled':l.disabled?'true':undefined,onClick:e=>goNav(e,l)},l.label)
         )
       ),
       React.createElement('div',{className:'nav-menu'},
         React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'layout-grid',size:19}),onClick:()=>setNavOpen(v=>!v),'aria-label':'เมนู','aria-expanded':navOpen}),
         navOpen&&React.createElement('div',{className:'nav-dropdown'},
-          navLinks.map(l=>React.createElement('a',{key:l,href:'#',className:'dropdown-item'},l))
+          navLinks.map(l=>React.createElement('a',{key:l.label,href:l.disabled?undefined:(l.href||'#'),className:'dropdown-item'+(l.disabled?' is-disabled':''),'aria-disabled':l.disabled?'true':undefined,onClick:e=>goNav(e,l)},l.label))
         )
       )
     ),
@@ -169,9 +185,6 @@ function TopBar({role,setRoleKey}){
         Object.values(window.ROLES).map(r=>
           React.createElement(Button,{key:r.key,variant:role.key===r.key?'primary':'tertiary',size:'sm',className:'role-pill-btn',onClick:()=>setRoleKey(r.key)},r.shortLabel)
         )
-      ),
-      React.createElement('div',{className:'icon-btn-wrap'},
-        React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'search',size:19}),'aria-label':'ค้นหา'})
       ),
       React.createElement('div',{className:'icon-btn-wrap'},
         React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),onClick:()=>setNotifOpen(v=>!v),'aria-label':'การแจ้งเตือน '+unreadCount+' รายการ'}),
@@ -252,8 +265,8 @@ function ModuleCards({role}){
   return React.createElement('section',{className:'module-grid'+(c.qirLine?' is-4':'')},
     React.createElement(ModuleCard,{title:'BA & SLA Master',desc:'โครงสร้างสถาปัตยกรรมธุรกิจและตัวชี้วัด SLA ต้นแบบขององค์กร',img:'/assets/SLAandBAmaster.png',href:role.key==='admin'?'/ba-sla-master':'/ba-structure-view',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.ba}),
     React.createElement(ModuleCard,{title:'SLA Tracking & รายงานผล',desc:['กรอกผล ตรวจสอบ',React.createElement('br',{key:'br'}),'และติดตามสถานะ SLA'],img:'/assets/SLAtracking.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.sla}),
-    React.createElement(ModuleCard,{title:'Learning Form & QIR',desc:'ทบทวน SLA ที่ไม่ผ่านเกณฑ์และวางแผนปรับปรุงกระบวนการ',descStyle:{width:'118px',height:'59px'},img:'/assets/Learningform.webp',...c.learning}),
-    c.qirLine&&React.createElement(ModuleCard,{title:'QIR สายงาน',desc:'คัดเลือกและจัดกลุ่มกิจกรรม QIR ตามประเด็นพิจารณาสำหรับสายงาน',descStyle:{width:'150px'},img:'/assets/Learningform.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},...c.qirLine})
+    React.createElement(ModuleCard,{title:'Learning Form & QIR',desc:'ทบทวน SLA ที่ไม่ผ่านเกณฑ์และวางแผนปรับปรุงกระบวนการ',img:'/assets/Learningform.webp',...c.learning}),
+    c.qirLine&&React.createElement(ModuleCard,{title:'QIR สายงาน',desc:'คัดเลือกและจัดกลุ่มกิจกรรม QIR ตามประเด็นพิจารณาสำหรับสายงาน',img:'/assets/Learningform.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},...c.qirLine})
   );
 }
 

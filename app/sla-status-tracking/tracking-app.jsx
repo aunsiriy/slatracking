@@ -27,7 +27,10 @@ function Sidebar(){
 
 function TopBar(){
   return React.createElement('header',{className:'ttb'},
-    React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'layout-grid',size:19}),'aria-label':'เมนู'}),
+    React.createElement('div',{className:'ttb-left'},
+      React.createElement(Button,{variant:'tertiary',size:'sm',leadingIcon:React.createElement(Icon,{name:'chevron-left',size:18}),onClick:()=>{window.location.href='/';}},'กลับ'),
+      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'layout-grid',size:19}),'aria-label':'เมนู'})
+    ),
     React.createElement('div',{className:'ttb-right'},
       React.createElement('div',{className:'icon-btn-wrap'},
         React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
