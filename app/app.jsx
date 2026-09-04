@@ -266,7 +266,7 @@ function ModuleCards({role}){
     React.createElement(ModuleCard,{title:'BA & SLA Master',desc:'โครงสร้างสถาปัตยกรรมธุรกิจและตัวชี้วัด SLA ต้นแบบขององค์กร',img:'/assets/SLAandBAmaster.png',href:role.key==='admin'?'/ba-sla-master':'/ba-structure-view',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.ba}),
     React.createElement(ModuleCard,{title:'SLA Tracking & รายงานผล',desc:['กรอกผล ตรวจสอบ',React.createElement('br',{key:'br'}),'และติดตามสถานะ SLA'],img:'/assets/SLAtracking.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.sla}),
     React.createElement(ModuleCard,{title:'Learning Form & QIR',desc:'ทบทวน SLA ที่ไม่ผ่านเกณฑ์และวางแผนปรับปรุงกระบวนการ',img:'/assets/Learningform.webp',...c.learning}),
-    c.qirLine&&React.createElement(ModuleCard,{title:'QIR สายงาน',desc:'คัดเลือกและจัดกลุ่มกิจกรรม QIR ตามประเด็นพิจารณาสำหรับสายงาน',img:'/assets/Learningform.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},...c.qirLine})
+    c.qirLine&&React.createElement(ModuleCard,{title:'QIR สายงาน',desc:'คัดเลือกและจัดกลุ่มกิจกรรม QIR ตามประเด็นพิจารณาสำหรับสายงาน',img:'/assets/qir-line-building.png',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},...c.qirLine})
   );
 }
 
