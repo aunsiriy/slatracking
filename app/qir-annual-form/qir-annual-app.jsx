@@ -5,13 +5,14 @@ const {Button,Checkbox,Textarea,InputField}=window.DesignSystem_cbd181;
 function TopBar(){
   return React.createElement('header',{className:'qtop'},
     React.createElement('div',{className:'qtop-left'},
+      React.createElement(Link,{className:'qtop-back',href:'/p1-p11-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
+      React.createElement('span',{className:'qtop-divider'}),
       React.createElement(Image,{className:'qtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'qtop-word'},
         React.createElement('span',{className:'qtop-title'},'PEA-SLA Tracking System'),
         React.createElement('span',{className:'qtop-sub'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)')
       )
-    ),
-    React.createElement(Link,{className:'qtop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ')
+    )
   );
 }
 

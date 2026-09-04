@@ -59,6 +59,15 @@ function KpiCards({rows}){
 
 function App(){
   const rows=QLO_ROWS;
+  const [yearFilter,setYearFilter]=React.useState('all');
+  const [search,setSearch]=React.useState('');
+  const yearOptions=rows.map(r=>r.year);
+  const q=search.trim().toLowerCase();
+  const filtered=rows
+    .filter(r=>yearFilter==='all'||r.year===yearFilter)
+    .filter(r=>!q||[r.year,r.recorder,(QLO_STATUS[r.status]||{}).label,r.date].join(' ').toLowerCase().includes(q));
+  const hasFilter=yearFilter!=='all'||q!=='';
+  function clearFilter(){setYearFilter('all');setSearch('');}
   function goSelect(){window.location.href='/qir-line-form';}
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
@@ -79,25 +88,43 @@ function App(){
             React.createElement('p',{className:'lsection-hint'},'แต่ละปีระบุว่าได้ส่งผลการคัดเลือก QIR ของสายงานเรียบร้อยแล้วหรือยัง')
           )
         ),
-        React.createElement('table',{className:'ltable qlo-table'},
-          React.createElement('thead',null,React.createElement('tr',null,
-            ['ประจำปี','ผู้คัดเลือก','ข้อเสนอที่คัดเลือก','QIR ของสายงาน','วันที่ส่ง','สถานะ',''].map((h,i)=>React.createElement('th',{key:i},h))
-          )),
-          React.createElement('tbody',null,rows.map(r=>{
-            const s=QLO_STATUS[r.status];
-            return React.createElement('tr',{key:r.year,className:'qlo-row',onClick:goSelect},
-              React.createElement('td',null,'ปี '+r.year),
-              React.createElement('td',null,r.recorder),
-              React.createElement('td',null,r.picked?r.picked+' ข้อเสนอ':'—'),
-              React.createElement('td',null,r.lineAdded?r.lineAdded+' รายการ':'—'),
-              React.createElement('td',null,r.date),
-              React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'})),
-              React.createElement('td',{className:'qlo-row-action'},
-                React.createElement(Button,{variant:'tertiary',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:14}),onClick:e=>{e.stopPropagation();goSelect();}},r.status==='pending'?'คัดเลือก':'ดูรายละเอียด')
-              )
-            );
-          }))
-        )
+        React.createElement('div',{className:'qlo-filters'},
+          React.createElement('div',{className:'qlo-search'},
+            React.createElement(Icon,{name:'search',size:15}),
+            React.createElement('input',{placeholder:'ค้นหาปี / ผู้คัดเลือก / สถานะ...',value:search,onChange:e=>setSearch(e.target.value)})
+          ),
+          React.createElement('select',{className:'qlo-select',value:yearFilter,onChange:e=>setYearFilter(e.target.value)},
+            React.createElement('option',{value:'all'},'ทุกปี'),
+            yearOptions.map(y=>React.createElement('option',{key:y,value:y},'ประจำปี '+y))
+          ),
+          hasFilter&&React.createElement(Button,{variant:'secondary',size:'md',onClick:clearFilter},'ล้างค่า')
+        ),
+        filtered.length===0
+          ?React.createElement('div',{className:'qlo-empty'},
+            React.createElement(Icon,{name:'search',size:22}),
+            React.createElement('span',{className:'qlo-empty-title'},'ไม่พบข้อมูลตามที่ค้นหา'),
+            React.createElement('span',{className:'qlo-empty-sub'},'ลองปรับคำค้นหรือเลือกปีใหม่'),
+            React.createElement(Button,{variant:'secondary',size:'sm',onClick:clearFilter},'ล้างตัวกรอง')
+          )
+          :React.createElement('table',{className:'ltable qlo-table'},
+            React.createElement('thead',null,React.createElement('tr',null,
+              ['ประจำปี','ผู้คัดเลือก','ข้อเสนอที่คัดเลือก','QIR ของสายงาน','วันที่ส่ง','สถานะ',''].map((h,i)=>React.createElement('th',{key:i},h))
+            )),
+            React.createElement('tbody',null,filtered.map(r=>{
+              const s=QLO_STATUS[r.status];
+              return React.createElement('tr',{key:r.year,className:'qlo-row',onClick:goSelect},
+                React.createElement('td',null,'ปี '+r.year),
+                React.createElement('td',null,r.recorder),
+                React.createElement('td',null,r.picked?r.picked+' ข้อเสนอ':'—'),
+                React.createElement('td',null,r.lineAdded?r.lineAdded+' รายการ':'—'),
+                React.createElement('td',null,r.date),
+                React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'})),
+                React.createElement('td',{className:'qlo-row-action'},
+                  React.createElement(Button,{variant:'tertiary',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:14}),onClick:e=>{e.stopPropagation();goSelect();}},r.status==='pending'?'คัดเลือก':'ดูรายละเอียด')
+                )
+              );
+            }))
+          )
       )
     )
   );

@@ -255,6 +255,7 @@ function ConfirmSaveModal({onCancel,onConfirm}){
 
 function App(){
   const [step,setStep]=React.useState(0);
+  React.useEffect(()=>{window.scrollTo({top:0,behavior:'auto'});},[step]);
   const [selectedIds,setSelectedIds]=React.useState([]);
   const [qirGroups,setQirGroups]=React.useState([]);
   const [confirmOpen,setConfirmOpen]=React.useState(false);

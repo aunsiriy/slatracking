@@ -167,6 +167,98 @@ function TrackList(){
   );
 }
 
+const LFOA_STATUS_PCT={certified:100,draft:50,pending:25,notstarted:0};
+
+function DashBar({pct}){
+  return React.createElement('div',{className:'lfadash-bar-track'},
+    React.createElement('div',{className:'lfadash-bar-fill'+(pct>=100?' is-full':''),style:{width:Math.max(pct,2)+'%'}})
+  );
+}
+
+function SubmissionDashboard(){
+  const years=Object.keys(window.LFOA_PROGRESS||{}).sort().reverse();
+  const [year,setYear]=React.useState(years[0]||'2569');
+  const [tab,setTab]=React.useState('line');
+  const [expanded,setExpanded]=React.useState({});
+  function toggle(key){setExpanded(e=>({...e,[key]:!e[key]}));}
+  const unitWord=tab==='line'?'ฝ่าย':'หน่วยงาน';
+
+  let groups;
+  if(tab==='line'){
+    const depts=window.LFOA_DEPTS||[];
+    const prog=(window.LFOA_PROGRESS||{})[year]||{};
+    const lines=Array.from(new Set(depts.map(d=>d.line)));
+    groups=lines.map(line=>{
+      const children=depts.filter(d=>d.line===line).map(d=>{
+        const st=(prog[d.dept]||{}).status||'notstarted';
+        return {name:d.dept,pct:LFOA_STATUS_PCT[st],status:st};
+      });
+      const pct=children.length?Math.round(children.reduce((s,k)=>s+k.pct,0)/children.length):0;
+      return {key:line,name:line,pct,count:children.length,done:children.filter(k=>k.pct>=100).length,children};
+    });
+  }else{
+    groups=(window.LFOA_ZONES||[]).map(z=>{
+      const children=z.units.map(u=>({name:u.name,pct:(u.pct||{})[year]||0}));
+      const pct=children.length?Math.round(children.reduce((s,k)=>s+k.pct,0)/children.length):0;
+      return {key:z.zone,name:z.zone,pct,count:children.length,done:children.filter(k=>k.pct>=100).length,children};
+    });
+  }
+  const allKids=groups.reduce((a,g)=>a.concat(g.children),[]);
+  const overallPct=allKids.length?Math.round(allKids.reduce((s,k)=>s+k.pct,0)/allKids.length):0;
+  const overallDone=allKids.filter(k=>k.pct>=100).length;
+  const phi=Math.PI*(1-overallPct/100);
+  const ex=(100+90*Math.cos(phi)).toFixed(2);
+  const ey=(100-90*Math.sin(phi)).toFixed(2);
+
+  return React.createElement('div',{className:'card lfadash'},
+    React.createElement('div',{className:'lfadash-head-row'},
+      React.createElement('div',{className:'lfadash-head'},
+        React.createElement('h3',null,'ภาพรวมการส่ง Learning Form'),
+        React.createElement('p',{className:'lftrack-sub'},'สัดส่วนความคืบหน้าการจัดทำ Learning Form — กดที่แต่ละแถวเพื่อดูรายหน่วยงานภายใน')
+      ),
+      React.createElement('div',{className:'lfadash-filters'},
+        React.createElement('div',{className:'lfscope-toggle'},
+          React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='line'?' is-active':''),onClick:()=>{setTab('line');setExpanded({});}},'สายงาน (สำนักงานใหญ่)'),
+          React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='zone'?' is-active':''),onClick:()=>{setTab('zone');setExpanded({});}},'แต่ละเขต')
+        ),
+        React.createElement('select',{className:'lfscope-select',style:{width:'140px',height:'39px'},value:year,onChange:e=>setYear(e.target.value)},
+          years.map(y=>React.createElement('option',{key:y,value:y},'ประจำปี '+y))
+        )
+      )
+    ),
+    React.createElement('div',{className:'lfadash-body'},
+      React.createElement('div',{className:'lfadash-gauge'},
+        React.createElement('svg',{viewBox:'0 0 200 116',className:'lfadash-gauge-svg'},
+          React.createElement('path',{d:'M 10 100 A 90 90 0 0 1 190 100',fill:'none',stroke:'var(--pea-bg-tertiary)',strokeWidth:16,strokeLinecap:'round'}),
+          overallPct>0&&React.createElement('path',{d:'M 10 100 A 90 90 0 0 1 '+ex+' '+ey,fill:'none',stroke:overallPct>=100?'var(--pea-fg-success-primary)':'var(--pea-bg-brand-solid)',strokeWidth:16,strokeLinecap:'round'})
+        ),
+        React.createElement('div',{className:'lfadash-gauge-center'},
+          React.createElement('span',{className:'lfadash-gauge-label'},'ความคืบหน้าโดยรวม'),
+          React.createElement('span',{className:'lfadash-gauge-value'},overallPct+'%'),
+          React.createElement('span',{className:'lfadash-gauge-sub'},overallDone+' / '+allKids.length+' '+unitWord+'ส่งครบ')
+        )
+      ),
+      React.createElement('div',{className:'lfadash-tree'},
+        groups.map(g=>React.createElement(React.Fragment,{key:g.key},
+        React.createElement('button',{type:'button',className:'lfadash-node'+(expanded[g.key]?' is-open':''),onClick:()=>toggle(g.key)},
+          React.createElement(Icon,{name:expanded[g.key]?'chevron-down':'chevron-right',size:16}),
+          React.createElement('span',{className:'lfadash-node-name'},g.name),
+          React.createElement(DashBar,{pct:g.pct}),
+          React.createElement('span',{className:'lfadash-node-val'},g.pct+'%  ·  '+g.done+'/'+g.count+' '+unitWord)
+        ),
+        expanded[g.key]&&React.createElement('div',{className:'lfadash-children'},
+          g.children.map((c,ci)=>React.createElement('div',{key:ci,className:'lfadash-child'},
+            React.createElement('span',{className:'lfadash-child-name'},c.name),
+            React.createElement(DashBar,{pct:c.pct}),
+            React.createElement('span',{className:'lfadash-child-val'},c.pct+'%')
+          ))
+        )
+      ))
+      )
+    )
+  );
+}
+
 function App(){
   const [year]=React.useState(window.LFOA_YEARS[0]);
   const [guideOpen,setGuideOpen]=React.useState(false);
@@ -182,6 +274,7 @@ function App(){
         React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>{window.location.href='/learning-form';}},'สร้าง Learning Form ของตัวเอง')
       ),
       React.createElement(MenuCards,{onGuide:()=>setGuideOpen(true)}),
+      React.createElement(SubmissionDashboard,null),
       React.createElement(KpiCards,{year}),
       React.createElement(TrackList,null),
       guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)})

@@ -7,7 +7,8 @@ button,input{font-family:inherit}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
 .qtop{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;background:#fff;border-bottom:1px solid var(--pea-border-secondary)}
-.qtop-left{display:flex;align-items:center;gap:10px}
+.qtop-left{display:flex;align-items:center;gap:12px}
+.qtop-divider{width:1px;height:20px;background:var(--pea-border-secondary)}
 .qtop-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
 .qtop-word{display:flex;flex-direction:column;line-height:1.2}
 .qtop-title{font-family:var(--pea-font-family-display);font-weight:700;font-size:15px}

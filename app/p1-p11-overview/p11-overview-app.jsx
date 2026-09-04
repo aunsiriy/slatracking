@@ -4,7 +4,7 @@ const {Button,Badge}=window.DesignSystem_cbd181;
 
 function TopBar(){
   return React.createElement('header',{className:'ptop'},
-    React.createElement(Link,{className:'ptop-back',href:'/learning-form-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
+    React.createElement(Link,{className:'ptop-back',href:'/learning-form-overview-province'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
     React.createElement('div',{className:'ptop-left'},
       React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ptop-word'},
