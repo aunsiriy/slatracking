@@ -73,9 +73,7 @@ function ActivityTable(){
     ),
     React.createElement('div',{className:'qfield'},
       React.createElement('span',{className:'qfield-label'},'สอดคล้องกับกระบวนการ'),
-      React.createElement('select',{className:'qir-select',value:processKey,onChange:e=>setProcessKey(e.target.value)},
-        QA_PROCESS_OPTIONS.map(o=>React.createElement('option',{key:o,value:o},o))
-      )
+      React.createElement(window.SelectMenu,{value:processKey,onChange:setProcessKey,options:QA_PROCESS_OPTIONS})
     ),
     rows.every(r=>!r.activity)&&React.createElement('div',{className:'qactivity-warn'},'กรุณาเพิ่มกิจกรรมอย่างน้อย 1 รายการ'),
     React.createElement('table',{className:'qtable'},

@@ -1,6 +1,7 @@
 'use client';
 
 import '@/src/shared/icons.jsx';
+import '@/src/shared/select-menu.jsx';
 import '../learning-form/learning-form-data.jsx';
 import App from './qir-line-app.jsx';
 import './page.css';

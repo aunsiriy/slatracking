@@ -1,0 +1,18 @@
+/* Design-system component overrides applied app-wide (linked from app/layout.jsx). */
+
+/*
+  DS Checkbox: the unchecked box renders with `bg-transparent`, which visually
+  disappears on grey / secondary panels and reads as disabled ("กดเลือกไม่ได้").
+  Force an explicit white fill so an unchecked box always looks interactive;
+  keep the brand fill when checked and a muted fill when truly disabled.
+  `:not([role="switch"])` leaves the Toggle/Switch component untouched.
+*/
+span:has(> input[type="checkbox"]:not([role="switch"])) {
+  background-color: #fff;
+}
+span:has(> input[type="checkbox"]:not([role="switch"]):checked) {
+  background-color: var(--pea-bg-brand-solid);
+}
+span:has(> input[type="checkbox"]:not([role="switch"]):disabled) {
+  background-color: var(--pea-bg-disabled, var(--pea-bg-secondary));
+}

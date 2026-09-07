@@ -130,10 +130,7 @@ function TrackList(){
         React.createElement(Icon,{name:'search',size:15}),
         React.createElement('input',{placeholder:'ค้นหาฝ่าย...',value:search,onChange:e=>setSearch(e.target.value)})
       ),
-      React.createElement('select',{className:'lfscope-select',style:{width:'224px',height:'39px'},value:line,onChange:e=>setLine(e.target.value)},
-        React.createElement('option',{value:'all'},'ทุกสายงาน'),
-        lineOptions.map(l=>React.createElement('option',{key:l,value:l},l))
-      ),
+      React.createElement(window.SelectMenu,{style:{width:'224px'},value:line,onChange:setLine,options:[{value:'all',label:'ทุกสายงาน'},...lineOptions.map(l=>({value:l,label:l}))]}),
       React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{setSearch('');setLine('all');setStat('all');}},'ล้างค่า')
     ),
     items.length===0?React.createElement('div',{className:'lflist-empty'},'ไม่มีหน่วยงานตามเงื่อนไขที่เลือก'):
@@ -221,9 +218,7 @@ function SubmissionDashboard(){
           React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='line'?' is-active':''),onClick:()=>{setTab('line');setExpanded({});}},'สายงาน (สำนักงานใหญ่)'),
           React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='zone'?' is-active':''),onClick:()=>{setTab('zone');setExpanded({});}},'แต่ละเขต')
         ),
-        React.createElement('select',{className:'lfscope-select',style:{width:'140px',height:'39px'},value:year,onChange:e=>setYear(e.target.value)},
-          years.map(y=>React.createElement('option',{key:y,value:y},'ประจำปี '+y))
-        )
+        React.createElement(window.SelectMenu,{style:{width:'150px'},value:year,onChange:setYear,options:years.map(y=>({value:y,label:'ประจำปี '+y}))})
       )
     ),
     React.createElement('div',{className:'lfadash-body'},

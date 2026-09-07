@@ -52,14 +52,8 @@ function App(){
       React.createElement('div',{className:'ppage-head'},
         React.createElement('h1',null,'P1-P11 / QIR ประจำปี'),
         React.createElement('div',{className:'ppage-head-filters'},
-          React.createElement('div',{className:'pselect'},
-            React.createElement('select',{value:month,onChange:e=>setMonth(e.target.value)},window.P11_MONTHS.map(m=>React.createElement('option',{key:m,value:m},'เดือน '+m))),
-            React.createElement(Icon,{name:'chevron-down',size:14})
-          ),
-          React.createElement('div',{className:'pselect'},
-            React.createElement('select',{value:year,onChange:e=>setYear(e.target.value)},window.P11_YEARS.map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))),
-            React.createElement(Icon,{name:'chevron-down',size:14})
-          )
+          React.createElement(window.SelectMenu,{style:{width:'150px'},value:month,onChange:setMonth,options:window.P11_MONTHS.map(m=>({value:m,label:'เดือน '+m}))}),
+          React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:window.P11_YEARS.map(y=>({value:y,label:'ปี '+y}))})
         )
       ),
       React.createElement('div',{className:'card psearch-card'},

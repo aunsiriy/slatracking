@@ -112,10 +112,11 @@ function DataTable(){
 }
 
 function TablePagination(){
+  const [perPage,setPerPage]=React.useState('10');
   return React.createElement('div',{className:'pagination-row'},
     React.createElement('div',{className:'pagination-info'},
-      'แสดง 1 ถึง 10 จาก 106 รายการ ',
-      React.createElement('select',null,React.createElement('option',null,'10'))
+      'แสดง 1 ถึง '+perPage+' จาก 106 รายการ ',
+      React.createElement(window.SelectMenu,{style:{width:'80px',display:'inline-block'},value:perPage,onChange:setPerPage,options:['10','25','50','100']})
     ),
     React.createElement('div',{className:'pagination-controls'},
       ['«','‹','1','2','…','10','11','»'].map((p,i)=>React.createElement(Button,{key:i,variant:'tertiary',size:'sm',className:'page-btn'+(p==='1'?' is-active':'')},p))

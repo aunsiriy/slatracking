@@ -109,9 +109,7 @@ function BbView(){
         React.createElement('p',null,'โครงสร้าง 3 ระดับ : LEVEL 0 กระบวนการสำคัญ (Key Work Process) ▸ LEVEL 1 กระบวนการทำงาน (Work Process) ▸ LEVEL 2 งาน (Job)')
       ),
       React.createElement('div',{className:'bb-panel-head-actions'},
-        React.createElement('select',{className:'bb-year-select',value:year,onChange:e=>setYear(e.target.value)},
-          ['2569','2568','2567'].map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))
-        ),
+        React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))}),
         React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16})},'Export โครงสร้าง')
       )
     ),

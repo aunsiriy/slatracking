@@ -1,6 +1,7 @@
 'use client';
 
 import '@/src/shared/icons.jsx';
+import '@/src/shared/select-menu.jsx';
 import '@/src/shared/ba-sla-data.jsx';
 import './user-management-data.jsx';
 import App from './ba-sla-app.jsx';

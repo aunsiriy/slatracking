@@ -68,31 +68,20 @@ function SlaFormKong({initial,unitName,onClose,onSubmit}){
       React.createElement('div',{className:'sla-form-page-body'},
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'ชื่อกองที่รายงาน',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('select',{className:'modal-select',value:owner,onChange:e=>setOwner(e.target.value)},
-            kongNames.map(n=>React.createElement('option',{key:n,value:n},n))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือกกอง',value:owner,onChange:setOwner,options:kongNames})
         ),
         React.createElement(SmTextarea,{label:'ข้อตกลงระดับการให้บริการ (SLA ที่หน่วยงานกำหนด)',placeholder:'ระบุรายละเอียดข้อตกลงระดับการให้บริการ',size:'md',value:slaAgreement,onChange:setSlaAgreement}),
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'LEVEL 0 กระบวนการสำคัญ (Key Work Process)',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('select',{className:'modal-select',value:level0,onChange:e=>changeLevel0(e.target.value)},
-            React.createElement('option',{value:''},'เลือก Level 0'),
-            l.l0.map(o=>React.createElement('option',{key:o.code,value:o.code},o.code+' · '+o.name))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือก Level 0',value:level0,onChange:changeLevel0,options:l.l0.map(o=>({value:o.code,label:o.code+' · '+o.name}))})
         ),
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'Level 1 — กระบวนการทำงาน (Work Process)',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('select',{className:'modal-select',value:level1,disabled:!level0,onChange:e=>changeLevel1(e.target.value)},
-            React.createElement('option',{value:''},level0?'เลือก Level 1':'เลือก Level 0 ก่อน'),
-            l1Options.map(o=>React.createElement('option',{key:o.code,value:o.code},o.code+' · '+o.name))
-          )
+          React.createElement(window.SelectMenu,{placeholder:level0?'เลือก Level 1':'เลือก Level 0 ก่อน',disabled:!level0,value:level1,onChange:changeLevel1,options:l1Options.map(o=>({value:o.code,label:o.code+' · '+o.name}))})
         ),
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'Level 2 — งาน (Jobs)'),
-          React.createElement('select',{className:'modal-select',value:level2,disabled:!level1,onChange:e=>setLevel2(e.target.value)},
-            React.createElement('option',{value:''},'เลือก Level 2'),
-            l2Options.map(o=>React.createElement('option',{key:o.code,value:o.code},o.code+' · '+o.name))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือก Level 2',disabled:!level1,value:level2,onChange:setLevel2,options:l2Options.map(o=>({value:o.code,label:o.code+' · '+o.name}))})
         ),
         React.createElement(SmInputField,{fieldType:'default',label:'ผู้รับบริการ SLA',placeholder:'เช่น หน่วยงานที่เกี่ยวข้อง, ผู้ใช้งาน, ทุกหน่วยงาน',size:'md',value:servedBy,onChange:setServedBy}),
         React.createElement('div',{className:'modal-field'},
@@ -158,17 +147,11 @@ function SlaFormFai({initial,unitName,onClose,onSubmit}){
         React.createElement(SmTextarea,{label:'ข้อตกลงระดับการให้บริการ (SLA)',placeholder:'ระบุรายละเอียดข้อตกลงระดับการให้บริการ',size:'md',value:slaAgreement,onChange:setSlaAgreement}),
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'LEVEL 0 กระบวนการสำคัญ (Key Work Process)',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('select',{className:'modal-select',value:level0,onChange:e=>changeLevel0(e.target.value)},
-            React.createElement('option',{value:''},'เลือก Level 0'),
-            l.l0.map(o=>React.createElement('option',{key:o.code,value:o.code},o.code+' · '+o.name))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือก Level 0',value:level0,onChange:changeLevel0,options:l.l0.map(o=>({value:o.code,label:o.code+' · '+o.name}))})
         ),
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'Level 1 — กระบวนการทำงาน (Work Process)',React.createElement('span',{className:'modal-label-required'},' *')),
-          React.createElement('select',{className:'modal-select',value:level1,disabled:!level0,onChange:e=>setLevel1(e.target.value)},
-            React.createElement('option',{value:''},level0?'เลือก Level 1':'เลือก Level 0 ก่อน'),
-            l1Options.map(o=>React.createElement('option',{key:o.code,value:o.code},o.code+' · '+o.name))
-          )
+          React.createElement(window.SelectMenu,{placeholder:level0?'เลือก Level 1':'เลือก Level 0 ก่อน',disabled:!level0,value:level1,onChange:setLevel1,options:l1Options.map(o=>({value:o.code,label:o.code+' · '+o.name}))})
         ),
         React.createElement(SmInputField,{fieldType:'default',label:'ผู้รับบริการ SLA',placeholder:'เช่น หน่วยงานที่เกี่ยวข้อง, ผู้ใช้งาน, ทุกหน่วยงาน',size:'md',value:servedBy,onChange:setServedBy}),
         React.createElement('div',{className:'modal-field'},
@@ -375,11 +358,7 @@ function SlaOverview({items,onAdd,onEdit,onDelete,onSelectNode}){
       React.createElement('div',{className:'org-tree-panel'},
         React.createElement(SmInputField,{fieldType:'default',size:'md',placeholder:'ค้นหาชื่อหรือรหัสหน่วยงาน...',value:treeQ,onChange:setTreeQ}),
         React.createElement('div',{className:'org-tree-filter'},
-          React.createElement('select',{className:'modal-select',value:statusFilter,onChange:e=>setStatusFilter(e.target.value)},
-            React.createElement('option',{value:'all'},'ทุกสถานะ'),
-            React.createElement('option',{value:'assigned'},'กำหนดผู้กรอกแล้ว'),
-            React.createElement('option',{value:'unassigned'},'ยังไม่กำหนด')
-          )
+          React.createElement(window.SelectMenu,{value:statusFilter,onChange:setStatusFilter,options:[{value:'all',label:'ทุกสถานะ'},{value:'assigned',label:'กำหนดผู้กรอกแล้ว'},{value:'unassigned',label:'ยังไม่กำหนด'}]})
         ),
         React.createElement('div',{className:'org-tree-list'},
           filteredTree.map(sa=>React.createElement(OrgTreeItem,{key:sa.id,node:sa,depth:0,selectedId:selectedId,onSelect:n=>setSelectedId(n.id)}))
@@ -451,16 +430,11 @@ function CopySlaModal({sourceNode,sourceItems,year,onClose,onCopy}){
         React.createElement('div',{className:'copy-sla-targets'},
           React.createElement('div',{className:'modal-field'},
             React.createElement('label',{className:'modal-label'},'หน่วยงานปลายทาง'),
-            React.createElement('select',{className:'modal-select',value:targetUnit,onChange:e=>setTargetUnit(e.target.value)},
-              React.createElement('option',{value:''},'— เลือกหน่วยงาน —'),
-              unitNames.map(n=>React.createElement('option',{key:n,value:n},n))
-            )
+            React.createElement(window.SelectMenu,{placeholder:'— เลือกหน่วยงาน —',value:targetUnit,onChange:setTargetUnit,options:unitNames})
           ),
           React.createElement('div',{className:'modal-field'},
             React.createElement('label',{className:'modal-label'},'ปีปลายทาง'),
-            React.createElement('select',{className:'modal-select',value:targetYear,onChange:e=>setTargetYear(e.target.value)},
-              ['2569','2568','2567'].map(y=>React.createElement('option',{key:y,value:y},'พ.ศ. '+y))
-            )
+            React.createElement(window.SelectMenu,{value:targetYear,onChange:setTargetYear,options:['2569','2568','2567'].map(y=>({value:y,label:'พ.ศ. '+y}))})
           )
         )
       ),
@@ -525,9 +499,7 @@ function SlaPanel(){
         React.createElement('p',null,'กำหนด KPI/SLA ต้นแบบ ผูกกับโครงสร้าง BA และค่าเป้าหมายรายงวด')
       ),
       React.createElement('div',{className:'panel-head-actions'},
-        React.createElement('select',{className:'modal-select year-select',value:year,onChange:e=>setYear(e.target.value)},
-          ['2569','2568','2567'].map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))
-        ),
+        React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))}),
         React.createElement(SmButton,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16})},'Export SLA'),
         React.createElement(SmButton,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'upload-cloud-01',size:16})},'Import Excel'),
         React.createElement(SmButton,{variant:'secondary',size:'md',isDisabled:!currentNode,leadingIcon:React.createElement(Icon,{name:'clipboard',size:16}),onClick:()=>setCopyModalOpen(true)},'คัดลอก SLA')

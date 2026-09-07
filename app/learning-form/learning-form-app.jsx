@@ -477,10 +477,7 @@ function IssueCard({item,onChange}){
         ),
         React.createElement('div',{className:'lissue-meta-field lissue-meta-field--year'},
           React.createElement('span',{className:'lfield-label'},'ปีที่ดำเนินการ'),
-          React.createElement('select',{className:'lqir-issue-select',value:item.improveYear||'',onChange:e=>set('improveYear',e.target.value)},
-            React.createElement('option',{value:''},'เลือกปี'),
-            yearOptions.map(y=>React.createElement('option',{key:y,value:y},'พ.ศ. '+y))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือกปี',value:item.improveYear||'',onChange:v=>set('improveYear',v),options:yearOptions.map(y=>({value:String(y),label:'พ.ศ. '+y}))})
         )
       ),
       React.createElement('div',{className:'lissue-meta-field'},
@@ -535,10 +532,7 @@ function IssuesPrioritiesSection(){
           React.createElement('div',{className:'lqir-group-select lqir-group-select--process'},
             React.createElement('span',{className:'lfield-label'},'สอดคล้องกับกระบวนการ'),
             React.createElement('div',{className:'lqir-process-inline'},
-              React.createElement('select',{className:'lqir-issue-select',value:g.processKey,onChange:e=>setGroupProcess(g.id,e.target.value)},
-                window.LF_BA_PROCESS_OPTIONS.map(o=>React.createElement('option',{key:o.key,value:o.key},o.label)),
-                React.createElement('option',{value:'other'},'อื่นๆ')
-              ),
+              React.createElement(window.SelectMenu,{value:g.processKey,onChange:v=>setGroupProcess(g.id,v),options:[...window.LF_BA_PROCESS_OPTIONS.map(o=>({value:o.key,label:o.label})),{value:'other',label:'อื่นๆ'}]}),
               g.processKey==='other'&&React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุชื่อกระบวนการอื่นๆ',value:g.processOther||'',onChange:v=>setGroupProcessOther(g.id,v)})
             )
           ),
@@ -595,9 +589,7 @@ function NextYearEditableTable({label,stepOptions,rows,setRows}){
       React.createElement('thead',null,React.createElement('tr',null,['ขั้นตอน','ตัวชี้วัด','เป้าหมายปีถัดไป',''].map((h,i)=>React.createElement('th',{key:i},h)))),
       React.createElement('tbody',null,rows.map(r=>React.createElement('tr',{key:r.id},
         React.createElement('td',null,
-          React.createElement('select',{className:'lqir-issue-select',value:r.step,onChange:e=>update(r.id,'step',e.target.value)},
-            stepOptions.map(o=>React.createElement('option',{key:o,value:o},o))
-          )
+          React.createElement(window.SelectMenu,{value:r.step,onChange:v=>update(r.id,'step',v),options:stepOptions})
         ),
         React.createElement('td',null,React.createElement(Textarea,{size:'sm',rows:2,placeholder:'ระบุตัวชี้วัด',value:r.metric,onChange:v=>update(r.id,'metric',v)})),
         React.createElement('td',{className:'lqir-weight'},React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุเป้าหมาย',value:r.target,onChange:v=>update(r.id,'target',v)})),
@@ -716,10 +708,10 @@ function KnowledgeCard({item,onChange}){
           return React.createElement('tr',{key:e.id},
             React.createElement('td',null,i+1),
             React.createElement('td',null,
-              React.createElement('select',{className:'lqir-issue-select',value:e.knowType,onChange:ev=>updateEntry(e.id,'knowType',ev.target.value)},
-                React.createElement('option',{value:'existing'},'องค์ความรู้เดิม'),
-                React.createElement('option',{value:'new'},'องค์ความรู้ใหม่')
-              )
+              React.createElement(window.SelectMenu,{value:e.knowType,onChange:v=>updateEntry(e.id,'knowType',v),options:[
+                {value:'existing',label:'องค์ความรู้เดิม'},
+                {value:'new',label:'องค์ความรู้ใหม่'}
+              ]})
             ),
             React.createElement('td',{className:'lknow-name-col'},React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:namePlaceholder,value:e.name,onChange:v=>updateEntry(e.id,'name',v)})),
             React.createElement('td',null,

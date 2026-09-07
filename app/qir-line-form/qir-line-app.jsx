@@ -161,9 +161,7 @@ function QirGroupList({qirGroups,setGroupProposal,setGroupProcess,updateQir,addQ
           ),
           React.createElement('div',{className:'lqir-group-select'},
             React.createElement('span',{className:'lfield-label'},'สอดคล้องกับกระบวนการ'),
-            React.createElement('select',{className:'lqir-issue-select',value:g.processKey,onChange:e=>setGroupProcess(g.id,e.target.value)},
-              window.LF_BA_PROCESS_OPTIONS.map(o=>React.createElement('option',{key:o.key,value:o.key},o.label))
-            )
+            React.createElement(window.SelectMenu,{value:g.processKey,onChange:v=>setGroupProcess(g.id,v),options:window.LF_BA_PROCESS_OPTIONS.map(o=>({value:o.key,label:o.label}))})
           )
         )
       ),

@@ -20,6 +20,7 @@ export default function RootLayout({ children }) {
         <link rel="stylesheet" href={`${DS_BASE}/pea-ds-react.bundle.css`} />
         <link rel="stylesheet" href={`${DS_BASE}/styles.css`} />
         <link rel="stylesheet" href="/icons.css" />
+        <link rel="stylesheet" href="/ds-overrides.css" />
       </head>
       <body>
         {/*

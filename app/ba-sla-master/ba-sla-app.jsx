@@ -146,17 +146,11 @@ function AddOrgModal({onClose,onSubmit}){
         ),
         level==='ฝ่าย'&&React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'สายงานที่สังกัด'),
-          React.createElement('select',{className:'modal-select',value:parent,onChange:e=>setParent(e.target.value)},
-            React.createElement('option',{value:''},'เลือกสายงาน...'),
-            divisionOptions.map(o=>React.createElement('option',{key:o,value:o},o))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือกสายงาน...',value:parent,onChange:setParent,options:divisionOptions})
         ),
         level==='กอง'&&React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'ฝ่ายหรือสายงานที่สังกัด'),
-          React.createElement('select',{className:'modal-select',value:parent,onChange:e=>setParent(e.target.value)},
-            React.createElement('option',{value:''},'เลือกหน่วยงาน...'),
-            florOptions.map(o=>React.createElement('option',{key:o,value:o},o))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'เลือกหน่วยงาน...',value:parent,onChange:setParent,options:florOptions})
         ),
         React.createElement(InputField,{fieldType:'default',label:'ตัวย่อ',placeholder:cfg.codePlaceholder,size:'md',value:code,onChange:setCode}),
         React.createElement(InputField,{fieldType:'default',label:cfg.nameLabel,placeholder:'ระบุชื่อเต็มของหน่วยงาน',size:'md',value:name,onChange:setName}),
@@ -244,9 +238,7 @@ function OrgPanel(){
         React.createElement('p',null,'โครงสร้างหน่วยงานเรียงลำดับตามลำดับชั้นขององค์กร ดึงข้อมูลจากฐานข้อมูลองค์กร — เพิ่ม/แก้ไข/ลบได้ทุกลำดับชั้น')
       ),
       React.createElement('div',{className:'panel-head-actions'},
-        React.createElement('select',{className:'year-select',value:year,onChange:e=>setYear(e.target.value)},
-          ['2569','2568','2567'].map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))
-        ),
+        React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))}),
         React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>setModalOpen(true)},'เพิ่มหน่วยงานใหม่')
       )
     ),
@@ -594,9 +586,7 @@ function ArchPanel(){
     React.createElement('div',{className:'panel-head'},
       React.createElement('div',null,React.createElement('h2',null,'PEA สถาปัตกรรมธุรกิจ (PEA Business Architecture)'),React.createElement('p',null,'โครงสร้าง 3 ระดับ : LEVEL 0 กระบวนการสำคัญ (Key Work Process) ▸ LEVEL 1 กระบวนการทำงาน (Work Process) ▸ LEVEL 2 งาน (Job)')),
       React.createElement('div',{className:'panel-head-actions'},
-        React.createElement('select',{className:'year-select',value:archYear,onChange:e=>setArchYear(e.target.value)},
-          ['2569','2568','2567'].map(y=>React.createElement('option',{key:y,value:y},'ปี '+y))
-        ),
+        React.createElement(window.SelectMenu,{style:{width:'120px'},value:archYear,onChange:setArchYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))}),
         React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16})},'Export โครงสร้าง')
       )
     ),

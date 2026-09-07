@@ -84,14 +84,8 @@ function RecentList({year,setYear,scope,setScope}){
         React.createElement(Icon,{name:'search',size:15}),
         React.createElement('input',{placeholder:'ค้นหาฝ่าย...',value:search,onChange:e=>setSearch(e.target.value)})
       ),
-      React.createElement('select',{className:'lfscope-select',style:{width:'224px',height:'39px'},value:line,onChange:e=>setLine(e.target.value)},
-        React.createElement('option',{value:'all'},'ทุกสายงาน'),
-        lineOptions.map(l=>React.createElement('option',{key:l,value:l},l))
-      ),
-      React.createElement('select',{className:'lfscope-select',style:{width:'160px',height:'39px'},value:otherYear,onChange:e=>setOtherYear(e.target.value)},
-        React.createElement('option',{value:'all'},'ทุกปี'),
-        otherYearOptions.map(p=>React.createElement('option',{key:p,value:p},p))
-      ),
+      React.createElement(window.SelectMenu,{style:{width:'224px'},value:line,onChange:setLine,options:[{value:'all',label:'ทุกสายงาน'},...lineOptions.map(l=>({value:l,label:l}))]}),
+      React.createElement(window.SelectMenu,{style:{width:'180px'},value:otherYear,onChange:setOtherYear,options:[{value:'all',label:'ทุกปี'},...otherYearOptions.map(p=>({value:p,label:p}))]}),
       React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'search',size:15})},'ค้นหา'),
       React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{setSearch('');setLine('all');}},'ล้างค่า')
     ),

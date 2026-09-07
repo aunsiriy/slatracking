@@ -93,10 +93,7 @@ function App(){
             React.createElement(Icon,{name:'search',size:15}),
             React.createElement('input',{placeholder:'ค้นหาปี / ผู้คัดเลือก / สถานะ...',value:search,onChange:e=>setSearch(e.target.value)})
           ),
-          React.createElement('select',{className:'qlo-select',value:yearFilter,onChange:e=>setYearFilter(e.target.value)},
-            React.createElement('option',{value:'all'},'ทุกปี'),
-            yearOptions.map(y=>React.createElement('option',{key:y,value:y},'ประจำปี '+y))
-          ),
+          React.createElement(window.SelectMenu,{style:{width:'170px'},value:yearFilter,onChange:setYearFilter,options:[{value:'all',label:'ทุกปี'},...yearOptions.map(y=>({value:y,label:'ประจำปี '+y}))]}),
           hasFilter&&React.createElement(Button,{variant:'secondary',size:'md',onClick:clearFilter},'ล้างค่า')
         ),
         filtered.length===0

@@ -94,17 +94,12 @@ function UserForm({initial,onCancel,onSave}){
         React.createElement(UmInputField,{fieldType:'default',label:'เบอร์โทรศัพท์',size:'md',value:phone,onChange:setPhone}),
         React.createElement('div',{className:'modal-field'},
           React.createElement('label',{className:'modal-label'},'หน่วยงาน'),
-          React.createElement('select',{className:'modal-select',value:unit,onChange:e=>setUnit(e.target.value)},
-            React.createElement('option',{value:''},'— ไม่ระบุ —'),
-            units.map(u=>React.createElement('option',{key:u,value:u},u))
-          )
+          React.createElement(window.SelectMenu,{placeholder:'— ไม่ระบุ —',value:unit,onChange:setUnit,options:units})
         )
       ),
       React.createElement('div',{className:'modal-field'},
         React.createElement('label',{className:'modal-label'},'บทบาท (Role)'),
-        React.createElement('select',{className:'modal-select',value:role,onChange:e=>changeRole(e.target.value)},
-          window.USER_ROLES.map(r=>React.createElement('option',{key:r.key,value:r.key},r.label))
-        ),
+        React.createElement(window.SelectMenu,{value:role,onChange:changeRole,options:window.USER_ROLES.map(r=>({value:r.key,label:r.label}))}),
         React.createElement('div',{className:'um-role-desc'},roleInfo(role).desc)
       )
     ),

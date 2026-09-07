@@ -47,10 +47,7 @@ function SlaRow({row}){
     React.createElement('td',null,React.createElement(InputField,{fieldType:'default',size:'sm',value:pass,onChange:setPass})),
     React.createElement('td',null,React.createElement(InputField,{fieldType:'default',size:'sm',value:fail,onChange:setFail})),
     React.createElement('td',null,
-      React.createElement('select',{className:'pform-select',value:score,onChange:e=>setScore(e.target.value)},
-        React.createElement('option',{value:''},'เลือกคะแนน'),
-        SCORE_OPTIONS.map(o=>React.createElement('option',{key:o,value:o},o))
-      )
+      React.createElement(window.SelectMenu,{placeholder:'เลือกคะแนน',value:score,onChange:setScore,options:SCORE_OPTIONS})
     ),
     React.createElement('td',null,React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุ',value:note,onChange:setNote}))
   );
