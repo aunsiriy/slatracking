@@ -29,7 +29,7 @@ function KpiCards({year}){
   const s=window.LFOA_SUMMARY;
   const cards=[
     {icon:'book',label:'Learning Form ทั้งหมด (ทุกหน่วยงาน)',value:s.total,color:'brand'},
-    {icon:'clock',label:'รอดำเนินการ',value:s.pendingCount,color:'warning'},
+    {icon:'clock',label:'ยังไม่รายงาน',value:s.pendingCount,color:'warning'},
     {icon:'calendar',label:'เสร็จสิ้น',value:s.total-s.pendingCount,color:'success'}
   ];
   return React.createElement('div',{className:'lfakpi-grid'},
@@ -108,7 +108,7 @@ function TrackList(){
     .filter(r=>line==='all'||r.line===line)
     .filter(r=>stat==='all'||r.status===stat)
     .filter(r=>!search.trim()||r.dept.toLowerCase().includes(search.trim().toLowerCase()));
-  const chips=[['all','ทั้งหมด'],['certified','เสร็จสิ้น'],['pending','รอดำเนินการ'],['draft','ร่าง'],['notstarted','ยังไม่เริ่ม']];
+  const chips=[['all','ทั้งหมด'],['certified','เสร็จสิ้น'],['pending','ยังไม่รายงาน'],['draft','ร่าง'],['notstarted','ยังไม่เริ่ม']];
   return React.createElement('div',{className:'card lflist-card'},
     React.createElement('div',{className:'lflist-head'},
       React.createElement('div',null,

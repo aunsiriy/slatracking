@@ -17,5 +17,5 @@ const LFOA_ITEMS=[
 {id:6,process:'P2 กระบวนการติดตั้งมิเตอร์ใหม่',unit:'กฟฟ. นครราชสีมา',level:'branch',year:'2567',status:'certified'}
 ];
 const LFOA_LEVEL_LABEL={district:'สายงานเขต/สำนักงานใหญ่',branch:'สำนักงานการไฟฟ้า (กฟฟ.)'};
-const LFOA_STATUS_MAP={draft:{label:'ร่าง',color:'gray'},pending:{label:'รอดำเนินการ',color:'warning'},certified:{label:'รับรองแล้ว',color:'success'}};
+const LFOA_STATUS_MAP={draft:{label:'ร่าง',color:'gray'},pending:{label:'ยังไม่รายงาน',color:'blue'},certified:{label:'รับรองแล้ว',color:'success'}};
 Object.assign(window,{LFOA_YEARS,LFOA_SUMMARY,LFOA_UNITS,LFOA_ITEMS,LFOA_LEVEL_LABEL,LFOA_STATUS_MAP});

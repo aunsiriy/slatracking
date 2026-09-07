@@ -32,7 +32,7 @@ function KpiCards({year,scope}){
   const doneCount=items.filter(it=>it.status==='certified').length;
   const cards=[
     {icon:'book',label:'Learning Form ทั้งหมด',value:total,color:'brand'},
-    {icon:'clock',label:'รอดำเนินการ',value:pendingCount,color:'warning'},
+    {icon:'clock',label:'ยังไม่รายงาน',value:pendingCount,color:'warning'},
     {icon:'calendar',label:'เสร็จสิ้น',value:doneCount,color:'success'}
   ];
   return React.createElement('div',{className:'lfkpi-grid'},

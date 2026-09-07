@@ -42,7 +42,7 @@ const LFOA_PROGRESS={
 const LFOA_TRACK_STATUS={
 notstarted:{label:'ยังไม่เริ่ม',color:'gray'},
 draft:{label:'ร่าง',color:'blue-light'},
-pending:{label:'รอดำเนินการ',color:'warning'},
+pending:{label:'ยังไม่รายงาน',color:'blue'},
 certified:{label:'เสร็จสิ้น',color:'success'}
 };
 

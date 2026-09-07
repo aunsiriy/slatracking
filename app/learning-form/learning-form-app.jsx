@@ -932,7 +932,7 @@ function App(){
         React.createElement('div',{className:'ltitle-top'},
           React.createElement('div',{className:'ltitle-heading'},
             React.createElement('h1',null,window.LF_META.processName),
-            React.createElement(Badge,{label:'รอดำเนินการ',type:'pill-color',color:'warning',size:'sm'})
+            React.createElement(Badge,{label:'ยังไม่รายงาน',type:'pill-color',color:'blue',size:'sm'})
           ),
           React.createElement('div',{className:'ltitle-actions'},
             React.createElement(Button,{variant:'secondary',size:'md',isDisabled:exporting,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:()=>setExportModalOpen(true)},exporting?'กำลังสร้าง PDF...':'Export PDF'),

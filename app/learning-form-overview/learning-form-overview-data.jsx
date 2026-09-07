@@ -17,7 +17,7 @@ const LFO_ITEMS=[
 {id:14,process:'ปี 2567',unit:'อนุชิต วิริยะกูล',year:'2567',status:'certified',date:'18/09/2567',scope:'other',dept:'ฝ่ายบัญชีและการเงิน',line:'สายงานยุทธศาสตร์'}
 ];
 const LFO_STATUS_MAP={
-  pending:{label:'ยังไม่รายงาน',color:'gray'},
+  pending:{label:'ยังไม่รายงาน',color:'blue'},
   draft:{label:'บันทึกร่าง',color:'warning'},
   certified:{label:'เสร็จสิ้น',color:'success'},
   overdue:{label:'รายงานเกินกำหนด',color:'error'}
