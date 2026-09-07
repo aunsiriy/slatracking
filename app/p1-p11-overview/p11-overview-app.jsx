@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 const {Button,Badge}=window.DesignSystem_cbd181;
+const P11_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
+const P11_VQ=P11_VIEW?'view=1':'';
 
 function TopBar(){
   return React.createElement('header',{className:'ptop'},
@@ -30,7 +32,7 @@ function TreeRow({node,depth,onQirClick}){
         hasChildren?React.createElement('button',{className:'ptree-toggle',onClick:()=>setOpen(v=>!v)},React.createElement(Icon,{name:open?'minus-circle':'plus-circle',size:16})):React.createElement('span',{className:'ptree-toggle-spacer'}),
         React.createElement('span',null,node.name)
       ),
-      React.createElement('td',{className:'ptree-qir'},React.createElement('button',{className:'pqir-btn'+(approved?' pqir-btn--success':''),onClick:()=>{window.location.href='/p1-p11-summary?unit='+encodeURIComponent(node.name)+'&year=2569';}},React.createElement(Icon,{name:'file-search-02',size:15}))),
+      React.createElement('td',{className:'ptree-qir'},React.createElement('button',{className:'pqir-btn'+(approved?' pqir-btn--success':''),onClick:()=>{window.location.href='/p1-p11-summary?unit='+encodeURIComponent(node.name)+'&year=2569'+(P11_VQ?'&'+P11_VQ:'');}},React.createElement(Icon,{name:'file-search-02',size:15}))),
       window.P11_COLUMNS.map(c=>React.createElement('td',{key:c,className:'ptree-qir'},React.createElement('button',{className:'pqir-btn',onClick:()=>onQirClick(node)},React.createElement(Icon,{name:'file-search-02',size:15})))),
       React.createElement('td',{className:'ptree-qir'},React.createElement('button',{className:'pqir-btn',onClick:()=>onQirClick(node)},React.createElement(Icon,{name:'file-search-02',size:15})))
     ),
@@ -45,12 +47,12 @@ function App(){
   const filters=[];
   const [activeFilters,setActiveFilters]=React.useState([]);
   function removeFilter(f){setActiveFilters(activeFilters.filter(x=>x!==f));}
-  function goToQir(node){window.location.href='/qir-annual-form';}
+  function goToQir(node){window.location.href='/qir-annual-form'+(P11_VQ?'?'+P11_VQ:'');}
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'pcontent'},
       React.createElement('div',{className:'ppage-head'},
-        React.createElement('h1',null,'P1-P11 / QIR ประจำปี'),
+        React.createElement('h1',null,'P1-P11 / QIR ประจำปี',P11_VIEW&&React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm',style:{marginLeft:'10px'}})),
         React.createElement('div',{className:'ppage-head-filters'},
           React.createElement(window.SelectMenu,{style:{width:'150px'},value:month,onChange:setMonth,options:window.P11_MONTHS.map(m=>({value:m,label:'เดือน '+m}))}),
           React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:window.P11_YEARS.map(y=>({value:y,label:'ปี '+y}))})

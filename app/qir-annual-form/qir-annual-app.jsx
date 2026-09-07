@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Checkbox,Textarea,InputField}=window.DesignSystem_cbd181;
+const {Button,Badge,Checkbox,Textarea,InputField}=window.DesignSystem_cbd181;
+const QA_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
 
 function TopBar(){
   return React.createElement('header',{className:'qtop'},
     React.createElement('div',{className:'qtop-left'},
-      React.createElement(Link,{className:'qtop-back',href:'/p1-p11-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
+      React.createElement(Link,{className:'qtop-back',href:'/p1-p11-overview'+(QA_VIEW?'?view=1':'')},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
       React.createElement('span',{className:'qtop-divider'}),
       React.createElement(Image,{className:'qtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'qtop-word'},
@@ -20,7 +21,7 @@ function Breadcrumb(){
   return React.createElement('div',{className:'qbreadcrumb'},
     React.createElement(Link,{href:'/'},'ข้อเสนอโอกาสการปรับปรุงฯ (QIR)'),
     React.createElement(Icon,{name:'chevron-right',size:13}),
-    React.createElement(Link,{href:'/p1-p11-overview'},'P1-P11 / QIR ประจำปี'),
+    React.createElement(Link,{href:'/p1-p11-overview'+(QA_VIEW?'?view=1':'')},'P1-P11 / QIR ประจำปี'),
     React.createElement(Icon,{name:'chevron-right',size:13}),
     React.createElement('span',{className:'is-current'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)')
   );
@@ -112,43 +113,45 @@ function App(){
       React.createElement(Breadcrumb),
       React.createElement('div',{className:'qpage-head'},
         React.createElement('div',null,
-          React.createElement('h1',null,m.division),
+          React.createElement('h1',null,m.division,QA_VIEW&&React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm',style:{marginLeft:'10px'}})),
           React.createElement('p',null,'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR) ประจำปี '+m.year)
         ),
         React.createElement('button',{className:'qexport-btn'},'ส่งออกข้อมูล',React.createElement(Icon,{name:'chevron-down',size:14}))
       ),
-      React.createElement('div',{className:'card qsection'},
-        React.createElement('div',{className:'qsection-head'},
-          React.createElement('h3',null,'กระบวนงาน'),
-          React.createElement('p',{className:'qsection-hint'},'กระบวนงานและหลักเกณฑ์การพิจารณาคัดเลือก QIR')
+      React.createElement('fieldset',{className:'qform-fieldset',disabled:QA_VIEW},
+        React.createElement('div',{className:'card qsection'},
+          React.createElement('div',{className:'qsection-head'},
+            React.createElement('h3',null,'กระบวนงาน'),
+            React.createElement('p',{className:'qsection-hint'},'กระบวนงานและหลักเกณฑ์การพิจารณาคัดเลือก QIR')
+          ),
+          React.createElement('div',{className:'qfield'},
+            React.createElement('span',{className:'qfield-label'},'กระบวนงาน ',React.createElement('span',{className:'qrequired'},'*')),
+            React.createElement('div',{className:'qfield-static'},m.process)
+          ),
+          React.createElement('div',{className:'qfield'},
+            React.createElement('span',{className:'qfield-label'},'หลักเกณฑ์ (Criteria) การพิจารณาคัดเลือก QIR ดังนี้ ',React.createElement('span',{className:'qrequired'},'*')),
+            React.createElement('span',{className:'qfield-hint'},'(เลือกอย่างน้อย 1 ข้อ)'),
+            React.createElement(CriteriaList)
+          )
         ),
-        React.createElement('div',{className:'qfield'},
-          React.createElement('span',{className:'qfield-label'},'กระบวนงาน ',React.createElement('span',{className:'qrequired'},'*')),
-          React.createElement('div',{className:'qfield-static'},m.process)
+        React.createElement('div',{className:'card qsection'},
+          React.createElement('div',{className:'qsection-head'},
+            React.createElement('h3',null,'ข้อเสนอแนะ'),
+            React.createElement('p',{className:'qsection-hint'},'เสนอแนะอย่างน้อย 1 ด้าน')
+          ),
+          React.createElement(SuggestionList)
         ),
-        React.createElement('div',{className:'qfield'},
-          React.createElement('span',{className:'qfield-label'},'หลักเกณฑ์ (Criteria) การพิจารณาคัดเลือก QIR ดังนี้ ',React.createElement('span',{className:'qrequired'},'*')),
-          React.createElement('span',{className:'qfield-hint'},'(เลือกอย่างน้อย 1 ข้อ)'),
-          React.createElement(CriteriaList)
+        React.createElement('div',{className:'card qsection'},
+          React.createElement('div',{className:'qsection-head'},
+            React.createElement('h3',null,'กิจกรรม/ขั้นตอน ที่จะดำเนินการ ',React.createElement('span',{className:'qrequired'},'*')),
+            React.createElement('p',{className:'qsection-hint'},'ผลรวมน้ำหนักต้องเท่ากับ 100')
+          ),
+          React.createElement(ActivityTable)
         )
       ),
-      React.createElement('div',{className:'card qsection'},
-        React.createElement('div',{className:'qsection-head'},
-          React.createElement('h3',null,'ข้อเสนอแนะ'),
-          React.createElement('p',{className:'qsection-hint'},'เสนอแนะอย่างน้อย 1 ด้าน')
-        ),
-        React.createElement(SuggestionList)
-      ),
-      React.createElement('div',{className:'card qsection'},
-        React.createElement('div',{className:'qsection-head'},
-          React.createElement('h3',null,'กิจกรรม/ขั้นตอน ที่จะดำเนินการ ',React.createElement('span',{className:'qrequired'},'*')),
-          React.createElement('p',{className:'qsection-hint'},'ผลรวมน้ำหนักต้องเท่ากับ 100')
-        ),
-        React.createElement(ActivityTable)
-      ),
       React.createElement('div',{className:'qform-footer'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/p1-p11-overview';}},'ย้อนกลับ'),
-        React.createElement(Button,{variant:'primary',size:'md'},'บันทึก')
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.history.back();}},'ย้อนกลับ'),
+        !QA_VIEW&&React.createElement(Button,{variant:'primary',size:'md'},'บันทึก')
       )
     )
   );

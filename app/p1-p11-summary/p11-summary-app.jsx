@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 const {Button,Badge}=window.DesignSystem_cbd181;
+const PS_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
 
 const SUM_MONTHS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
@@ -81,7 +82,7 @@ function App(){
                 React.createElement('td',{className:'is-center'},React.createElement(PersonCell,r&&r.recorder?r.recorder:{})),
                 React.createElement('td',{className:'is-center'},React.createElement(PersonCell,r&&r.approver?r.approver:{})),
                 React.createElement('td',{className:'is-center'},
-                  React.createElement('button',{className:'pqir-btn'+(r?' pqir-btn--success':' pqir-btn--error'),onClick:()=>{window.location.href='/p1-p11-sla-report-form?unit='+encodeURIComponent(unit)+'&year='+year+'&month='+encodeURIComponent(m);}},React.createElement(Icon,{name:'file-search-02',size:15}))
+                  React.createElement('button',{className:'pqir-btn'+(r?' pqir-btn--success':' pqir-btn--error'),onClick:()=>{window.location.href='/p1-p11-sla-report-form?unit='+encodeURIComponent(unit)+'&year='+year+'&month='+encodeURIComponent(m)+(PS_VIEW?'&view=1':'');}},React.createElement(Icon,{name:'file-search-02',size:15}))
                 )
               );
             })

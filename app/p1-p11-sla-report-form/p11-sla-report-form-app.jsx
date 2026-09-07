@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,InputField}=window.DesignSystem_cbd181;
+const {Button,Badge,InputField}=window.DesignSystem_cbd181;
+const SLA_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
 
 const SLA_MONTH_FULL={'ม.ค.':'มกราคม','ก.พ.':'กุมภาพันธ์','มี.ค.':'มีนาคม','เม.ย.':'เมษายน','พ.ค.':'พฤษภาคม','มิ.ย.':'มิถุนายน','ก.ค.':'กรกฎาคม','ส.ค.':'สิงหาคม','ก.ย.':'กันยายน','ต.ค.':'ตุลาคม','พ.ย.':'พฤศจิกายน','ธ.ค.':'ธันวาคม'};
 
@@ -87,18 +88,19 @@ function App(){
       React.createElement('nav',{className:'psum-crumb'},
         React.createElement(Link,{href:'/learning-form-overview'},'ข้อเสนอโอกาสในการปรับปรุงฯ (QIR)'),
         React.createElement(Icon,{name:'chevron-right',size:14}),
-        React.createElement(Link,{href:'/p1-p11-overview'},'P1-P11 / QIR ประจำปี'),
+        React.createElement(Link,{href:'/p1-p11-overview'+(SLA_VIEW?'?view=1':'')},'P1-P11 / QIR ประจำปี'),
         React.createElement(Icon,{name:'chevron-right',size:14}),
         React.createElement('span',{className:'is-current'},'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)')
       ),
       React.createElement('div',{className:'psum-head'},
-        React.createElement('h1',null,unit),
+        React.createElement('h1',null,unit,SLA_VIEW&&React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm',style:{marginLeft:'10px'}})),
         React.createElement('p',null,'สรุปรายงานภาพรวม P1-P11 ประจำ เดือน'+month+' ปี '+year)
       ),
       React.createElement('div',{className:'psum-divider'}),
       React.createElement('div',{className:'pform-toolbar'},
         React.createElement(Button,{variant:'secondary',size:'md',trailingIcon:React.createElement(Icon,{name:'chevron-down',size:15})},'ส่งออกข้อมูล')
       ),
+      React.createElement('fieldset',{className:'pform-fieldset',disabled:SLA_VIEW},
       React.createElement('div',{className:'card ptable-card'},
         React.createElement('table',{className:'ptable pform-table'},
           React.createElement('thead',null,React.createElement('tr',null,
@@ -114,10 +116,11 @@ function App(){
           )),
           React.createElement('tbody',null,SLA_ROWS.map((r,i)=>React.createElement(SlaRow,{key:i,row:r})))
         )
+      )
       ),
       React.createElement('div',{className:'pform-foot'},
         React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:()=>history.back()},'ย้อนกลับ'),
-        React.createElement('div',{className:'pform-foot-right'},
+        !SLA_VIEW&&React.createElement('div',{className:'pform-foot-right'},
           React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>setToast('บันทึกร่างเรียบร้อยแล้ว')},'บันทึกร่าง'),
           React.createElement(Button,{variant:'primary',size:'md',onClick:()=>setConfirmOpen(true)},'บันทึกรายงานผล')
         )

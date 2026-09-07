@@ -66,3 +66,5 @@ button,input{font-family:inherit}
 .qform-footer{display:flex;justify-content:flex-start;gap:10px}
 
 @media (max-width:640px){.qsuggestion-detail{grid-template-columns:1fr}}
+
+.qform-fieldset{display:flex;flex-direction:column;gap:16px;border:0;margin:0;padding:0;min-width:0}
