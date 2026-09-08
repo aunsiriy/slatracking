@@ -106,3 +106,15 @@ button{font-family:inherit}
 .ltoast .icon{color:var(--pea-fg-success-primary)}
 
 @media (max-width:720px){.ltable{display:block;overflow-x:auto}}
+
+.qlf-fieldset{display:flex;flex-direction:column;gap:28px;border:0;margin:0;padding:0;min-width:0}
+.qlf-head-meta{font-size:12.5px;color:var(--pea-text-tertiary);margin-top:4px}
+.qlf-edit-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:10px;background:var(--pea-bg-warning-primary,#FEF0C7);border:1px solid var(--pea-border-warning,#FEDF89);color:var(--pea-fg-warning-primary,#93370D);font-size:13px;margin-bottom:18px}
+.qlf-edit-banner .icon{color:var(--pea-fg-warning-primary,#B54708);flex-shrink:0}
+.qlf-edit-banner>span{flex:1;min-width:0}
+.qlf-history{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.qlf-history-item{display:flex;align-items:center;gap:10px;font-size:13px}
+.qlf-history-dot{width:8px;height:8px;border-radius:50%;background:var(--pea-border-primary);flex-shrink:0}
+.qlf-history-dot.is-latest{background:var(--pea-bg-brand-solid)}
+.qlf-history-action{font-weight:600;color:var(--pea-text-primary)}
+.qlf-history-at{color:var(--pea-text-tertiary);margin-left:auto;font-size:12.5px;white-space:nowrap}

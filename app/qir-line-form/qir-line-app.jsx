@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,InputField,Checkbox,Avatar}=window.DesignSystem_cbd181;
+const {Button,Badge,InputField,Checkbox,Avatar}=window.DesignSystem_cbd181;
 
 const QLF_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
 const QLF_DEPT_SUBMISSIONS=[
@@ -59,13 +59,34 @@ function TopBar(){
   );
 }
 
-function Breadcrumb(){
+function Breadcrumb({current}){
   return React.createElement('div',{className:'lfbreadcrumb'},
     React.createElement(Link,{href:'/'},'หน้าหลัก'),
     React.createElement(Icon,{name:'chevron-right',size:14}),
     React.createElement(Link,{href:'/qir-line-overview'},'ภาพรวม QIR สายงาน'),
     React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'คัดเลือก QIR สายงาน')
+    React.createElement('span',{className:'is-current'},current||'คัดเลือก QIR สายงาน')
+  );
+}
+
+function HistoryCard({history}){
+  const items=(history||[]).slice().reverse();
+  return React.createElement('div',{className:'card lsection'},
+    React.createElement('div',{className:'lsection-head'},
+      React.createElement('div',null,
+        React.createElement('h3',null,'ประวัติการดำเนินการ'),
+        React.createElement('p',{className:'lsection-hint'},'บันทึกวันที่ที่มีการส่งและแก้ไขผลการคัดเลือก')
+      )
+    ),
+    items.length
+      ?React.createElement('ul',{className:'qlf-history'},
+        items.map((h,i)=>React.createElement('li',{key:i,className:'qlf-history-item'},
+          React.createElement('span',{className:'qlf-history-dot'+(i===0?' is-latest':'')}),
+          React.createElement('span',{className:'qlf-history-action'},h.action),
+          React.createElement('span',{className:'qlf-history-at'},h.at)
+        ))
+      )
+      :React.createElement('div',{className:'qlf-empty'},'ยังไม่มีประวัติ')
   );
 }
 
@@ -191,7 +212,7 @@ function QirGroupList({qirGroups,setGroupProposal,setGroupProcess,updateQir,addQ
   });
 }
 
-function SelectStep({selectedIds,setSelectedIds,onNext}){
+function SelectStep({selectedIds,setSelectedIds,onNext,onCancel}){
   function toggle(id){setSelectedIds(selectedIds.includes(id)?selectedIds.filter(x=>x!==id):[...selectedIds,id]);}
   return React.createElement(React.Fragment,null,
     React.createElement(SectionCard,{
@@ -203,13 +224,13 @@ function SelectStep({selectedIds,setSelectedIds,onNext}){
     ),
     React.createElement('div',{className:'qlf-actions'},
       React.createElement('span',{className:'qlf-count'},'เลือกแล้ว '+selectedIds.length+' ข้อเสนอ'),
-      React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/qir-line-overview';}},'ยกเลิก'),
+      React.createElement(Button,{variant:'secondary',size:'md',onClick:onCancel},'ยกเลิก'),
       React.createElement(Button,{variant:'primary',size:'md',isDisabled:selectedIds.length===0,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:onNext},'ถัดไป')
     )
   );
 }
 
-function ConfirmStep({selectedGroups,selectedCount,qirGroups,groupHandlers,addGroup,onBack,onSave,saveDisabled}){
+function ConfirmStep({selectedGroups,selectedCount,qirGroups,groupHandlers,addGroup,onBack,onSave,saveDisabled,saveLabel}){
   return React.createElement(React.Fragment,null,
     React.createElement('div',{className:'qlf-confirm-sections'},
       React.createElement(SectionCard,{
@@ -232,17 +253,17 @@ function ConfirmStep({selectedGroups,selectedCount,qirGroups,groupHandlers,addGr
     ),
     React.createElement('div',{className:'qlf-actions'},
       React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:onBack},'ย้อนกลับ'),
-      React.createElement(Button,{variant:'primary',size:'md',isDisabled:saveDisabled,leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:onSave},'บันทึกผล')
+      React.createElement(Button,{variant:'primary',size:'md',isDisabled:saveDisabled,leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:onSave},saveLabel||'บันทึกผล')
     )
   );
 }
 
-function ConfirmSaveModal({onCancel,onConfirm}){
+function ConfirmSaveModal({onCancel,onConfirm,title,text}){
   return React.createElement('div',{className:'qlf-modal-overlay',onClick:onCancel},
     React.createElement('div',{className:'qlf-modal',onClick:e=>e.stopPropagation()},
       React.createElement('span',{className:'qlf-modal-icon'},React.createElement(Icon,{name:'check-circle',size:26})),
-      React.createElement('h3',{className:'qlf-modal-title'},'ยืนยันบันทึกผลการคัดเลือก'),
-      React.createElement('p',{className:'qlf-modal-text'},'คุณได้ทำการคัดเลือก QIR ของสายงานประจำปีนี้เรียบร้อยแล้ว ระบบจะบันทึกผลและส่งเข้าสู่การพิจารณาระดับสายงาน — สามารถกลับมาแก้ไขได้ภายหลัง'),
+      React.createElement('h3',{className:'qlf-modal-title'},title||'ยืนยันบันทึกผลการคัดเลือก'),
+      React.createElement('p',{className:'qlf-modal-text'},text||'คุณได้ทำการคัดเลือก QIR ของสายงานประจำปีนี้เรียบร้อยแล้ว ระบบจะบันทึกผลและส่งเข้าสู่การพิจารณาระดับสายงาน — สามารถกลับมาแก้ไขได้ภายหลัง'),
       React.createElement('div',{className:'qlf-modal-foot'},
         React.createElement(Button,{variant:'secondary',size:'md',onClick:onCancel},'ยกเลิก'),
         React.createElement(Button,{variant:'primary',size:'md',onClick:onConfirm},'ยืนยัน')
@@ -251,11 +272,49 @@ function ConfirmSaveModal({onCancel,onConfirm}){
   );
 }
 
+function ViewMode({year,stored,selectedGroups,onEdit}){
+  return React.createElement(React.Fragment,null,
+    React.createElement('div',{className:'qlf-confirm-sections'},
+      React.createElement('fieldset',{className:'qlf-fieldset',disabled:true},
+        React.createElement(SectionCard,{
+          title:'QIR ของสายงาน (เพิ่มโดยผู้คัดเลือก)',
+          hint:'ข้อมูลนี้อยู่ในสถานะส่งคัดเลือกแล้ว — กด "แก้ไข" เพื่อปรับปรุง'},
+          (stored.ownGroups&&stored.ownGroups.length>0)
+            ?React.createElement(QirGroupList,{qirGroups:stored.ownGroups,setGroupProposal:()=>{},setGroupProcess:()=>{},updateQir:()=>{},addQirRow:()=>{},removeQirRow:()=>{},duplicateGroup:()=>{},removeGroup:()=>{}})
+            :React.createElement('div',{className:'qlf-empty'},'ไม่มี QIR ของสายงานที่เพิ่มเอง')
+        ),
+        React.createElement(SectionCard,{
+          title:'QIR ของฝ่ายที่คัดเลือก ('+(stored.selectedIds||[]).length+')',
+          hint:'ข้อเสนอ QIR ของฝ่ายที่สายงานคัดเลือกไว้'},
+          selectedGroups.length>0
+            ?React.createElement('div',{className:'qlf-dept-list'},
+                selectedGroups.map(grp=>React.createElement(DeptBlock,{key:grp.id,dept:grp.dept,proposals:grp.proposals}))
+              )
+            :React.createElement('div',{className:'qlf-empty'},'ไม่ได้เลือกข้อเสนอ QIR ของฝ่ายใด')
+        )
+      ),
+      React.createElement(HistoryCard,{history:stored.history})
+    ),
+    React.createElement('div',{className:'qlf-actions'},
+      React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/qir-line-overview';}},'ย้อนกลับ'),
+      React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:onEdit},'แก้ไข')
+    )
+  );
+}
+
+const QLF_PARAMS=(typeof window!=='undefined')?new URLSearchParams(window.location.search):new URLSearchParams();
+const QLF_YEAR=QLF_PARAMS.get('year')||'2569';
+const QLF_STORED=(typeof window!=='undefined'&&window.QLF_STORE)?window.QLF_STORE.get(QLF_YEAR):null;
+const QLF_WANT_VIEW=QLF_PARAMS.get('mode')==='view'&&!!QLF_STORED;
+
 function App(){
+  const [editing,setEditing]=React.useState(false);
+  const viewMode=QLF_WANT_VIEW&&!editing;
+  const isEdit=QLF_WANT_VIEW&&editing;
   const [step,setStep]=React.useState(0);
-  React.useEffect(()=>{window.scrollTo({top:0,behavior:'auto'});},[step]);
-  const [selectedIds,setSelectedIds]=React.useState([]);
-  const [qirGroups,setQirGroups]=React.useState([]);
+  React.useEffect(()=>{window.scrollTo({top:0,behavior:'auto'});},[step,editing]);
+  const [selectedIds,setSelectedIds]=React.useState(()=>QLF_STORED?(QLF_STORED.selectedIds||[]).slice():[]);
+  const [qirGroups,setQirGroups]=React.useState(()=>QLF_STORED?JSON.parse(JSON.stringify(QLF_STORED.ownGroups||[])):[]);
   const [confirmOpen,setConfirmOpen]=React.useState(false);
   const [saveToast,setSaveToast]=React.useState(false);
   function setGroupProposal(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,proposal:text}:g));}
@@ -282,30 +341,52 @@ function App(){
   function handleSave(){setConfirmOpen(true);}
   function confirmSave(){
     setConfirmOpen(false);
+    if(window.QLF_STORE)window.QLF_STORE.save(QLF_YEAR,{selectedIds,ownGroups:qirGroups},isEdit);
     setSaveToast(true);
     setTimeout(()=>{window.location.href='/qir-line-overview';},1500);
   }
+  function cancelWizard(){
+    if(isEdit){setEditing(false);setStep(0);}
+    else window.location.href='/qir-line-overview';
+  }
+  const headText=viewMode
+    ?'รายละเอียดผลการคัดเลือก QIR ของสายงานประจำปี '+QLF_YEAR
+    :(isEdit?'แก้ไขผลการคัดเลือก QIR ของสายงานประจำปี '+QLF_YEAR:'คัดเลือก QIR ของฝ่ายภายใต้สายงาน แล้วสรุปยืนยันผลการคัดเลือก');
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lfcontent'},
-      React.createElement(Breadcrumb),
+      React.createElement(Breadcrumb,{current:viewMode?'รายละเอียด QIR สายงาน':(isEdit?'แก้ไข QIR สายงาน':'คัดเลือก QIR สายงาน')}),
       React.createElement('div',{className:'lfpage-head'},
         React.createElement('div',null,
-          React.createElement('h1',null,'QIR สายงาน'),
-          React.createElement('p',null,'คัดเลือก QIR ของฝ่ายภายใต้สายงาน แล้วสรุปยืนยันผลการคัดเลือก')
+          React.createElement('h1',null,'QIR สายงาน · ประจำปี '+QLF_YEAR,
+            (viewMode||isEdit)&&React.createElement(Badge,{label:'ส่งคัดเลือกแล้ว',type:'pill-color',color:'success',size:'sm',style:{marginLeft:'10px'}})
+          ),
+          React.createElement('p',null,headText),
+          QLF_STORED&&React.createElement('p',{className:'qlf-head-meta'},
+            'ส่งเมื่อ '+QLF_STORED.submittedAt+(QLF_STORED.lastEditedAt?' · แก้ไขล่าสุด '+QLF_STORED.lastEditedAt:'')
+          )
         )
       ),
-      React.createElement('div',{className:'qlf-layout'},
-        React.createElement(Stepper,{step,setStep}),
-        React.createElement('div',{className:'qlf-main'},
-          step===0
-            ?React.createElement(SelectStep,{selectedIds,setSelectedIds,onNext:()=>setStep(1)})
-            :React.createElement(ConfirmStep,{selectedGroups,selectedCount:selectedIds.length,qirGroups,groupHandlers,addGroup,onBack:()=>setStep(0),onSave:handleSave,saveDisabled:ownIncomplete})
-        )
-      )
+      isEdit&&React.createElement('div',{className:'qlf-edit-banner'},
+        React.createElement(Icon,{name:'alert-triangle',size:16}),
+        React.createElement('span',null,'กำลังแก้ไขผลการคัดเลือกที่ส่งแล้ว — เมื่อบันทึก ระบบจะบันทึกวันที่แก้ไขไว้ในประวัติ'),
+        React.createElement(Button,{variant:'tertiary',size:'sm',onClick:()=>{setEditing(false);setStep(0);}},'ยกเลิกการแก้ไข')
+      ),
+      viewMode
+        ?React.createElement(ViewMode,{year:QLF_YEAR,stored:QLF_STORED,selectedGroups,onEdit:()=>{setEditing(true);setStep(0);}})
+        :React.createElement('div',{className:'qlf-layout'},
+            React.createElement(Stepper,{step,setStep}),
+            React.createElement('div',{className:'qlf-main'},
+              step===0
+                ?React.createElement(SelectStep,{selectedIds,setSelectedIds,onNext:()=>setStep(1),onCancel:cancelWizard})
+                :React.createElement(ConfirmStep,{selectedGroups,selectedCount:selectedIds.length,qirGroups,groupHandlers,addGroup,onBack:()=>setStep(0),onSave:handleSave,saveDisabled:ownIncomplete,saveLabel:isEdit?'บันทึกการแก้ไข':'บันทึกผล'})
+            )
+          )
     ),
-    confirmOpen&&React.createElement(ConfirmSaveModal,{onCancel:()=>setConfirmOpen(false),onConfirm:confirmSave}),
-    saveToast&&React.createElement('div',{className:'ltoast'},React.createElement(Icon,{name:'check-circle',size:16}),'บันทึกผลการคัดเลือก QIR เรียบร้อยแล้ว')
+    confirmOpen&&React.createElement(ConfirmSaveModal,{onCancel:()=>setConfirmOpen(false),onConfirm:confirmSave,
+      title:isEdit?'ยืนยันบันทึกการแก้ไข':'ยืนยันบันทึกผลการคัดเลือก',
+      text:isEdit?'ระบบจะบันทึกการแก้ไขผลการคัดเลือก QIR ของสายงานประจำปี '+QLF_YEAR+' และบันทึกวันที่แก้ไขไว้ในประวัติการดำเนินการ':undefined}),
+    saveToast&&React.createElement('div',{className:'ltoast'},React.createElement(Icon,{name:'check-circle',size:16}),isEdit?'บันทึกการแก้ไขเรียบร้อยแล้ว':'บันทึกผลการคัดเลือก QIR เรียบร้อยแล้ว')
   );
 }
 

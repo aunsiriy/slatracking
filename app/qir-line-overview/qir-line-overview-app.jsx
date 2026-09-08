@@ -57,8 +57,20 @@ function KpiCards({rows}){
   );
 }
 
+function mergeRow(r){
+  const stored=(typeof window!=='undefined'&&window.QLF_STORE)?window.QLF_STORE.get(r.year):null;
+  if(!stored)return r;
+  return {...r,
+    status:stored.status||r.status,
+    date:stored.submittedAt||r.date,
+    picked:(stored.selectedIds||[]).length,
+    lineAdded:(stored.ownGroups||[]).length,
+    lastEditedAt:stored.lastEditedAt||null
+  };
+}
+
 function App(){
-  const rows=QLO_ROWS;
+  const rows=QLO_ROWS.map(mergeRow);
   const [yearFilter,setYearFilter]=React.useState('all');
   const [search,setSearch]=React.useState('');
   const yearOptions=rows.map(r=>r.year);
@@ -68,7 +80,14 @@ function App(){
     .filter(r=>!q||[r.year,r.recorder,(QLO_STATUS[r.status]||{}).label,r.date].join(' ').toLowerCase().includes(q));
   const hasFilter=yearFilter!=='all'||q!=='';
   function clearFilter(){setYearFilter('all');setSearch('');}
-  function goSelect(){window.location.href='/qir-line-form';}
+  function openRow(r){
+    if(r.status==='submitted')window.location.href='/qir-line-form?year='+r.year+'&mode=view';
+    else window.location.href='/qir-line-form?year='+r.year;
+  }
+  function goSelect(){
+    const cur=QLO_ROWS.map(mergeRow).find(r=>r.status!=='submitted');
+    window.location.href='/qir-line-form?year='+(cur?cur.year:QLO_ROWS[0].year);
+  }
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lfcontent'},
@@ -109,15 +128,18 @@ function App(){
             )),
             React.createElement('tbody',null,filtered.map(r=>{
               const s=QLO_STATUS[r.status];
-              return React.createElement('tr',{key:r.year,className:'qlo-row',onClick:goSelect},
+              return React.createElement('tr',{key:r.year,className:'qlo-row',onClick:()=>openRow(r)},
                 React.createElement('td',null,'ปี '+r.year),
                 React.createElement('td',null,r.recorder),
                 React.createElement('td',null,r.picked?r.picked+' ข้อเสนอ':'—'),
                 React.createElement('td',null,r.lineAdded?r.lineAdded+' รายการ':'—'),
-                React.createElement('td',null,r.date),
+                React.createElement('td',null,
+                  React.createElement('div',null,r.date),
+                  r.lastEditedAt&&React.createElement('div',{className:'qlo-edited'},'แก้ไขล่าสุด '+r.lastEditedAt)
+                ),
                 React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'})),
                 React.createElement('td',{className:'qlo-row-action'},
-                  React.createElement(Button,{variant:'tertiary',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:14}),onClick:e=>{e.stopPropagation();goSelect();}},r.status==='pending'?'คัดเลือก':'ดูรายละเอียด')
+                  React.createElement(Button,{variant:'tertiary',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:14}),onClick:e=>{e.stopPropagation();openRow(r);}},r.status==='submitted'?'ดูรายละเอียด':'คัดเลือก')
                 )
               );
             }))
