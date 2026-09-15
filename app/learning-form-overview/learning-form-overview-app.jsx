@@ -35,16 +35,15 @@ function DueBanner(){
   );
 }
 
+const LFO_STATUS_ICON={pending:'file-text',draft:'edit',certified:'check-circle',overdue:'alert-triangle'};
 function KpiCards({year,scope}){
   const items=window.LFO_ITEMS.filter(it=>it.scope===scope&&(scope!=='own'||it.year===year));
-  const total=items.length;
-  const pendingCount=items.filter(it=>it.status!=='certified').length;
-  const doneCount=items.filter(it=>it.status==='certified').length;
-  const cards=[
-    {icon:'book',label:'Learning Form ทั้งหมด',value:total,color:'brand'},
-    {icon:'clock',label:'ยังไม่เสร็จสิ้น',value:pendingCount,color:'warning'},
-    {icon:'calendar',label:'เสร็จสิ้น',value:doneCount,color:'success'}
-  ];
+  const cards=window.LFO_STATUS_ORDER.map(key=>({
+    icon:LFO_STATUS_ICON[key],
+    label:window.LFO_STATUS_MAP[key].label,
+    value:items.filter(it=>it.status===key).length,
+    color:window.LFO_STATUS_MAP[key].color
+  }));
   return React.createElement('div',{className:'lfkpi-grid'},
     cards.map((c,i)=>React.createElement('div',{key:i,className:'card lfkpi-card'},
       React.createElement('span',{className:`lfkpi-icon lfkpi-icon--${c.color}`},React.createElement(Icon,{name:c.icon,size:18})),

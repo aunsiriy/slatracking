@@ -688,8 +688,9 @@ function KnowledgeCard({item,onChange}){
     {key:'cost',label:'ลดค่าใช้จ่าย'},
     {key:'innovation',label:'ชิ้นงานนวัตกรรม'}
   ];
+  const PROCESS_OPTIONS=[...window.LF_BA_PROCESS_OPTIONS.map(o=>({value:o.key,label:o.label})),{value:'other',label:'อื่นๆ'}];
   function updateEntry(id,field,value){set('entries',(item.entries||[]).map(e=>e.id===id?{...e,[field]:value}:e));}
-  function addEntry(){set('entries',[...(item.entries||[]),{id:Date.now(),knowType:'existing',name:'',location:[],locationOther:''}]);}
+  function addEntry(){set('entries',[...(item.entries||[]),{id:Date.now(),knowType:'existing',name:'',location:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}]);}
   function removeEntry(id){set('entries',(item.entries||[]).filter(e=>e.id!==id));}
   return React.createElement('div',{className:'card lknow-card2'},
     React.createElement('div',{className:'lknow-section lknow-section--fill'},
@@ -701,6 +702,7 @@ function KnowledgeCard({item,onChange}){
           React.createElement('th',null,'ประเภทองค์ความรู้'),
           React.createElement('th',{className:'lknow-name-col'},'ระบุชื่อหัวข้อองค์ความรู้'),
           React.createElement('th',null,'ที่อยู่จัดเก็บ'),
+          React.createElement('th',null,'สอดคล้องกับกระบวนการ'),
           React.createElement('th',null)
         )),
         React.createElement('tbody',null,(item.entries||[]).map((e,i)=>{
@@ -718,6 +720,12 @@ function KnowledgeCard({item,onChange}){
               React.createElement(CheckDropdown,{options:LOCATIONS,value:e.location,onChange:v=>updateEntry(e.id,'location',v),placeholder:'เลือกที่อยู่จัดเก็บ'}),
               (e.location||[]).includes('other')&&React.createElement('div',{className:'lknow-loc-other-input'},
                 React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุ',value:e.locationOther,onChange:v=>updateEntry(e.id,'locationOther',v)})
+              )
+            ),
+            React.createElement('td',null,
+              React.createElement(window.SelectMenu,{value:e.processKey||window.LF_BA_PROCESS_OPTIONS[0].key,onChange:v=>updateEntry(e.id,'processKey',v),options:PROCESS_OPTIONS}),
+              e.processKey==='other'&&React.createElement('div',{className:'lknow-loc-other-input'},
+                React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุชื่อกระบวนการอื่นๆ',value:e.processOther||'',onChange:v=>updateEntry(e.id,'processOther',v)})
               )
             ),
             React.createElement('td',null,(item.entries||[]).length>1&&React.createElement('button',{className:'lqir-remove',onClick:()=>removeEntry(e.id)},React.createElement(Icon,{name:'x',size:15})))
@@ -753,11 +761,11 @@ function KnowledgeCard({item,onChange}){
 function KnowledgeSection(){
   const [rows,setRows]=React.useState(window.LF_KNOWLEDGE.map(r=>({
     id:r.id,
-    entries:[{id:Date.now()+r.id,knowType:r.type==='existing'?'existing':'new',name:r.type==='existing'?(r.contentId||''):(r.topic||''),location:r.type==='existing'?['kmsi']:[],locationOther:''}],
+    entries:[{id:Date.now()+r.id,knowType:r.type==='existing'?'existing':'new',name:r.type==='existing'?(r.contentId||''):(r.topic||''),location:r.type==='existing'?['kmsi']:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],
     methods:[],outcomes:[],outcomesOther:'',before:'',after:''
   })));
   function update(next){setRows(rows.map(r=>r.id===next.id?next:r));}
-  function addRow(){setRows([...rows,{id:Date.now(),entries:[{id:Date.now()+1,knowType:'existing',name:'',location:[],locationOther:''}],methods:[],outcomes:[],outcomesOther:'',before:'',after:''}]);}
+  function addRow(){setRows([...rows,{id:Date.now(),entries:[{id:Date.now()+1,knowType:'existing',name:'',location:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],methods:[],outcomes:[],outcomesOther:'',before:'',after:''}]);}
   return React.createElement(SectionCard,{title:'ส่วนที่ 6 — องค์ความรู้ที่ใช้ / องค์ความรู้ใหม่ที่เกิดขึ้นจากการปรับปรุงกระบวนการ'},
     rows.map(item=>React.createElement(KnowledgeCard,{key:item.id,item,onChange:update}))
   );

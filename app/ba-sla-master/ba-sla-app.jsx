@@ -2,14 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ORG_TREE } from '@/src/shared/org-tree-data.js';
 
-const {Button,Badge,Avatar,InputField,Radio,Toggle,FeaturedIcon}=window.DesignSystem_cbd181;
+const {Button,Badge,Avatar,InputField,Toggle,FeaturedIcon}=window.DesignSystem_cbd181;
 
 const TABS=[
 {key:'org',icon:'building',label:'ตั้งค่าหน่วยงาน'},
 {key:'arch',icon:'layout-grid',label:'ตั้งค่า Business Architecture'},
-{key:'sla',icon:'file-text',label:'ตั้งค่า SLA Master'},
-{key:'users',icon:'users',label:'จัดการผู้ใช้งานระบบ'},
-{key:'kpi',icon:'trending-up',label:'วิเคราะห์ภาระงานและผลการดำเนินงาน KPI'}
+{key:'sla',icon:'file-text',label:'ตั้งค่า SLA Master'}
 ];
 
 function TopBar(){
@@ -33,16 +31,6 @@ function TopTabs({active,setActive}){
       TABS.map(t=>React.createElement(Button,{key:t.key,variant:'tertiary',size:'md',className:'top-tab'+(active===t.key?' is-active':''),leadingIcon:React.createElement(Icon,{name:t.icon,size:18}),onClick:()=>setActive(t.key)},t.label))
     )
   );
-}
-
-const LEVEL_PALETTE=['brand','blue','success','warning','gray','error'];
-const levelColorCache={};
-function levelColor(level){
-  if(levelColorCache[level])return levelColorCache[level];
-  let h=0;for(let i=0;i<level.length;i++)h=(h*31+level.charCodeAt(i))>>>0;
-  const c=LEVEL_PALETTE[h%LEVEL_PALETTE.length];
-  levelColorCache[level]=c;
-  return c;
 }
 
 function countNodes(nodes){
@@ -77,7 +65,7 @@ function filterTree(nodes,search){
   return walk(nodes);
 }
 
-function OrgTreeNode({node,depth,allOpen,onEdit,onDelete}){
+function OrgTreeNode({node,depth,allOpen}){
   const [open,setOpen]=React.useState(depth<1);
   React.useEffect(()=>{if(node._forceOpen)setOpen(true);},[node._forceOpen]);
   React.useEffect(()=>{if(allOpen!=null)setOpen(allOpen);},[allOpen]);
@@ -87,14 +75,10 @@ function OrgTreeNode({node,depth,allOpen,onEdit,onDelete}){
       hasChildren?React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'org-caret',onClick:()=>setOpen(v=>!v),leadingIcon:React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:15})}):React.createElement('span',{className:'org-caret-spacer'}),
       node.code&&React.createElement('span',{className:'org-code'},node.code),
       React.createElement('span',{className:'org-name'},node.name),
-      React.createElement(Badge,{label:node.status==='active'?'ใช้งาน':'ปิดใช้งาน',type:'pill-color',color:node.status==='active'?'success':'gray',size:'sm'}),
-      React.createElement('div',{className:'org-actions'},
-        React.createElement(Button,{variant:'link-color',size:'sm',leadingIcon:React.createElement(Icon,{name:'edit',size:14}),onClick:()=>onEdit(node)},'แก้ไข'),
-        React.createElement(Button,{variant:'link-color',size:'sm',className:'org-delete',leadingIcon:React.createElement(Icon,{name:'trash',size:14}),onClick:()=>onDelete(node)},'ลบ')
-      )
+      React.createElement(Badge,{label:node.status==='active'?'ใช้งาน':'ปิดใช้งาน',type:'pill-color',color:node.status==='active'?'success':'gray',size:'sm'})
     ),
     hasChildren&&open&&React.createElement('div',{className:'org-children'},
-      node.children.map(c=>React.createElement(OrgTreeNode,{key:c.id,node:c,depth:depth+1,allOpen,onEdit,onDelete}))
+      node.children.map(c=>React.createElement(OrgTreeNode,{key:c.id,node:c,depth:depth+1,allOpen}))
     )
   );
 }
@@ -116,130 +100,20 @@ function Toast({message,onDone}){
   return React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),message);
 }
 
-function AddOrgModal({onClose,onSubmit}){
-  const [level,setLevel]=React.useState('สายงาน');
-  const [parent,setParent]=React.useState('');
-  const [code,setCode]=React.useState('');
-  const [name,setName]=React.useState('');
-  const [status,setStatus]=React.useState('active');
-  const divisionOptions=React.useMemo(getDivisionOptions,[]);
-  const florOptions=React.useMemo(getFlorOptions,[]);
-  const LEVEL_LABELS={'สายงาน':{nameLabel:'ชื่อสายงาน',codePlaceholder:'เช่น กพอ.',submitLabel:'เพิ่มสายงาน',title:'เพิ่มสายงานใหม่'},
-    'ฝ่าย':{nameLabel:'ชื่อฝ่าย',codePlaceholder:'เช่น ฝบว.',submitLabel:'เพิ่มฝ่าย',title:'เพิ่มฝ่ายใหม่'},
-    'กอง':{nameLabel:'ชื่อกอง',codePlaceholder:'เช่น กสต.',submitLabel:'เพิ่มกอง',title:'เพิ่มกองใหม่'}
-  };
-  const cfg=LEVEL_LABELS[level];
-  function handleLevelChange(l){setLevel(l);setParent('');}
-  function handleSubmit(){onSubmit(cfg.submitLabel.replace('เพิ่ม','เพิ่ม')+'เรียบร้อยแล้ว');}
-  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
-    React.createElement('div',{className:'modal-card',onClick:e=>e.stopPropagation()},
-      React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,cfg.title),
-        React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'modal-close',leadingIcon:React.createElement(Icon,{name:'x',size:18}),onClick:onClose,'aria-label':'ปิด'})
-      ),
-      React.createElement('div',{className:'modal-body'},
-        React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'ระดับ'),
-          React.createElement('div',{className:'modal-radio-row'},
-            ['สายงาน','ฝ่าย','กอง'].map(l=>React.createElement(Radio,{key:l,size:'sm',name:'org-level',value:l,label:l,isChecked:level===l,onChange:()=>handleLevelChange(l)}))
-          )
-        ),
-        level==='ฝ่าย'&&React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'สายงานที่สังกัด'),
-          React.createElement(window.SelectMenu,{placeholder:'เลือกสายงาน...',value:parent,onChange:setParent,options:divisionOptions})
-        ),
-        level==='กอง'&&React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'ฝ่ายหรือสายงานที่สังกัด'),
-          React.createElement(window.SelectMenu,{placeholder:'เลือกหน่วยงาน...',value:parent,onChange:setParent,options:florOptions})
-        ),
-        React.createElement(InputField,{fieldType:'default',label:'ตัวย่อ',placeholder:cfg.codePlaceholder,size:'md',value:code,onChange:setCode}),
-        React.createElement(InputField,{fieldType:'default',label:cfg.nameLabel,placeholder:'ระบุชื่อเต็มของหน่วยงาน',size:'md',value:name,onChange:setName}),
-        React.createElement('div',{className:'modal-field'},
-          React.createElement(Toggle,{size:'md',label:'สถานะใช้งาน',isChecked:status==='active',onChange:checked=>setStatus(checked?'active':'inactive')})
-        )
-      ),
-      React.createElement('div',{className:'modal-footer'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
-        React.createElement(Button,{variant:'primary',size:'md',onClick:handleSubmit},cfg.submitLabel)
-      )
-    )
-  );
-}
-
-function EditOrgModal({node,onClose,onSubmit}){
-  const [code,setCode]=React.useState(node.code||'');
-  const [name,setName]=React.useState(node.name);
-  const [status,setStatus]=React.useState(node.status);
-  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
-    React.createElement('div',{className:'modal-card',onClick:e=>e.stopPropagation()},
-      React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,'แก้ไขหน่วยงาน'),
-        React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'modal-close',leadingIcon:React.createElement(Icon,{name:'x',size:18}),onClick:onClose,'aria-label':'ปิด'})
-      ),
-      React.createElement('div',{className:'modal-body'},
-        React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'ระดับ'),
-          React.createElement(Badge,{label:node.level,type:'pill-color',color:levelColor(node.level),size:'sm'})
-        ),
-        React.createElement(InputField,{fieldType:'default',label:'ตัวย่อ',size:'md',value:code,onChange:setCode}),
-        React.createElement(InputField,{fieldType:'default',label:'ชื่อหน่วยงาน',size:'md',value:name,onChange:setName}),
-        React.createElement('div',{className:'modal-field'},
-          React.createElement(Toggle,{size:'md',label:'สถานะใช้งาน',isChecked:status==='active',onChange:checked=>setStatus(checked?'active':'inactive')})
-        )
-      ),
-      React.createElement('div',{className:'modal-footer'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
-        React.createElement(Button,{variant:'primary',size:'md',onClick:()=>onSubmit('บันทึกเรียบร้อยแล้ว')},'บันทึก')
-      )
-    )
-  );
-}
-function DeleteOrgModal({node,onClose,onConfirm}){
-  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
-    React.createElement('div',{className:'modal-card modal-card--sm',onClick:e=>e.stopPropagation()},
-      React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,React.createElement(Icon,{name:'alert-triangle',size:18,className:'delete-warn-icon-inline'}),'ยืนยันการลบหน่วยงาน'),
-        React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'modal-close',leadingIcon:React.createElement(Icon,{name:'x',size:18}),onClick:onClose,'aria-label':'ปิด'})
-      ),
-      React.createElement('div',{className:'modal-body'},
-        React.createElement('p',{className:'delete-warn-text'},
-          'คุณกำลังจะลบ ',
-          React.createElement(Badge,{label:node.level,type:'pill-color',color:levelColor(node.level),size:'sm'}),
-          ' ',
-          React.createElement('strong',null,node.name),
-          node.children&&node.children.length>0?' และหน่วยงานย่อยอีก '+node.children.length+' หน่วยงานภายใต้':''
-        ),
-        React.createElement('p',{className:'delete-warn-sub'},'การกระทำนี้ไม่สามารถย้อนกลับได้')
-      ),
-      React.createElement('div',{className:'modal-footer'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
-        React.createElement(Button,{variant:'primary',size:'md',className:'btn-danger',onClick:()=>onConfirm('ลบหน่วยงานเรียบร้อยแล้ว')},'ลบหน่วยงาน')
-      )
-    )
-  );
-}
 function OrgPanel(){
   const [year,setYear]=React.useState('2569');
   const [search,setSearch]=React.useState('');
-  const [modalOpen,setModalOpen]=React.useState(false);
-  const [editingNode,setEditingNode]=React.useState(null);
-  const [deletingNode,setDeletingNode]=React.useState(null);
   const [allOpen,setAllOpen]=React.useState(null);
-  const [toast,setToast]=React.useState(null);
   const stats=React.useMemo(()=>countNodes(ORG_TREE),[]);
   const filtered=React.useMemo(()=>filterTree(ORG_TREE,search),[search]);
-  function handleAdded(message){setModalOpen(false);setToast(message);}
-  function handleEdited(message){setEditingNode(null);setToast(message);}
-  function handleDeleted(message){setDeletingNode(null);setToast(message);}
   return React.createElement('div',{className:'card panel'},
     React.createElement('div',{className:'panel-head'},
       React.createElement('div',null,
         React.createElement('h2',null,'ตั้งค่าหน่วยงาน'),
-        React.createElement('p',null,'โครงสร้างหน่วยงานเรียงลำดับตามลำดับชั้นขององค์กร ดึงข้อมูลจากฐานข้อมูลองค์กร — เพิ่ม/แก้ไข/ลบได้ทุกลำดับชั้น')
+        React.createElement('p',null,'โครงสร้างหน่วยงานเรียงลำดับตามลำดับชั้นขององค์กร ดึงข้อมูลจากฐานข้อมูลองค์กร')
       ),
       React.createElement('div',{className:'panel-head-actions'},
-        React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))}),
-        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>setModalOpen(true)},'เพิ่มหน่วยงานใหม่')
+        React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))})
       )
     ),
     React.createElement('div',{className:'org-toolbar'},
@@ -259,13 +133,9 @@ function OrgPanel(){
       )
     ),
     React.createElement('div',{className:'org-tree'},
-      filtered.length?filtered.map(n=>React.createElement(OrgTreeNode,{key:n.id,node:n,depth:0,allOpen,onEdit:setEditingNode,onDelete:setDeletingNode})):
+      filtered.length?filtered.map(n=>React.createElement(OrgTreeNode,{key:n.id,node:n,depth:0,allOpen})):
       React.createElement('div',{className:'org-empty'},'ไม่พบหน่วยงานที่ตรงกับเงื่อนไข')
-    ),
-    modalOpen&&React.createElement(AddOrgModal,{onClose:()=>setModalOpen(false),onSubmit:handleAdded}),
-    editingNode&&React.createElement(EditOrgModal,{node:editingNode,onClose:()=>setEditingNode(null),onSubmit:handleEdited}),
-    deletingNode&&React.createElement(DeleteOrgModal,{node:deletingNode,onClose:()=>setDeletingNode(null),onConfirm:handleDeleted}),
-    toast&&React.createElement(Toast,{message:toast,onDone:()=>setToast(null)})
+    )
   );
 }
 

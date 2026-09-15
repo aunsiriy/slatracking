@@ -24,27 +24,6 @@ function Hero({role}){
   );
 }
 
-function TodayOverview({role}){
-  const glance=[
-    {icon:'file-text',value:role.kpi[0].value,label:role.kpi[0].label,color:'brand'},
-    {icon:'book',value:role.kpi[1].value,label:role.kpi[1].label,color:'blue'},
-    {icon:'alert-triangle',value:role.kpi[2].value,label:role.kpi[2].label,color:'warning'},
-    {icon:'shield-check',value:role.counts.certified,label:'รับรองผลแล้ว',color:'success'}
-  ];
-  return React.createElement('section',{className:'today-overview'},
-    React.createElement('span',{className:'today-overview-title'},React.createElement(Icon,{name:'activity',size:14}),'ภาพรวมวันนี้'),
-    React.createElement('div',{className:'today-overview-grid'},
-      glance.map((g,i)=>React.createElement('div',{key:i,className:'card today-overview-card',style:{animationDelay:`${i*0.08+0.05}s`}},
-        React.createElement('span',{className:`hero-glance-icon hero-glance-icon--${g.color}`},React.createElement(Icon,{name:g.icon,size:17})),
-        React.createElement('div',{className:'today-overview-info'},
-          React.createElement('span',{className:'today-overview-value'},g.value),
-          React.createElement('span',{className:'today-overview-label'},g.label)
-        )
-      ))
-    )
-  );
-}
-
 const KPI_COLOR_VARS={success:'var(--pea-fg-success-primary)',blue:'var(--pea-blue-600)',error:'var(--pea-fg-error-primary)'};
 function KpiCards({kpi}){
   const items=kpi.slice(2);
@@ -353,7 +332,6 @@ function App(){
       React.createElement(Hero,{role}),
       React.createElement('div',{className:'layout'},
         React.createElement('div',{className:'layout-main'},
-          React.createElement(TodayOverview,{role}),
           React.createElement(SectionHeader,{title:'ฟีเจอร์หลัก'}),
           React.createElement(ModuleCards,{role}),
           React.createElement(FeatureRow,null),

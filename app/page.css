@@ -157,7 +157,6 @@ button{font-family:inherit}
   .layout-side{position:static}
   .module-grid,.module-grid.is-4{grid-template-columns:1fr 1fr}
   .status-bar{grid-template-columns:repeat(4,1fr)}
-  .today-overview-grid{grid-template-columns:repeat(2,1fr)}
   .kpi-grid,.feature-row,.help-row{grid-template-columns:1fr}
 }
 
@@ -182,20 +181,6 @@ button{font-family:inherit}
 @keyframes heroGlowPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
 @keyframes trackSweep{0%{background-position:-220% 0}100%{background-position:220% 0}}
 @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(18,183,106,.35)}50%{box-shadow:0 0 0 5px rgba(18,183,106,0)}}
-@keyframes glanceRowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.today-overview{margin:4px 0 24px}
-.today-overview-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--pea-text-primary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
-.today-overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.today-overview-card{display:flex;align-items:center;gap:12px;padding:18px;cursor:pointer;animation:glanceRowIn .5s ease both;transition:transform .15s,box-shadow .15s}
-.today-overview-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(116,4,95,.25)}
-.today-overview-info{display:flex;flex-direction:column;gap:2px}
-.hero-glance-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.hero-glance-icon--brand{background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary)}
-.hero-glance-icon--blue{background:var(--pea-blue-50);color:var(--pea-blue-600)}
-.hero-glance-icon--warning{background:var(--pea-utility-warning-50);color:var(--pea-utility-warning-600)}
-.hero-glance-icon--success{background:var(--pea-utility-success-50);color:var(--pea-utility-success-700)}
-.today-overview-value{font-family:var(--pea-font-family-display);font-size:19px;font-weight:700;color:var(--pea-text-primary)}
-.today-overview-label{font-size:12.5px;color:var(--pea-text-tertiary)}
 
 /* ---- kpi cards ---- */
 .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
