@@ -2,6 +2,11 @@ import { ORG_TREE } from '@/src/shared/org-tree-data.js';
 
 const {Button:SmButton,Badge:SmBadge,InputField:SmInputField,Toggle:SmToggle,Radio:SmRadio,Textarea:SmTextarea}=window.DesignSystem_cbd181;
 
+function Toast({message,onDone}){
+  React.useEffect(()=>{const t=setTimeout(onDone,2600);return ()=>clearTimeout(t);},[]);
+  return React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),message);
+}
+
 function monthLabel(k){const idx=parseInt(k.replace('M',''),10)-1;return ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][idx]||k;}
 function periodDefaults(type){return type==='quarter'?{Q1:'',Q2:'',Q3:'',Q4:''}:{M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:'',M9:'',M10:'',M11:'',M12:''};}
 function avgOf(values){const nums=Object.values(values).map(v=>parseFloat(v)).filter(v=>!isNaN(v));if(!nums.length)return null;return (nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1);}
@@ -300,11 +305,18 @@ function treeFilter(node,q,statusFilter){
 
 const LEVEL_LABEL=['สายงาน','ฝ่าย','กอง'];
 const LEVEL_BADGE_COLOR=['purple','blue','success'];
+function containsId(node,id){
+  if(node.id===id)return true;
+  return !!(node.children&&node.children.some(c=>containsId(c,id)));
+}
 function OrgTreeItem({node,depth,selectedId,onSelect}){
   const [open,setOpen]=React.useState(depth<1);
   const hasChildren=node.children&&node.children.length>0;
   const isSelected=selectedId===node.id;
   const selectable=depth>0;
+  React.useEffect(()=>{
+    if(hasChildren&&selectedId!=null&&containsId(node,selectedId))setOpen(true);
+  },[selectedId]);
   function handleClick(){
     if(hasChildren)setOpen(!open);
     if(selectable)onSelect(node);
@@ -328,7 +340,14 @@ function findNodePath(tree,id,path){
   return null;
 }
 
-function SlaOverview({items,onAdd,onEdit,onDelete,onSelectNode}){
+function findNodeByName(nodes,name){
+  for(const n of nodes){
+    if(n.name===name)return n;
+    if(n.children){const found=findNodeByName(n.children,name);if(found)return found;}
+  }
+  return null;
+}
+function SlaOverview({items,onAdd,onEdit,onDelete,onSelectNode,focusUnit}){
   const tree=React.useMemo(buildOrgSlaTree,[]);
   const [treeQ,setTreeQ]=React.useState('');
   const [statusFilter,setStatusFilter]=React.useState('all');
@@ -337,6 +356,11 @@ function SlaOverview({items,onAdd,onEdit,onDelete,onSelectNode}){
     const secretariat=root&&root.children&&root.children.find(c=>c.name.includes('เลขานุการองค์กร'));
     return secretariat?secretariat.id:null;
   });
+  React.useEffect(()=>{
+    if(!focusUnit)return;
+    const found=findNodeByName(tree,focusUnit.name);
+    if(found)setSelectedId(found.id);
+  },[focusUnit&&focusUnit.token]);
   const totalSayngan=tree.length;
   const totalDept=tree.reduce((a,sa)=>a+sa.children.length,0);
   const totalUnit=tree.reduce((a,sa)=>a+treeLeafCount(sa),0);
@@ -434,7 +458,7 @@ function CopySlaModal({sourceNode,sourceItems,year,onClose,onCopy}){
           ),
           React.createElement('div',{className:'modal-field'},
             React.createElement('label',{className:'modal-label'},'ปีปลายทาง'),
-            React.createElement(window.SelectMenu,{value:targetYear,onChange:setTargetYear,options:['2569','2568','2567'].map(y=>({value:y,label:'พ.ศ. '+y}))})
+            React.createElement(window.SelectMenu,{value:targetYear,onChange:setTargetYear,options:[year,String(Number(year)+1)].map(y=>({value:y,label:'พ.ศ. '+y}))})
           )
         )
       ),
@@ -472,6 +496,7 @@ function SlaPanel(){
   const [year,setYear]=React.useState('2569');
   const [currentNode,setCurrentNode]=React.useState(null);
   const [copyModalOpen,setCopyModalOpen]=React.useState(false);
+  const [focusUnit,setFocusUnit]=React.useState(null);
 
   function handleSubmit(data){
     if(modal.initial){
@@ -489,7 +514,8 @@ function SlaPanel(){
     const newItems=copiedItems.map((it,i)=>({...it,id:now+i,owner:targetUnit,status:'active'}));
     setItems([...newItems,...items]);
     setCopyModalOpen(false);
-    setToast('คัดลอก SLA '+newItems.length+' รายการเรียบร้อยแล้ว');
+    setFocusUnit({name:targetUnit,token:now});
+    setToast('คัดลอก SLA '+newItems.length+' รายการไปยัง '+targetUnit+' เรียบร้อยแล้ว');
   }
 
   return React.createElement('div',{className:'card panel'},
@@ -506,7 +532,7 @@ function SlaPanel(){
       )
     ),
     modal?(modal.formType==='fai'?React.createElement(SlaFormFai,{initial:modal.initial,unitName:modal.unitName,onClose:()=>setModal(null),onSubmit:handleSubmit}):React.createElement(SlaFormKong,{initial:modal.initial,unitName:modal.unitName,onClose:()=>setModal(null),onSubmit:handleSubmit})):
-    React.createElement(SlaOverview,{items:items,onAdd:(node,levelIdx)=>setModal({initial:null,formType:levelIdx===1?'fai':'kong',unitName:node.name}),onEdit:item=>setModal({initial:item,formType:item.formType==='fai'?'fai':'kong',unitName:item.owner}),onDelete:item=>setConfirmDelete(item),onSelectNode:setCurrentNode}),
+    React.createElement(SlaOverview,{items:items,onAdd:(node,levelIdx)=>setModal({initial:null,formType:levelIdx===1?'fai':'kong',unitName:node.name}),onEdit:item=>setModal({initial:item,formType:item.formType==='fai'?'fai':'kong',unitName:item.owner}),onDelete:item=>setConfirmDelete(item),onSelectNode:setCurrentNode,focusUnit:focusUnit}),
     copyModalOpen&&currentNode&&React.createElement(CopySlaModal,{sourceNode:currentNode,sourceItems:items.filter(it=>nodeItemMatch(currentNode,it)),year:year,onClose:()=>setCopyModalOpen(false),onCopy:handleCopy}),
     confirmDelete&&React.createElement('div',{className:'modal-overlay',onClick:()=>setConfirmDelete(null)},
       React.createElement('div',{className:'modal-card confirm-modal',onClick:e=>e.stopPropagation()},
