@@ -131,9 +131,16 @@ function ParticipantsEditRow({people,onChange}){
   );
 }
 
-function ProcessObjectiveList(){
-  const [objectives,setObjectives]=React.useState(window.LF_BA_PROCESS_OPTIONS.map(o=>o.objective||''));
-  function update(i,v){setObjectives(objectives.map((o,idx)=>idx===i?v:o));}
+// สถานะความคืบหน้าของขั้นตอน: empty = ยังไม่กรอก, partial = กรอกไม่ครบ, complete = ครบแล้ว
+function lfStateOf(touched,complete){return complete?'complete':(touched?'partial':'empty');}
+function lfCombineStates(list){
+  if(list.every(s=>s==='complete'))return 'complete';
+  if(list.every(s=>s==='empty'))return 'empty';
+  return 'partial';
+}
+
+function ProcessObjectiveList({objectives,onChange}){
+  function update(i,v){onChange(objectives.map((o,idx)=>idx===i?v:o));}
   return React.createElement('div',{className:'lmeta-field lmeta-field--wide'},
     React.createElement('div',{className:'lprocobj-headrow'},
       React.createElement('span',{className:'lfield-label'},'ชื่อกระบวนการ'),
@@ -175,8 +182,9 @@ function PdfPreviewModal({file,onClose}){
   );
 }
 
-function DiagramUploadSection({title,hint,redNote}){
-  const [files,setFiles]=React.useState([]);
+function DiagramUploadSection({title,hint,redNote,step,seedName,onStateChange}){
+  const [files,setFiles]=React.useState(()=>window.lfFill(step)==='full'?[{name:seedName,url:'/assets/target.png',isPdf:false}]:[]);
+  React.useEffect(()=>{onStateChange&&onStateChange(files.length?'complete':'empty');},[files.length]);
   const [error,setError]=React.useState('');
   const [lightboxIndex,setLightboxIndex]=React.useState(-1);
   const [pdfPreview,setPdfPreview]=React.useState(null);
@@ -225,31 +233,40 @@ function DiagramUploadSection({title,hint,redNote}){
   );
 }
 
-function DiagramBeforeSection(){
+function DiagramBeforeSection({onStateChange}){
   return React.createElement(DiagramUploadSection,{
     title:'ส่วนที่ 1 — แผนภาพกระบวนการก่อนการปรับปรุงประจำปี',
     hint:'แผนภาพรวมทั้งกระบวนการก่อนการปรับปรุง อาจอยู่ในรูปแบบ Work Flow หรือ SIPOC (ถ้ามี)',
-    redNote:'สำหรับหน่วยงานที่ใช้ตอบเกณฑ์ Core Business Enabler ของ กฟภ. ให้แสดงภาพกระบวนการในส่วนนี้'
+    redNote:'สำหรับหน่วยงานที่ใช้ตอบเกณฑ์ Core Business Enabler ของ กฟภ. ให้แสดงภาพกระบวนการในส่วนนี้',
+    step:1,seedName:'แผนภาพกระบวนการก่อนปรับปรุง-2569.png',onStateChange
   });
 }
 
-function DiagramAfterSection(){
+function DiagramAfterSection({onStateChange}){
   return React.createElement(DiagramUploadSection,{
     title:'ส่วนที่ 4 — ผลการปรับปรุงกระบวนการประจำปี',
     hint:'แผนภาพกระบวนการหลังการปรับปรุงและนำมาใช้ในการดำเนินการประจำปีถัดไป ซึ่งเกิดจากการกำหนดการพัฒนา/ปรับปรุงในส่วนที่ 3 (ถ้ามี)',
-    redNote:'สำหรับหน่วยงานที่ใช้ตอบเกณฑ์ Core Business Enabler ของ กฟภ. ให้แสดงภาพกระบวนการในส่วนนี้'
+    redNote:'สำหรับหน่วยงานที่ใช้ตอบเกณฑ์ Core Business Enabler ของ กฟภ. ให้แสดงภาพกระบวนการในส่วนนี้',
+    step:4,seedName:'แผนภาพกระบวนการหลังปรับปรุง-2569.png',onStateChange
   });
 }
 
-function MetaSection(){
+const LF_BLANK_PERSON={empId:'',name:'',position:'',tel:''};
+function MetaSection({onStateChange}){
   const m=window.LF_META;
-  const [recorder,setRecorder]=React.useState({...window.LF_CURRENT_USER,role:'ผู้บันทึกข้อมูล'});
-  const [reviewer,setReviewer]=React.useState(m.reviewer);
-  const [approver,setApprover]=React.useState(m.approver);
-  const [participants,setParticipants]=React.useState(m.participants);
+  const blank=window.lfFill(0)==='empty';
+  const [objectives,setObjectives]=React.useState(()=>window.LF_BA_PROCESS_OPTIONS.map(o=>blank?'':(o.objective||'')));
+  const [recorder,setRecorder]=React.useState(()=>blank?{...LF_BLANK_PERSON,role:'ผู้บันทึกข้อมูล'}:{...window.LF_CURRENT_USER,role:'ผู้บันทึกข้อมูล'});
+  const [reviewer,setReviewer]=React.useState(()=>blank?{...LF_BLANK_PERSON}:m.reviewer);
+  const [approver,setApprover]=React.useState(()=>blank?{...LF_BLANK_PERSON}:m.approver);
+  const [participants,setParticipants]=React.useState(()=>blank?[]:m.participants);
+  const people=[recorder,reviewer,approver];
+  const touched=objectives.some(o=>String(o||'').trim()!=='')||people.some(p=>!!p.name)||participants.some(p=>!!p.name);
+  const complete=objectives.every(o=>String(o||'').trim()!=='')&&people.every(p=>!!p.name);
+  React.useEffect(()=>{onStateChange&&onStateChange(lfStateOf(touched,complete));},[touched,complete]);
   return React.createElement(SectionCard,{title:'ส่วนที่ 0 — ข้อมูลพื้นฐานการประเมินและปรับปรุงกระบวนการ'},
     React.createElement('div',{className:'lmeta-grid'},
-      React.createElement(ProcessObjectiveList),
+      React.createElement(ProcessObjectiveList,{objectives,onChange:setObjectives}),
       React.createElement('div',{className:'lmeta-field lmeta-field--wide'},
         React.createElement('span',{className:'lfield-label'},'หน่วยงานผู้รับผิดชอบ'),
         React.createElement('div',{className:'lfield-static'},m.division)
@@ -264,6 +281,17 @@ function MetaSection(){
   );
 }
 
+function metricIsTouched(item){
+  return String(item.target||'').trim()!==''||String(item.result2568||'').trim()!==''||String(item.competitorTarget||'').trim()!==''
+    ||String(item.controlFix||'').trim()!==''||(item.controlCriteria||[]).length>0||(item.followup||[]).length>0;
+}
+function lfSeedMetricList(list){
+  const f=window.lfFill(2);
+  if(f==='empty')return list.map(m=>({...m,target:'',result2568:'',competitorTarget:'',analysis:'',analysisList:[],analysisDetail:'',improvementDetail:'',followup:[],controlCriteria:[],controlFix:''}));
+  const filled=m=>({...m,competitorTarget:'ร้อยละ 95',controlCriteria:m.isControl?['oversight']:[],controlFix:m.isControl?'กำกับดูแลให้ปฏิบัติงานตามมาตรฐานและติดตามผลทุกไตรมาส':''});
+  if(f==='full')return list.map(filled);
+  return list.map((m,i)=>i===0?filled(m):{...m,competitorTarget:'',controlCriteria:[],controlFix:''});
+}
 function metricIsComplete(item){
   const pointType=item.isControl?'control':(item.isCritical?'critical':'none');
   const hasTarget=String(item.target||'').trim()!=='';
@@ -355,14 +383,15 @@ function MetricCard({item,onChange,slaLabel}){
   );
 }
 
-function EffectivenessSection({onValidChange}){
-  const [leading,setLeading]=React.useState(window.LF_LEADING_METRICS);
-  const [lagging,setLagging]=React.useState(window.LF_LAGGING_METRICS);
+function EffectivenessSection({onStateChange}){
+  const [leading,setLeading]=React.useState(()=>lfSeedMetricList(window.LF_LEADING_METRICS));
+  const [lagging,setLagging]=React.useState(()=>lfSeedMetricList(window.LF_LAGGING_METRICS));
   const [tab,setTab]=React.useState(window.LF_BA_PROCESS_OPTIONS[0].label);
   function updateLeading(next){setLeading(leading.map(i=>i.id===next.id?next:i));}
   function updateLagging(next){setLagging(lagging.map(i=>i.id===next.id?next:i));}
-  const allValid=[...leading,...lagging].every(metricIsComplete);
-  React.useEffect(()=>{onValidChange&&onValidChange(allValid);},[allValid]);
+  const all=[...leading,...lagging];
+  const state=lfStateOf(all.some(metricIsTouched),all.every(metricIsComplete));
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   return React.createElement(SectionCard,{title:'ส่วนที่ 2.1 — ผลการดำเนินงานตามตัวชี้วัด (ย้อนหลัง 3 ปี)'},
     React.createElement('div',{className:'lmetric-tabs'},
       window.LF_BA_PROCESS_OPTIONS.map(o=>React.createElement('button',{key:o.key,type:'button',className:'lmetric-tab'+(tab===o.label?' is-active':''),onClick:()=>setTab(o.label)},o.label))
@@ -382,16 +411,18 @@ function EffectivenessSection({onValidChange}){
 
 const ADEQUACY_OPTIONS=[{key:'sufficient',label:'1. เพียงพอ'},{key:'insufficient',label:'2. ไม่เพียงพอ'}];
 
-function PointFormCard({kind,onValidChange}){
+function PointFormCard({kind,onStateChange}){
   const isControl=kind==='control';
-  const [step,setStep]=React.useState('');
-  const [analysisKey,setAnalysisKey]=React.useState('');
+  const seeded=window.lfFill(2)==='full';
+  const [step,setStep]=React.useState(()=>seeded?(isControl?'ขั้นตอนตรวจสอบและอนุมัติแผนงานประจำไตรมาส':'ขั้นตอนทบทวนขอบเขตงานร่วมกับผู้รับบริการก่อนเริ่มโครงการ'):'');
+  const [analysisKey,setAnalysisKey]=React.useState(()=>seeded?'sufficient':'');
   const [detail,setDetail]=React.useState('');
   const [open,setOpen]=React.useState(!isControl);
   const baseFilled=String(step||'').trim()!=='';
   const analysisFilled=analysisKey==='sufficient'?true:(analysisKey==='insufficient'?String(detail||'').trim()!=='':false);
   const complete=baseFilled&&analysisFilled;
-  React.useEffect(()=>{onValidChange&&onValidChange(complete);},[complete]);
+  const state=lfStateOf(baseFilled||!!analysisKey,complete);
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   return React.createElement('div',{className:'lpoint-acc'},
     React.createElement('button',{type:'button',className:'lpoint-acc-head',onClick:()=>setOpen(!open)},
       React.createElement('span',{className:'lpoint-acc-titlewrap'},
@@ -421,16 +452,17 @@ function PointFormCard({kind,onValidChange}){
   );
 }
 
-function PointSection({onValidChange}){
-  const [criticalValid,setCriticalValid]=React.useState(false);
-  const [controlValid,setControlValid]=React.useState(false);
-  React.useEffect(()=>{onValidChange&&onValidChange(criticalValid&&controlValid);},[criticalValid,controlValid]);
+function PointSection({onStateChange}){
+  const [criticalState,setCriticalState]=React.useState('empty');
+  const [controlState,setControlState]=React.useState('empty');
+  const state=lfCombineStates([criticalState,controlState]);
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   return React.createElement(SectionCard,{
     title:'ส่วนที่ 2.2 — การระบุ Critical Point และ Control Point',
     hint:'ระบุจุดที่ส่งผลสำคัญต่อผลลัพธ์ และจุดที่ต้องควบคุมให้เป็นไปตามเกณฑ์ — จำเป็นต้องกรอกทั้งสองส่วน'},
     React.createElement('div',{className:'lpoint-wrap'},
-      React.createElement(PointFormCard,{kind:'critical',onValidChange:setCriticalValid}),
-      React.createElement(PointFormCard,{kind:'control',onValidChange:setControlValid})
+      React.createElement(PointFormCard,{kind:'critical',onStateChange:setCriticalState}),
+      React.createElement(PointFormCard,{kind:'control',onStateChange:setControlState})
     )
   );
 }
@@ -498,13 +530,27 @@ function IssueCard({item,onChange}){
   );
 }
 
-function IssuesPrioritiesSection({onValidChange}){
-  const [issues,setIssues]=React.useState(window.LF_ISSUES);
-  const [qirGroups,setQirGroups]=React.useState([{id:Date.now(),issueText:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',rows:window.LF_QIR_ACTIVITIES.map(r=>({...r}))}]);
+function lfSeedIssues(){
+  const f=window.lfFill(3);
+  if(f==='empty')return window.LF_ISSUES.map(it=>({...it,analysis:'',direction:'',improveProcesses:[],improveYear:'',improveOther:''}));
+  if(f==='full')return window.LF_ISSUES.map(it=>({...it,direction:String(it.direction||'').trim()!==''?it.direction:'ทบทวนและปรับปรุงแนวทางการดำเนินงานให้สอดคล้องกับผลการวิเคราะห์'}));
+  return window.LF_ISSUES.map(it=>({...it}));
+}
+function lfSeedQirRows(){
+  const f=window.lfFill(3);
+  if(f==='empty')return [{id:Date.now()+1,activity:'',weight:0,saved:false}];
+  if(f==='full')return window.LF_QIR_ACTIVITIES.map(r=>({...r}));
+  return window.LF_QIR_ACTIVITIES.map((r,i)=>({...r,weight:i===0?40:0}));
+}
+function IssuesPrioritiesSection({onStateChange}){
+  const [issues,setIssues]=React.useState(lfSeedIssues);
+  const [qirGroups,setQirGroups]=React.useState(()=>[{id:Date.now(),issueText:window.lfFill(3)==='full'?'ปรับปรุงตัวชี้วัดกระบวนการให้สะท้อนผลลัพธ์':'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',rows:lfSeedQirRows()}]);
   const hasAnyIssueFilled=issues.some(it=>String(it.analysis||'').trim()!==''&&String(it.direction||'').trim()!=='');
   const qirGroupsOk=qirGroups.every(g=>g.rows.reduce((s,r)=>s+(Number(r.weight)||0),0)===100);
-  const sectionValid=hasAnyIssueFilled&&qirGroupsOk;
-  React.useEffect(()=>{onValidChange&&onValidChange(sectionValid);},[sectionValid]);
+  const touched=issues.some(it=>String(it.analysis||'').trim()!==''||String(it.direction||'').trim()!=='')
+    ||qirGroups.some(g=>String(g.issueText||'').trim()!==''||g.rows.some(r=>String(r.activity||'').trim()!==''||Number(r.weight)>0));
+  const state=lfStateOf(touched,hasAnyIssueFilled&&qirGroupsOk);
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   function updateIssue(next){setIssues(issues.map(i=>i.key===next.key?next:i));}
   function setGroupIssueText(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,issueText:text}:g));}
   function setGroupProcess(gid,key){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,processKey:key}:g));}
@@ -615,11 +661,15 @@ function NextYearEditableTable({label,stepOptions,rows,setRows}){
   );
 }
 
-function NextYearMetricsSection(){
-  const [mode,setMode]=React.useState(null);
+function NextYearMetricsSection({onStateChange}){
+  const [mode,setMode]=React.useState(()=>window.lfFill(5)==='full'?'reuse':null);
   const [leadingRows,setLeadingRows]=React.useState([]);
   const [laggingRows,setLaggingRows]=React.useState([]);
   const [seeded,setSeeded]=React.useState(false);
+  const rowsFilled=[...leadingRows,...laggingRows].every(r=>String(r.metric||'').trim()!==''&&String(r.target||'').trim()!=='');
+  const complete=mode==='reuse'||(mode==='revise'&&leadingRows.length+laggingRows.length>0&&rowsFilled);
+  const state=lfStateOf(mode!==null,complete);
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   function chooseReuse(){setMode('reuse');}
   function chooseRevise(){
     if(!seeded){
@@ -777,29 +827,40 @@ function knowledgeRowIsComplete(r){
   const entriesOk=entries.length>0&&entries.every(e=>String(e.name||'').trim()!==''&&(e.location||[]).length>0);
   return entriesOk&&(r.methods||[]).length>0&&(r.outcomes||[]).length>0;
 }
-function KnowledgeSection({onValidChange}){
-  const [rows,setRows]=React.useState(window.LF_KNOWLEDGE.map(r=>({
+function knowledgeRowIsTouched(r){
+  return (r.entries||[]).some(e=>String(e.name||'').trim()!==''||(e.location||[]).length>0)
+    ||(r.methods||[]).length>0||(r.outcomes||[]).length>0
+    ||String(r.before||'').trim()!==''||String(r.after||'').trim()!=='';
+}
+function KnowledgeSection({onStateChange}){
+  const fill=window.lfFill(6);
+  const [rows,setRows]=React.useState(()=>window.LF_KNOWLEDGE.map(r=>({
     id:r.id,
-    entries:[{id:Date.now()+r.id,knowType:r.type==='existing'?'existing':'new',name:r.type==='existing'?(r.contentId||''):(r.topic||''),location:r.type==='existing'?['kmsi']:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],
-    methods:[],outcomes:[],outcomesOther:'',before:'',after:''
+    entries:[{id:Date.now()+r.id,knowType:r.type==='existing'?'existing':'new',name:fill==='empty'?'':(r.type==='existing'?(r.contentId||''):(r.topic||'')),location:fill==='empty'?[]:(r.type==='existing'?['kmsi']:['kmcs']),locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],
+    methods:fill==='full'?['meeting','lesson']:[],
+    outcomes:fill==='full'?['time']:[],
+    outcomesOther:'',
+    before:fill==='full'?'ใช้เวลาดำเนินการเฉลี่ย 10 วันทำการ':'',
+    after:fill==='full'?'ใช้เวลาดำเนินการเฉลี่ย 6 วันทำการ':''
   })));
   function update(next){setRows(rows.map(r=>r.id===next.id?next:r));}
   function addRow(){setRows([...rows,{id:Date.now(),entries:[{id:Date.now()+1,knowType:'existing',name:'',location:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],methods:[],outcomes:[],outcomesOther:'',before:'',after:''}]);}
-  const allValid=rows.every(knowledgeRowIsComplete);
-  React.useEffect(()=>{onValidChange&&onValidChange(allValid);},[allValid]);
+  const state=lfStateOf(rows.some(knowledgeRowIsTouched),rows.every(knowledgeRowIsComplete));
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   return React.createElement(SectionCard,{title:'ส่วนที่ 6 — องค์ความรู้ที่ใช้ / องค์ความรู้ใหม่ที่เกิดขึ้นจากการปรับปรุงกระบวนการ'},
     rows.map(item=>React.createElement(KnowledgeCard,{key:item.id,item,onChange:update}))
   );
 }
 
-function EffectivenessAndPointSection({onValidChange}){
-  const [effValid,setEffValid]=React.useState(true);
-  const [pointValid,setPointValid]=React.useState(false);
-  React.useEffect(()=>{onValidChange&&onValidChange(effValid&&pointValid);},[effValid,pointValid]);
+function EffectivenessAndPointSection({onStateChange}){
+  const [effState,setEffState]=React.useState('empty');
+  const [pointState,setPointState]=React.useState('empty');
+  const state=lfCombineStates([effState,pointState]);
+  React.useEffect(()=>{onStateChange&&onStateChange(state);},[state]);
   return React.createElement(React.Fragment,null,
-    React.createElement(EffectivenessSection,{onValidChange:setEffValid}),
+    React.createElement(EffectivenessSection,{onStateChange:setEffState}),
     React.createElement('div',{className:'lqir-spacer'}),
-    React.createElement(PointSection,{onValidChange:setPointValid})
+    React.createElement(PointSection,{onStateChange:setPointState})
   );
 }
 
@@ -812,14 +873,16 @@ const LF_STEPS=[
 {key:'nextyear',label:'ตัวชี้วัดปีถัดไป',hint:'กำหนดตัวชี้วัดและเป้าหมายสำหรับปีถัดไป',Component:NextYearMetricsSection},
 {key:'knowledge',label:'องค์ความรู้',hint:'บันทึกองค์ความรู้เดิมและองค์ความรู้ใหม่',Component:KnowledgeSection}
 ];
+// ขั้นตอนที่มีช่องบังคับกรอก (ขั้นตอนอื่นเป็นแนบไฟล์/ตัวเลือกเสริม)
+const LF_REQUIRED_STEPS=[2,3,6];
 
-function Stepper({step,setStep,stepValid}){
+function Stepper({step,setStep,stepState}){
   return React.createElement('div',{className:'lstepper'},
     LF_STEPS.map((s,i)=>{
-      const isDone=i<step;
-      const isInvalid=stepValid&&stepValid[i]===false;
-      const cls='lstepper-item'+(i===step?' is-active':'')+(isDone?' is-done':'')+(isInvalid?' is-warning':'');
-      const icon=isInvalid?React.createElement(Icon,{name:'alert-circle',size:13}):isDone?React.createElement(Icon,{name:'check',size:13}):i;
+      const state=(stepState&&stepState[i])||'empty';
+      const cls='lstepper-item'+(i===step?' is-active':'')+(state==='complete'?' is-done':'')+(state==='partial'?' is-warning':'');
+      const icon=state==='complete'?React.createElement(Icon,{name:'check',size:13})
+        :state==='partial'?React.createElement(Icon,{name:'alert-circle',size:13}):i;
       return React.createElement('button',{key:s.key,type:'button',className:cls,onClick:()=>setStep(i)},
         React.createElement('span',{className:'lstepper-num'},icon),
         React.createElement('span',{className:'lstepper-label'},s.label)
@@ -903,13 +966,16 @@ function IncompleteStepsModal({stepIndexes,onClose,onGoTo}){
   );
 }
 
-function SaveAllConfirmModal({onClose,onConfirm}){
+function SaveAllConfirmModal({onClose,onConfirm,lastEdited}){
   return React.createElement('div',{className:'modal-overlay',onClick:onClose},
     React.createElement('div',{className:'modal-card lsaveconfirm-modal',onClick:e=>e.stopPropagation()},
       React.createElement('div',{className:'lsaveconfirm-body'},
         React.createElement('span',{className:'lsaveconfirm-icon'},React.createElement(Icon,{name:'check-circle',size:28})),
         React.createElement('h3',null,'ยืนยันบันทึกการประเมินและปรับปรุงกระบวนการ',React.createElement('br',null),'ประจำปี 2569'),
-        React.createElement('p',null,'ระบบจะบันทึกข้อมูลทุกส่วนของแบบฟอร์มนี้ หลังจากกดยืนยันยังสามารถแก้ไขข้อมูลในขั้นตอนนี้ได้อีก')
+        React.createElement('p',null,
+          lastEdited&&React.createElement('span',{className:'lsaveconfirm-edited'},'บันทึกการแก้ไขล่าสุด วันที่ '+lastEdited),
+          'ระบบจะบันทึกข้อมูลทุกส่วนของแบบฟอร์มนี้ หลังจากกดยืนยันยังสามารถแก้ไขข้อมูลได้อีก'
+        )
       ),
       React.createElement('div',{className:'lmodal-foot'},
         React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
@@ -929,19 +995,22 @@ function App(){
   const [exportToast,setExportToast]=React.useState(null);
   const [exportModalOpen,setExportModalOpen]=React.useState(false);
   const [pendingExport,setPendingExport]=React.useState(null);
-  const [stepValid,setStepValid]=React.useState(()=>LF_STEPS.map(()=>true));
+  const [stepState,setStepState]=React.useState(()=>LF_STEPS.map(()=>'empty'));
   const [incompleteSteps,setIncompleteSteps]=React.useState(null);
+  const [readOnly,setReadOnly]=React.useState(()=>window.LF_STATUS==='certified');
+  const [lastEdited,setLastEdited]=React.useState(()=>window.lfoLastEdited(window.LF_REF));
   const stepContentRef=React.useRef(null);
   const exportRef=React.useRef(null);
   const lastStepIndex=LF_STEPS.length-1;
   const prevStepRef=React.useRef(step);
-  function setStepValidAt(i,valid){
-    setStepValid(prev=>{
-      if(prev[i]===valid)return prev;
-      const next=[...prev];next[i]=valid;return next;
+  function setStepStateAt(i,state){
+    setStepState(prev=>{
+      if(prev[i]===state)return prev;
+      const next=[...prev];next[i]=state;return next;
     });
   }
-  function findIncompleteSteps(){return LF_STEPS.map((s,i)=>i).filter(i=>stepValid[i]===false);}
+  // ขั้นตอนที่มีช่องบังคับกรอก — ใช้ตัดสินว่าบันทึกทั้งหมดได้หรือยัง
+  function findIncompleteSteps(){return LF_REQUIRED_STEPS.filter(i=>stepState[i]!=='complete');}
   React.useEffect(()=>{if(!draftToast)return;const t=setTimeout(()=>setDraftToast(null),2200);return()=>clearTimeout(t);},[draftToast]);
   React.useEffect(()=>{if(!exportToast)return;const t=setTimeout(()=>setExportToast(null),3200);return()=>clearTimeout(t);},[exportToast]);
   React.useEffect(()=>{
@@ -951,15 +1020,25 @@ function App(){
       const incomplete=findIncompleteSteps();
       if(incomplete.length>0)setIncompleteSteps(incomplete);
     }
-  },[step,stepValid]);
+  },[step,stepState]);
   function handleFinalSaveClick(){
     const incomplete=findIncompleteSteps();
     if(incomplete.length>0){setIncompleteSteps(incomplete);return;}
     setSaveConfirmOpen(true);
   }
+  function saveDraft(){
+    try{localStorage.setItem('lf_draft_started','1');}catch(e){}
+    // ฟอร์มที่ส่งไปแล้วและกำลังแก้ไขอยู่ ไม่ต้องถอยสถานะกลับเป็นร่าง
+    if(window.LF_STATUS!=='certified')window.lfoSaveStatus(window.LF_REF,'draft');
+    setDraftToast('บันทึกร่างเรียบร้อยแล้ว');
+  }
   function confirmSaveAll(){
+    const today=window.lfoThaiToday();
+    window.lfoSaveLastEdited(window.LF_REF,today);
+    // ส่งครบทุกส่วนแล้ว — รายการนี้เปลี่ยนเป็น "ส่งรายงานแล้ว" เมื่อกลับไปหน้าภาพรวม
+    window.lfoSaveStatus(window.LF_REF,'certified');
     try{localStorage.setItem('lfo_just_saved','1');}catch(e){}
-    window.location.href='/learning-form-overview';
+    window.location.href=window.LF_BACK;
   }
   function startExport(keys){
     if(exporting||!keys.length)return;
@@ -1015,6 +1094,8 @@ function App(){
     return()=>{cancelled=true;};
   },[pendingExport]);
   const m=window.LF_META;
+  const statusMeta=window.LFO_STATUS_MAP[window.LF_STATUS]||window.LFO_STATUS_MAP.pending;
+  const isOverdue=window.LF_STATUS==='overdue';
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lcontent'},
@@ -1023,9 +1104,10 @@ function App(){
         React.createElement('div',{className:'ltitle-top'},
           React.createElement('div',{className:'ltitle-heading'},
             React.createElement('h1',null,window.LF_META.processName),
-            React.createElement(Badge,{label:'ยังไม่รายงาน',type:'pill-color',color:'blue',size:'sm'})
+            React.createElement(Badge,{label:statusMeta.label,type:'pill-color',color:statusMeta.color,size:'sm'})
           ),
           React.createElement('div',{className:'ltitle-actions'},
+            readOnly&&React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:()=>setReadOnly(false)},'แก้ไข'),
             React.createElement(Button,{variant:'secondary',size:'md',isDisabled:exporting,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:()=>setExportModalOpen(true)},exporting?'กำลังสร้าง PDF...':'Export PDF'),
             React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายแบบฟอร์ม')
           )
@@ -1033,24 +1115,34 @@ function App(){
         React.createElement('div',{className:'ltitle-meta'},
           React.createElement('span',{className:'ltitle-meta-item'},m.division),
           React.createElement('span',{className:'ltitle-meta-divider'}),
-          React.createElement('span',{className:'ltitle-meta-item'},'จัดทำเมื่อวันที่ '+m.createdDate)
+          React.createElement('span',{className:'ltitle-meta-item'},'จัดทำเมื่อวันที่ '+m.createdDate),
+          lastEdited&&React.createElement('span',{className:'ltitle-meta-divider'}),
+          lastEdited&&React.createElement('span',{className:'ltitle-meta-item'},'แก้ไขล่าสุดวันที่ '+lastEdited)
+        ),
+        isOverdue&&React.createElement('div',{className:'ltitle-overdue'},
+          React.createElement(Icon,{name:'alert-circle',size:16}),
+          'เลยกำหนดส่งแล้ว — รอบการจัดทำ '+window.LFO_PERIOD.label+' กรุณากรอกให้ครบแล้วกดบันทึกทั้งหมดเพื่อส่งรายงาน'
         )
       ),
       React.createElement('div',{className:'lstep-layout'},
-        React.createElement(Stepper,{step,setStep,stepValid}),
+        React.createElement(Stepper,{step,setStep,stepState}),
         React.createElement('div',{className:'lstep-main'},
-          React.createElement('div',{ref:stepContentRef,className:'lstep-content'},
+          readOnly&&React.createElement('div',{className:'lreadonly-note'},
+            React.createElement(Icon,{name:'lock-01',size:16}),
+            'ส่งรายงานแล้ว — แสดงแบบอ่านอย่างเดียว กดปุ่ม "แก้ไข" ด้านบนเพื่อแก้ไขข้อมูล'
+          ),
+          React.createElement('div',{ref:stepContentRef,className:'lstep-content'+(readOnly?' lstep-content--locked':'')},
             LF_STEPS.map((s,i)=>React.createElement('div',{key:s.key,style:i===step?undefined:{display:'none'}},
-              React.createElement(s.Component,{onValidChange:valid=>setStepValidAt(i,valid)})
+              React.createElement(s.Component,{onStateChange:state=>setStepStateAt(i,state)})
             ))
           ),
           React.createElement('div',{className:'lstep-nav'},
             React.createElement(Button,{variant:'secondary',size:'md',isDisabled:step===0,leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:()=>setStep(s=>Math.max(0,s-1))},'ย้อนกลับ'),
             React.createElement('span',{className:'lstep-nav-count'},'ขั้นตอน '+(step+1)+' / '+LF_STEPS.length),
             React.createElement('div',{className:'lstep-nav-right'},
-              React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'save-01',size:16}),onClick:()=>{try{localStorage.setItem('lf_draft_started','1');}catch(e){}setDraftToast('บันทึกร่างเรียบร้อยแล้ว');}},'บันทึกร่าง'),
+              !readOnly&&React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'save-01',size:16}),onClick:saveDraft},'บันทึกร่าง'),
               step<LF_STEPS.length-1?React.createElement(Button,{variant:'primary',size:'md',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>setStep(s=>Math.min(LF_STEPS.length-1,s+1))},'ถัดไป'):
-              React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:handleFinalSaveClick},'บันทึกทั้งหมด')
+              !readOnly&&React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:handleFinalSaveClick},'บันทึกทั้งหมด')
             )
           )
         )
@@ -1072,7 +1164,7 @@ function App(){
     ),
     guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)}),
     exportModalOpen&&React.createElement(ExportPdfModal,{onClose:()=>setExportModalOpen(false),onConfirm:startExport}),
-    saveConfirmOpen&&React.createElement(SaveAllConfirmModal,{onClose:()=>setSaveConfirmOpen(false),onConfirm:confirmSaveAll}),
+    saveConfirmOpen&&React.createElement(SaveAllConfirmModal,{onClose:()=>setSaveConfirmOpen(false),onConfirm:confirmSaveAll,lastEdited:lastEdited||window.lfoThaiToday()}),
     incompleteSteps&&React.createElement(IncompleteStepsModal,{stepIndexes:incompleteSteps,onClose:()=>setIncompleteSteps(null),onGoTo:i=>{setStep(i);setIncompleteSteps(null);}}),
     draftToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),draftToast),
     exportToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),exportToast)

@@ -127,4 +127,20 @@ const LF_AVATARS={
 '491667':'/assets/avatars/avatar-491667.jpg'
 };
 function lfLookupEmployee(empId){return LF_EMPLOYEES[empId]||null;}
-Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee});
+
+// ---- โหมดเปิดฟอร์ม (?status=&ref= จากหน้าภาพรวม) ----
+// บอกว่าแต่ละขั้นตอนควรมีข้อมูลกรอกไว้แค่ไหน เพื่อให้แต่ละสถานะเปิดมาแล้วเห็นความคืบหน้าต่างกัน
+// empty = ยังไม่กรอก (เทา) · partial = กรอกไม่ครบ (เหลือง) · full = ครบแล้ว (เขียว)
+const LF_FILL_BY_STATUS={
+  pending:  ['empty','empty','empty','empty','empty','empty','empty'],
+  draft:    ['full','full','partial','partial','empty','empty','empty'],
+  overdue:  ['full','empty','partial','empty','empty','empty','empty'],
+  certified:['full','full','full','full','full','full','full']
+};
+function lfQueryParam(name){try{return new URLSearchParams(window.location.search).get(name)||'';}catch(e){return '';}}
+const LF_STATUS=LF_FILL_BY_STATUS[lfQueryParam('status')]?lfQueryParam('status'):'pending';
+const LF_REF=lfQueryParam('ref');
+const LF_BACK=lfQueryParam('back')||'/learning-form-overview';
+function lfFill(step){return (LF_FILL_BY_STATUS[LF_STATUS]||[])[step]||'empty';}
+Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee,
+  LF_STATUS,LF_REF,LF_BACK,lfFill});

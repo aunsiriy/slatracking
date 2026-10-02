@@ -36,12 +36,14 @@ function DueBanner(){
 }
 
 const LFO_STATUS_ICON={pending:'file-text',draft:'edit',certified:'check-circle',overdue:'alert-triangle'};
+// สถานะจริงของรายการ = สถานะที่ผู้ใช้เพิ่งบันทึก > เลยกำหนดส่ง > สถานะตั้งต้น
+function lfoItemStatus(it){return window.lfoResolveStatus('item-'+it.id,it.status,it.due);}
 function KpiCards({year,scope}){
   const items=window.LFO_ITEMS.filter(it=>it.scope===scope&&(scope!=='own'||it.year===year));
   const cards=window.LFO_STATUS_ORDER.map(key=>({
     icon:LFO_STATUS_ICON[key],
     label:window.LFO_STATUS_MAP[key].label,
-    value:items.filter(it=>it.status===key).length,
+    value:items.filter(it=>lfoItemStatus(it)===key).length,
     color:window.LFO_STATUS_MAP[key].color
   }));
   return React.createElement('div',{className:'lfkpi-grid'},
@@ -116,8 +118,10 @@ function RecentList({year,setYear,scope,setScope}){
       ),
       React.createElement('tbody',null,
         items.map((it,i)=>{
-          const s=window.LFO_STATUS_MAP[it.status];
-          return React.createElement('tr',{key:i,className:scope==='other'?'':'lftable-row',onClick:scope==='other'?undefined:()=>{window.location.href='/learning-form';}},
+          const ref='item-'+it.id;
+          const status=lfoItemStatus(it);
+          const s=window.LFO_STATUS_MAP[status];
+          return React.createElement('tr',{key:i,className:scope==='other'?'':'lftable-row',onClick:scope==='other'?undefined:()=>{window.location.href=window.lfoFormHref(status,ref)+'&back=%2Flearning-form-overview';}},
             scope==='other'&&React.createElement('td',null,it.dept),
             React.createElement('td',null,it.scope==='own'&&window.lfoRowTitle?window.lfoRowTitle(it.formYear):it.process),
             React.createElement('td',null,it.unit),
@@ -159,21 +163,15 @@ function App(){
   const [savedToast,setSavedToast]=React.useState(false);
   const [hasDraft,setHasDraft]=React.useState(false);
   React.useEffect(()=>{
-    let draft=false;
-    try{draft=localStorage.getItem('lf_draft_started')==='1';}catch(e){}
-    setHasDraft(draft);
-    if(draft){
-      const item=window.LFO_ITEMS.find(it=>it.scope==='own'&&it.status==='pending');
-      if(item)item.status='draft';
-    }
-  },[]);
+    // สถานะรายฟอร์มถูกบันทึกไว้ต่อรายการแล้ว (ดู lfoResolveStatus) — ตรงนี้แค่ดูว่ามีฟอร์มที่เริ่มทำแล้วหรือยัง
+    const own=window.LFO_ITEMS.find(it=>it.scope==='own'&&it.year===year);
+    setHasDraft(!!own&&lfoItemStatus(own)!=='pending');
+  },[year]);
   React.useEffect(()=>{
     let saved=false;
     try{saved=localStorage.getItem('lfo_just_saved')==='1';}catch(e){}
     if(saved){
-      const item=window.LFO_ITEMS.find(it=>it.scope==='own'&&(it.status==='pending'||it.status==='draft'));
-      if(item)item.status='certified';
-      try{localStorage.removeItem('lfo_just_saved');localStorage.removeItem('lf_draft_started');}catch(e){}
+      try{localStorage.removeItem('lfo_just_saved');}catch(e){}
       setSavedToast(true);
       setTimeout(()=>setSavedToast(false),3500);
     }

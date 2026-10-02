@@ -25,13 +25,34 @@ function Breadcrumb(){
   );
 }
 
-function KpiCards({year}){
-  const s=window.LFOA_SUMMARY;
-  const cards=[
-    {icon:'book',label:'Learning Form ทั้งหมด (ทุกหน่วยงาน)',value:s.total,color:'brand'},
-    {icon:'clock',label:'ยังไม่รายงาน',value:s.pendingCount,color:'warning'},
-    {icon:'calendar',label:'เสร็จสิ้น',value:s.total-s.pendingCount,color:'success'}
-  ];
+const LFOA_MY_DEPT='ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง (ฝพอ.)';
+function getTrackRows(scope){
+  const depts=window.LFOA_DEPTS||[];
+  if(scope==='own'){
+    const allYears=Object.keys(window.LFOA_PROGRESS).sort().reverse();
+    return allYears.map(y=>{
+      const p=(window.LFOA_PROGRESS[y]||{})[LFOA_MY_DEPT];
+      const ref='own-'+y;
+      return {year:y,dept:LFOA_MY_DEPT,line:'',ref,status:window.lfoResolveStatus(ref,p?p.status:'pending',p&&p.due),recorder:p?p.recorder:'—',date:p?p.date:'—',hasForm:!!p};
+    });
+  }
+  const prog=(window.LFOA_PROGRESS||{})['2569']||{};
+  return depts.filter(d=>d.dept!==LFOA_MY_DEPT).map(d=>{
+    const p=prog[d.dept];
+    const ref='dept-'+d.dept;
+    return {dept:d.dept,line:d.line,ref,status:window.lfoResolveStatus(ref,p?p.status:'pending',p&&p.due),recorder:p?p.recorder:'—',date:p?p.date:'—',hasForm:!!p};
+  });
+}
+const LFOA_KPI_ICON={pending:'file-text',draft:'edit',certified:'check-circle',overdue:'alert-triangle'};
+function KpiCards({scope}){
+  const rows=getTrackRows(scope);
+  const SM=window.LFO_STATUS_MAP;
+  const cards=window.LFO_STATUS_ORDER.map(key=>({
+    icon:LFOA_KPI_ICON[key],
+    label:SM[key].label,
+    value:rows.filter(r=>r.status===key).length,
+    color:SM[key].color
+  }));
   return React.createElement('div',{className:'lfakpi-grid'},
     cards.map((c,i)=>React.createElement('div',{key:i,className:'card lfakpi-card'},
       React.createElement('span',{className:`lfakpi-icon lfakpi-icon--${c.color}`},React.createElement(Icon,{name:c.icon,size:18})),
@@ -81,34 +102,21 @@ function MenuCards({onGuide}){
   );
 }
 
-function TrackList(){
-  const [year,setYear]=React.useState('2569');
-  const [scope,setScope]=React.useState('own');
+function TrackList({scope,setScope}){
   const [line,setLine]=React.useState('all');
   const [stat,setStat]=React.useState('all');
   const [search,setSearch]=React.useState('');
   const depts=window.LFOA_DEPTS||[];
-  const prog=(window.LFOA_PROGRESS||{})[year]||{};
-  const SM=window.LFOA_TRACK_STATUS;
+  const SM=window.LFO_STATUS_MAP;
   const lineOptions=Array.from(new Set(depts.map(d=>d.line)));
-  const MY_DEPT='ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง (ฝพอ.)';
-  const allYears=Object.keys(window.LFOA_PROGRESS).sort().reverse();
-  const ownRows=allYears.map(y=>{
-    const p=(window.LFOA_PROGRESS[y]||{})[MY_DEPT];
-    return {year:y,dept:MY_DEPT,line:'',status:p?p.status:'notstarted',recorder:p?p.recorder:'—',date:p?p.date:'—',hasForm:!!p};
-  });
-  const rows=scope==='own'?ownRows:depts.filter(d=>d.dept!==MY_DEPT).map(d=>{
-    const p=prog[d.dept];
-    return {dept:d.dept,line:d.line,status:p?p.status:'notstarted',recorder:p?p.recorder:'—',date:p?p.date:'—',hasForm:!!p};
-  });
-  const done=rows.filter(r=>r.status==='certified').length;
-  const pct=Math.round(done/rows.length*100);
-  const counts={all:rows.length,certified:done,pending:rows.filter(r=>r.status==='pending').length,draft:rows.filter(r=>r.status==='draft').length,notstarted:rows.filter(r=>r.status==='notstarted').length};
+  const rows=getTrackRows(scope);
+  const counts={all:rows.length};
+  window.LFO_STATUS_ORDER.forEach(key=>{counts[key]=rows.filter(r=>r.status===key).length;});
   const items=rows
     .filter(r=>line==='all'||r.line===line)
     .filter(r=>stat==='all'||r.status===stat)
     .filter(r=>!search.trim()||r.dept.toLowerCase().includes(search.trim().toLowerCase()));
-  const chips=[['all','ทั้งหมด'],['certified','เสร็จสิ้น'],['pending','ยังไม่รายงาน'],['draft','ร่าง'],['notstarted','ยังไม่เริ่ม']];
+  const chips=[['all','ทั้งหมด'],...window.LFO_STATUS_ORDER.map(key=>[key,SM[key].label])];
   return React.createElement('div',{className:'card lflist-card'},
     React.createElement('div',{className:'lflist-head'},
       React.createElement('div',null,
@@ -148,7 +156,7 @@ function TrackList(){
       React.createElement('tbody',null,
         items.map((r,i)=>{
           const st=SM[r.status];
-          return React.createElement('tr',{key:i,className:r.hasForm?'lftable-row':'lftrack-row-empty',onClick:r.hasForm?()=>{window.location.href='/learning-form';}:undefined},
+          return React.createElement('tr',{key:i,className:r.hasForm?'lftable-row':'lftrack-row-empty',onClick:r.hasForm?()=>{window.location.href=window.lfoFormHref(r.status,r.ref)+'&back=%2Flearning-form-overview-admin';}:undefined},
             React.createElement('td',{className:'lftrack-dept'},scope==='own'?'การประเมินและปรับปรุงกระบวนการ ประจำปี '+r.year:r.dept),
             scope==='other'&&React.createElement('td',null,r.line),
             React.createElement('td',null,r.recorder),
@@ -164,7 +172,7 @@ function TrackList(){
   );
 }
 
-const LFOA_STATUS_PCT={certified:100,draft:50,pending:25,notstarted:0};
+const LFOA_STATUS_PCT={certified:100,draft:50,pending:25,overdue:0,notstarted:0};
 
 function DashBar({pct}){
   return React.createElement('div',{className:'lfadash-bar-track'},
@@ -255,7 +263,7 @@ function SubmissionDashboard(){
 }
 
 function App(){
-  const [year]=React.useState(window.LFOA_YEARS[0]);
+  const [scope,setScope]=React.useState('own');
   const [guideOpen,setGuideOpen]=React.useState(false);
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
@@ -270,8 +278,8 @@ function App(){
       ),
       React.createElement(MenuCards,{onGuide:()=>setGuideOpen(true)}),
       React.createElement(SubmissionDashboard,null),
-      React.createElement(KpiCards,{year}),
-      React.createElement(TrackList,null),
+      React.createElement(KpiCards,{scope}),
+      React.createElement(TrackList,{scope,setScope}),
       guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)})
     )
   );

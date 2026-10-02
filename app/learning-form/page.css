@@ -13,6 +13,12 @@ button{font-family:inherit}
 .lsaveconfirm-icon{width:56px;height:56px;border-radius:50%;background:var(--pea-bg-success-primary);color:var(--pea-fg-success-primary);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
 .lsaveconfirm-body h3{font-size:17px;font-weight:700;color:var(--pea-text-primary);margin:0}
 .lsaveconfirm-body p{font-size:13.5px;color:var(--pea-text-tertiary);margin:0;line-height:1.6}
+.lsaveconfirm-edited{display:block;font-weight:600;color:var(--pea-text-secondary);margin-bottom:4px}
+
+.ltitle-overdue{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--pea-bg-error-primary);color:var(--pea-fg-error-primary);font-size:13px;font-weight:600}
+.lreadonly-note{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 14px;border-radius:10px;background:var(--pea-bg-secondary);border:1px solid var(--pea-border-secondary);color:var(--pea-text-secondary);font-size:13px;font-weight:600}
+.lstep-content--locked{pointer-events:none}
+.lstep-content--locked input,.lstep-content--locked textarea,.lstep-content--locked button{cursor:default}
 
 .lincomplete-modal{width:460px}
 .lincomplete-body{padding:32px 28px 8px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}

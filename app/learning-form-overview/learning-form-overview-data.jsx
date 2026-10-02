@@ -3,11 +3,11 @@ const LFO_ITEMS=[
 {id:1,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2569',formYear:'2569',unit:'ธนพรเสมาไชย',year:'2569',status:'pending',date:'01/10/2569',scope:'own'},
 {id:2,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2568',formYear:'2568',unit:'ธนพร เสมาไชย',year:'2569',status:'draft',date:'08/10/2568',scope:'own'},
 {id:3,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2567',formYear:'2567',unit:'ธนพร เสมาไชย',year:'2569',status:'certified',date:'12/10/2567',scope:'own'},
-{id:15,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2566',formYear:'2566',unit:'ธนพร เสมาไชย',year:'2569',status:'overdue',date:'15/10/2566',scope:'own'},
+{id:15,process:'การประเมินและปรับปรุงกระบวนการ ประจำปี 2566',formYear:'2566',unit:'ธนพร เสมาไชย',year:'2569',status:'pending',due:'2023-09-30',date:'15/10/2566',scope:'own'},
 {id:4,process:'ปี 2568',unit:'ปิยะพร โชติวัฒน์',year:'2568',status:'certified',date:'25/10/2568',scope:'other',dept:'ฝ่ายกลยุทธ์ดิจิทัลและบริหารจัดการข้อมูล (ฝดข.)',line:'สายงานดิจิทัลและการสื่อสาร'},
 {id:5,process:'ปี 2568',unit:'ศักดิ์ชัย เรืองศิริ',year:'2568',status:'draft',date:'18/10/2568',scope:'other',dept:'ฝ่ายปฏิบัติการและบำรุงรักษาระบบดิจิทัล (ฝปด.)',line:'สายงานดิจิทัลและการสื่อสาร'},
 {id:6,process:'ปี 2567',unit:'มณีรัตน์ ทองประเสริฐ',year:'2567',status:'certified',date:'30/09/2567',scope:'other',dept:'ฝ่ายโครงสร้างพื้นฐานเทคโนโลยีดิจิทัล (ฝสท.)',line:'สายงานดิจิทัลและการสื่อสาร'},
-{id:7,process:'ปี 2567',unit:'ภานุวัฒน์ แสงจันทร์',year:'2567',status:'overdue',date:'22/09/2567',scope:'other',dept:'ฝ่ายระบบสื่อสาร (ฝรส.)',line:'สายงานดิจิทัลและการสื่อสาร'},
+{id:7,process:'ปี 2567',unit:'ภานุวัฒน์ แสงจันทร์',year:'2567',status:'pending',due:'2024-09-30',date:'22/09/2567',scope:'other',dept:'ฝ่ายระบบสื่อสาร (ฝรส.)',line:'สายงานดิจิทัลและการสื่อสาร'},
 {id:8,process:'ปี 2568',unit:'สุนีย์ จันทร์เสง',year:'2568',status:'certified',date:'20/12/2568',scope:'other',dept:'ฝ่ายวิศวกรรมและบริการ',line:'สายงานภาคกลาง'},
 {id:9,process:'ปี 2568',unit:'กรชกร พิมลกุล',year:'2568',status:'certified',date:'15/11/2568',scope:'other',dept:'การไฟฟ้าส่วนภูมิภาคจังหวัดสระบุรี',line:'สายงานภาคกลาง'},
 {id:10,process:'ปี 2568',unit:'ดวงพร สุขสวรรค์',year:'2568',status:'pending',date:'02/10/2568',scope:'other',dept:'ฝ่ายปฏิบัติการและบำรุงรักษา',line:'สายงานภาคกลาง'},
@@ -19,10 +19,35 @@ const LFO_ITEMS=[
 const LFO_STATUS_MAP={
   pending:{label:'ยังไม่รายงาน',color:'blue'},
   draft:{label:'บันทึกร่าง',color:'warning'},
-  certified:{label:'เสร็จสิ้น',color:'success'},
+  certified:{label:'ส่งรายงานแล้ว',color:'success'},
   overdue:{label:'รายงานเกินกำหนด',color:'error'}
 };
 const LFO_STATUS_ORDER=['pending','draft','certified','overdue'];
+
+// ช่วงเวลาจัดทำของรอบปีปัจจุบัน — รายการที่ยังไม่ส่งหลังพ้นกำหนดจะกลายเป็น "รายงานเกินกำหนด"
+const LFO_PERIOD={label:'1 - 30 กันยายน 2569',due:'2026-09-30'};
+const LFO_THAI_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function lfoThaiToday(){
+  const d=new Date();
+  return d.getDate()+' '+LFO_THAI_MONTHS[d.getMonth()]+' '+(d.getFullYear()+543);
+}
+function lfoPastDue(due){
+  if(!due)return false;
+  return new Date().toISOString().slice(0,10)>due;
+}
+function lfoRead(key,fallback){try{return localStorage.getItem(key)||fallback;}catch(e){return fallback;}}
+function lfoWrite(key,value){try{localStorage.setItem(key,value);}catch(e){}}
+// สถานะที่ผู้ใช้เพิ่งบันทึกจากหน้าแบบฟอร์ม จะชนะค่าที่ตั้งไว้ใน mock data
+function lfoResolveStatus(ref,status,due){
+  const saved=ref?lfoRead('lf_status_'+ref,''):'';
+  if(saved)return saved;
+  if(status!=='certified'&&lfoPastDue(due))return 'overdue';
+  return status;
+}
+function lfoSaveStatus(ref,status){if(ref)lfoWrite('lf_status_'+ref,status);}
+function lfoLastEdited(ref){return ref?lfoRead('lf_edited_'+ref,''):'';}
+function lfoSaveLastEdited(ref,text){if(ref)lfoWrite('lf_edited_'+ref,text);}
+function lfoFormHref(status,ref){return '/learning-form?status='+encodeURIComponent(status)+'&ref='+encodeURIComponent(ref);}
 
 const LFO_FORM_GUIDE=[
 {part:'ส่วนที่ 0',title:'ข้อมูลพื้นฐาน',desc:'ข้อมูลพื้นฐานของกระบวนการและผู้ที่เกี่ยวข้องกับการประเมินและปรับปรุงกระบวนการ ประกอบด้วย\n- ชื่อกระบวนการ หมายถึง กระบวนการที่จะดำเนินการประเมินและปรับปรุง ซึ่งเป็นกระบวนการตามเกณฑ์การประเมินการดำเนินงาน Core Business Enablers\n- วัตถุประสงค์ของกระบวนการ หมายถึง เป้าหมายที่ต้องการบรรลุจากการดำเนินงานตามกระบวนการ ซึ่งจะช่วยให้การปฏิบัติงานมีทิศทางที่ชัดเจน สามารถติดตาม ประเมินผล และปรับปรุงประสิทธิภาพ/ประสิทธิผลของกระบวนการได้อย่างต่อเนื่อง\n- กระบวนงานหลักตาม BA หมายถึง กระบวนงานหลัก/กระบวนการย่อยตาม BA ของ กฟภ. (โดยให้ระบุว่า กระบวนการที่จะดำเนินการประเมินและปรับปรุงตาม Bullet ที่ 1 ตรงกับกระบวนงานหลัก/กระบวนการย่อยใดตาม BA ของ กฟภ. หากไม่ตรงก็ไม่ต้องระบุ)\n- ผู้บันทึกข้อมูล หมายถึง ผู้ที่ได้รับมอบหมายให้บันทึกข้อมูลลงระบบ\n- ผู้ตรวจสอบข้อมูล หมายถึง ผู้อำนวยการกองที่เป็นเจ้าของกระบวนการที่ได้รับมอบหมายให้ตรวจสอบข้อมูล\n- ผู้อนุมัติข้อมูล หมายถึง ผู้อำนวยการฝ่ายที่เป็นเจ้าของกระบวนการ\n- ผู้เข้าร่วมจัดทำ หมายถึง ผู้ที่เกี่ยวข้องกับกระบวนการที่มีส่วนร่วมในการประเมินและปรับปรุงกระบวนการ\n- หน่วยงานผู้รับผิดชอบ หมายถึง หน่วยงานผู้รับผิดชอบกระบวนการ'},
@@ -42,4 +67,5 @@ const LF_FORM_YEAR='2569';
 function lfFormTitle(year){return 'แบบฟอร์มการประเมินและปรับปรุงกระบวนการของ กฟภ. ประจำปี '+(year||LF_FORM_YEAR);}
 function lfoRowTitle(year){return 'PEA Learning Form ประจำปี '+(year||LF_FORM_YEAR);}
 
-Object.assign(window,{LFO_YEARS,LFO_ITEMS,LFO_STATUS_MAP,LFO_STATUS_ORDER,LFO_FORM_GUIDE,LF_FORM_YEAR,lfFormTitle,lfoRowTitle});
+Object.assign(window,{LFO_YEARS,LFO_ITEMS,LFO_STATUS_MAP,LFO_STATUS_ORDER,LFO_FORM_GUIDE,LF_FORM_YEAR,lfFormTitle,lfoRowTitle,
+  LFO_PERIOD,lfoThaiToday,lfoPastDue,lfoResolveStatus,lfoSaveStatus,lfoLastEdited,lfoSaveLastEdited,lfoFormHref});

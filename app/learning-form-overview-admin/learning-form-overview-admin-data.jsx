@@ -1,5 +1,3 @@
-const LFOA_YEARS=['2569','2568','2567'];
-const LFOA_SUMMARY={total:47,byYear:{'2569':9,'2568':24,'2567':14},pendingCount:6};
 const LFOA_UNITS=[
 {key:'org1',name:'ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',level:'district'},
 {key:'org2',name:'เขต 1 (ภาคเหนือ)',level:'district'},
@@ -18,4 +16,4 @@ const LFOA_ITEMS=[
 ];
 const LFOA_LEVEL_LABEL={district:'สายงานเขต/สำนักงานใหญ่',branch:'สำนักงานการไฟฟ้า (กฟฟ.)'};
 const LFOA_STATUS_MAP={draft:{label:'ร่าง',color:'gray'},pending:{label:'ยังไม่รายงาน',color:'blue'},certified:{label:'รับรองแล้ว',color:'success'}};
-Object.assign(window,{LFOA_YEARS,LFOA_SUMMARY,LFOA_UNITS,LFOA_ITEMS,LFOA_LEVEL_LABEL,LFOA_STATUS_MAP});
+Object.assign(window,{LFOA_UNITS,LFOA_ITEMS,LFOA_LEVEL_LABEL,LFOA_STATUS_MAP});

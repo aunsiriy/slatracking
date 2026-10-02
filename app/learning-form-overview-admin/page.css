@@ -24,13 +24,14 @@ button{font-family:inherit}
 .lfapage-head h1{font-size:26px;font-weight:700;margin-bottom:6px}
 .lfapage-head p{font-size:14px;color:var(--pea-text-tertiary);margin:0}
 
-.lfakpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.lfakpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
 .lfakpi-card{padding:18px 20px;display:flex;align-items:center;gap:14px}
 .lfakpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .lfakpi-icon--brand{background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary)}
 .lfakpi-icon--blue{background:var(--pea-utility-blue-50);color:var(--pea-utility-blue-700)}
 .lfakpi-icon--warning{background:var(--pea-utility-warning-50);color:var(--pea-utility-warning-700)}
 .lfakpi-icon--success{background:var(--pea-bg-success-primary,#ECFDF3);color:var(--pea-utility-success-600,#079455)}
+.lfakpi-icon--error{background:var(--pea-utility-error-50);color:var(--pea-utility-error-700)}
 .lfakpi-value{font-family:var(--pea-font-family-display);font-size:26px;font-weight:700;color:var(--pea-text-primary)}
 .lfakpi-label{font-size:13px;color:var(--pea-text-tertiary)}
 
@@ -78,7 +79,7 @@ button{font-family:inherit}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--pea-text-primary);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;z-index:200}
 .toast .icon{color:var(--pea-utility-success-400)}
 
-@media (max-width:900px){.lfakpi-grid,.lfamenu-grid{grid-template-columns:1fr}.lfalist-row{grid-template-columns:1fr;gap:8px}}
+@media (max-width:900px){.lfakpi-grid{grid-template-columns:repeat(2,1fr)}.lfamenu-grid{grid-template-columns:1fr}.lfalist-row{grid-template-columns:1fr;gap:8px}}
 .lflist-card{padding:20px 22px}
 .lflist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;flex-wrap:wrap;gap:10px}
 .lflist-head h3{font-size:16px;font-weight:700}

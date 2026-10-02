@@ -20,7 +20,7 @@ const LFOA_PROGRESS={
   'ฝ่ายปฏิบัติการและบำรุงรักษาระบบดิจิทัล (ฝปด.)':{status:'certified',recorder:'ศักดิ์ชัย เรืองศิริ',date:'18/10/2569'},
   'ฝ่ายโครงสร้างพื้นฐานเทคโนโลยีดิจิทัล (ฝสท.)':{status:'draft',recorder:'มณีรัตน์ ทองประเสริฐ',date:'12/10/2569'},
   'ฝ่ายวางแผนระบบไฟฟ้า (ฝวฟ.)':{status:'certified',recorder:'ดวงพร สุขสวรรล',date:'09/10/2569'},
-  'ฝ่ายบัญชีและการเงิน (ฝบง.)':{status:'pending',recorder:'อนุชิต วิริยะกูล',date:'22/10/2569'},
+  'ฝ่ายบัญชีและการเงิน (ฝบง.)':{status:'pending',due:'2026-09-30',recorder:'อนุชิต วิริยะกูล',date:'22/10/2569'},
   'ฝ่ายปฏิบัติการระบบจำหน่าย (ฝปจ.)':{status:'certified',recorder:'สุนีย์ จันทร์เสง',date:'15/10/2569'},
   'ฝ่ายบริการลูกค้า (ฝบล.)':{status:'draft',recorder:'กรชกร พิมลกุล',date:'20/10/2569'}
 },
@@ -39,13 +39,6 @@ const LFOA_PROGRESS={
   'ฝ่ายบำรุงรักษาระบบจำหน่าย (ฝบจ.)':{status:'certified',recorder:'อนุชิต วิริยะกูล',date:'18/09/2568'}
 }
 };
-const LFOA_TRACK_STATUS={
-notstarted:{label:'ยังไม่เริ่ม',color:'gray'},
-draft:{label:'ร่าง',color:'blue-light'},
-pending:{label:'ยังไม่รายงาน',color:'blue'},
-certified:{label:'เสร็จสิ้น',color:'success'}
-};
-
 // แต่ละเขต — mock progress for the admin dashboard "แต่ละเขต" view (pct per unit per year)
 const LFOA_ZONES=[
 {zone:'กฟน.1 จ.เชียงใหม่',units:[
@@ -86,4 +79,4 @@ const LFOA_ZONES=[
   {name:'กฟจ.ยะลา',pct:{'2569':0,'2568':25}},
   {name:'กฟจ.ปัตตานี',pct:{'2569':25,'2568':50}}]}
 ];
-Object.assign(window,{LFOA_DEPTS,LFOA_PROGRESS,LFOA_TRACK_STATUS,LFOA_ZONES});
+Object.assign(window,{LFOA_DEPTS,LFOA_PROGRESS,LFOA_ZONES});
