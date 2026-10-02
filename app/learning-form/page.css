@@ -14,6 +14,17 @@ button{font-family:inherit}
 .lsaveconfirm-body h3{font-size:17px;font-weight:700;color:var(--pea-text-primary);margin:0}
 .lsaveconfirm-body p{font-size:13.5px;color:var(--pea-text-tertiary);margin:0;line-height:1.6}
 
+.lincomplete-modal{width:460px}
+.lincomplete-body{padding:32px 28px 8px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.lincomplete-icon{width:56px;height:56px;border-radius:50%;background:var(--pea-bg-warning-primary);color:var(--pea-fg-warning-primary);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.lincomplete-body h3{font-size:17px;font-weight:700;color:var(--pea-text-primary);margin:0}
+.lincomplete-body p{font-size:13.5px;color:var(--pea-text-tertiary);margin:0;line-height:1.6}
+.lincomplete-list{display:flex;flex-direction:column;gap:6px;padding:16px 24px 24px}
+.lincomplete-item{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid var(--pea-border-tertiary);border-radius:10px;background:var(--pea-bg-warning-primary);color:var(--pea-text-primary);cursor:pointer;font-size:13.5px;font-weight:600;text-align:left}
+.lincomplete-item:hover{background:var(--pea-utility-warning-100)}
+.lincomplete-item-icon{color:var(--pea-fg-warning-primary);flex-shrink:0}
+.lincomplete-item-text{flex:1}
+
 .ltop{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:18px;height:64px;padding:0 24px;background:#fff;border-bottom:1px solid var(--pea-border-secondary)}
 .ltop-left{display:flex;align-items:center;gap:10px}
 .ltop-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
@@ -174,6 +185,7 @@ button{font-family:inherit}
 .lstepper-item.is-done .lstepper-num{background:var(--pea-bg-success-solid);color:#fff}
 .lstepper-num{width:22px;height:22px;border-radius:50%;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
 .lstepper-item.is-active .lstepper-num{background:var(--pea-bg-brand-solid);color:#fff}
+.lstepper-item.is-warning .lstepper-num{background:var(--pea-bg-warning-solid);color:#fff}
 .lstep-layout{display:flex;gap:20px;align-items:flex-start}
 .lstep-main{flex:1;min-width:0}
 .lstep-nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:18px 22px;background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}

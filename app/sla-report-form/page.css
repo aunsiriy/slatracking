@@ -59,5 +59,7 @@ button{font-family:inherit}
 .report-field-static{font-size:14px;color:var(--pea-text-primary);padding:9px 12px;background:var(--pea-bg-secondary);border-radius:8px;border:1px solid var(--pea-border-tertiary)}
 .report-item-footer{display:flex;justify-content:flex-end}
 .submitted-note{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-fg-success-primary)}
+.report-submit-bar{display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:20px;flex-wrap:wrap}
+.report-submit-hint{font-size:13px;color:var(--pea-fg-warning-primary);font-weight:600}
 
 @media (max-width:720px){.report-grid{grid-template-columns:1fr}.intro-tabs{grid-template-columns:1fr;padding-left:0}}

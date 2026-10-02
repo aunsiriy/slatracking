@@ -264,6 +264,15 @@ function MetaSection(){
   );
 }
 
+function metricIsComplete(item){
+  const pointType=item.isControl?'control':(item.isCritical?'critical':'none');
+  const hasTarget=String(item.target||'').trim()!=='';
+  const hasResult=String(item.result2568||'').trim()!=='';
+  const hasCompetitorTarget=String(item.competitorTarget||'').trim()!=='';
+  return pointType==='control'
+    ?hasTarget&&hasResult&&hasCompetitorTarget&&(item.controlCriteria||[]).length>0&&String(item.controlFix||'').trim()!==''
+    :hasTarget&&hasResult&&hasCompetitorTarget;
+}
 function MetricCard({item,onChange,slaLabel}){
   function set(field,value){onChange({...item,[field]:value});}
   function toggleFollowup(key){
@@ -277,12 +286,7 @@ function MetricCard({item,onChange,slaLabel}){
   }
   const pointType=item.isControl?'control':(item.isCritical?'critical':'none');
   const [open,setOpen]=React.useState(true);
-  const hasTarget=String(item.target||'').trim()!=='';
-  const hasResult=String(item.result2568||'').trim()!=='';
-  const hasCompetitorTarget=String(item.competitorTarget||'').trim()!=='';
-  const isComplete=pointType==='control'
-    ?hasTarget&&hasResult&&hasCompetitorTarget&&(item.controlCriteria||[]).length>0&&String(item.controlFix||'').trim()!==''
-    :hasTarget&&hasResult&&hasCompetitorTarget;
+  const isComplete=metricIsComplete(item);
   return React.createElement('div',{className:'card lmetric-card'},
     React.createElement('button',{type:'button',className:'lmetric-toggle',onClick:()=>setOpen(!open)},
       React.createElement('div',{className:'lmetric-toggle-text'},
@@ -351,12 +355,14 @@ function MetricCard({item,onChange,slaLabel}){
   );
 }
 
-function EffectivenessSection(){
+function EffectivenessSection({onValidChange}){
   const [leading,setLeading]=React.useState(window.LF_LEADING_METRICS);
   const [lagging,setLagging]=React.useState(window.LF_LAGGING_METRICS);
   const [tab,setTab]=React.useState(window.LF_BA_PROCESS_OPTIONS[0].label);
   function updateLeading(next){setLeading(leading.map(i=>i.id===next.id?next:i));}
   function updateLagging(next){setLagging(lagging.map(i=>i.id===next.id?next:i));}
+  const allValid=[...leading,...lagging].every(metricIsComplete);
+  React.useEffect(()=>{onValidChange&&onValidChange(allValid);},[allValid]);
   return React.createElement(SectionCard,{title:'ส่วนที่ 2.1 — ผลการดำเนินงานตามตัวชี้วัด (ย้อนหลัง 3 ปี)'},
     React.createElement('div',{className:'lmetric-tabs'},
       window.LF_BA_PROCESS_OPTIONS.map(o=>React.createElement('button',{key:o.key,type:'button',className:'lmetric-tab'+(tab===o.label?' is-active':''),onClick:()=>setTab(o.label)},o.label))
@@ -376,7 +382,7 @@ function EffectivenessSection(){
 
 const ADEQUACY_OPTIONS=[{key:'sufficient',label:'1. เพียงพอ'},{key:'insufficient',label:'2. ไม่เพียงพอ'}];
 
-function PointFormCard({kind}){
+function PointFormCard({kind,onValidChange}){
   const isControl=kind==='control';
   const [step,setStep]=React.useState('');
   const [analysisKey,setAnalysisKey]=React.useState('');
@@ -385,6 +391,7 @@ function PointFormCard({kind}){
   const baseFilled=String(step||'').trim()!=='';
   const analysisFilled=analysisKey==='sufficient'?true:(analysisKey==='insufficient'?String(detail||'').trim()!=='':false);
   const complete=baseFilled&&analysisFilled;
+  React.useEffect(()=>{onValidChange&&onValidChange(complete);},[complete]);
   return React.createElement('div',{className:'lpoint-acc'},
     React.createElement('button',{type:'button',className:'lpoint-acc-head',onClick:()=>setOpen(!open)},
       React.createElement('span',{className:'lpoint-acc-titlewrap'},
@@ -414,13 +421,16 @@ function PointFormCard({kind}){
   );
 }
 
-function PointSection(){
+function PointSection({onValidChange}){
+  const [criticalValid,setCriticalValid]=React.useState(false);
+  const [controlValid,setControlValid]=React.useState(false);
+  React.useEffect(()=>{onValidChange&&onValidChange(criticalValid&&controlValid);},[criticalValid,controlValid]);
   return React.createElement(SectionCard,{
     title:'ส่วนที่ 2.2 — การระบุ Critical Point และ Control Point',
     hint:'ระบุจุดที่ส่งผลสำคัญต่อผลลัพธ์ และจุดที่ต้องควบคุมให้เป็นไปตามเกณฑ์ — จำเป็นต้องกรอกทั้งสองส่วน'},
     React.createElement('div',{className:'lpoint-wrap'},
-      React.createElement(PointFormCard,{kind:'critical'}),
-      React.createElement(PointFormCard,{kind:'control'})
+      React.createElement(PointFormCard,{kind:'critical',onValidChange:setCriticalValid}),
+      React.createElement(PointFormCard,{kind:'control',onValidChange:setControlValid})
     )
   );
 }
@@ -488,9 +498,13 @@ function IssueCard({item,onChange}){
   );
 }
 
-function IssuesPrioritiesSection(){
+function IssuesPrioritiesSection({onValidChange}){
   const [issues,setIssues]=React.useState(window.LF_ISSUES);
   const [qirGroups,setQirGroups]=React.useState([{id:Date.now(),issueText:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',rows:window.LF_QIR_ACTIVITIES.map(r=>({...r}))}]);
+  const hasAnyIssueFilled=issues.some(it=>String(it.analysis||'').trim()!==''&&String(it.direction||'').trim()!=='');
+  const qirGroupsOk=qirGroups.every(g=>g.rows.reduce((s,r)=>s+(Number(r.weight)||0),0)===100);
+  const sectionValid=hasAnyIssueFilled&&qirGroupsOk;
+  React.useEffect(()=>{onValidChange&&onValidChange(sectionValid);},[sectionValid]);
   function updateIssue(next){setIssues(issues.map(i=>i.key===next.key?next:i));}
   function setGroupIssueText(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,issueText:text}:g));}
   function setGroupProcess(gid,key){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,processKey:key}:g));}
@@ -694,7 +708,7 @@ function KnowledgeCard({item,onChange}){
   function removeEntry(id){set('entries',(item.entries||[]).filter(e=>e.id!==id));}
   return React.createElement('div',{className:'card lknow-card2'},
     React.createElement('div',{className:'lknow-section lknow-section--fill'},
-      React.createElement('span',{className:'lknow-section-head'},'1. หัวข้อองค์ความรู้'),
+      React.createElement('span',{className:'lknow-section-head'},'1. หัวข้อองค์ความรู้',React.createElement('span',{className:'lc-required'},' *')),
       React.createElement('div',{className:'lknow-table-scroll'},
       React.createElement('table',{className:'ltable lknow-table'},
         React.createElement('thead',null,React.createElement('tr',null,
@@ -706,7 +720,7 @@ function KnowledgeCard({item,onChange}){
           React.createElement('th',null)
         )),
         React.createElement('tbody',null,(item.entries||[]).map((e,i)=>{
-          const namePlaceholder=e.knowType==='new'?'ระบุหัวข้อองค์ความรู้':'ระบุชื่อองค์ความรู้ในระบบ KM-Si (Content ID)';
+          const namePlaceholder=e.knowType==='new'?'ระบุหัวข้อองค์ความรู้':'ระบุชื่อองค์ความรู้ (Content ID)';
           return React.createElement('tr',{key:e.id},
             React.createElement('td',null,i+1),
             React.createElement('td',null,
@@ -719,7 +733,7 @@ function KnowledgeCard({item,onChange}){
             React.createElement('td',null,
               React.createElement(CheckDropdown,{options:LOCATIONS,value:e.location,onChange:v=>updateEntry(e.id,'location',v),placeholder:'เลือกที่อยู่จัดเก็บ'}),
               (e.location||[]).includes('other')&&React.createElement('div',{className:'lknow-loc-other-input'},
-                React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุ',value:e.locationOther,onChange:v=>updateEntry(e.id,'locationOther',v)})
+                React.createElement(InputField,{fieldType:'default',size:'sm',placeholder:'ระบุแหล่งที่มา (Link)',value:e.locationOther,onChange:v=>updateEntry(e.id,'locationOther',v)})
               )
             ),
             React.createElement('td',null,
@@ -736,13 +750,13 @@ function KnowledgeCard({item,onChange}){
       React.createElement(Button,{variant:'tertiary',size:'sm',className:'lfc-btn-purple',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addEntry},'เพิ่มองค์ความรู้')
     ),
     React.createElement('div',{className:'lknow-section lknow-section--fill'},
-      React.createElement('span',{className:'lknow-section-head'},'2. รูปแบบ/วิธีการในการแลกเปลี่ยนเรียนรู้'),
+      React.createElement('span',{className:'lknow-section-head'},'2. รูปแบบ/วิธีการในการแลกเปลี่ยนเรียนรู้',React.createElement('span',{className:'lc-required'},' *')),
       React.createElement('div',{className:'lcheck-group lcheck-group--2col'},
         METHODS.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:(item.methods||[]).includes(o.key),onChange:()=>toggleList('methods',o.key)}))
       )
     ),
     React.createElement('div',{className:'lknow-section lknow-section--fill'},
-      React.createElement('span',{className:'lknow-section-head'},'3. ผลลัพธ์การแลกเปลี่ยนเรียนรู้'),
+      React.createElement('span',{className:'lknow-section-head'},'3. ผลลัพธ์การแลกเปลี่ยนเรียนรู้',React.createElement('span',{className:'lc-required'},' *')),
       React.createElement('div',{className:'lcheck-group--2col-row'},
         OUTCOMES.map(o=>React.createElement(Checkbox,{key:o.key,size:'sm',label:o.label,isChecked:(item.outcomes||[]).includes(o.key),onChange:()=>toggleList('outcomes',o.key)})),
         React.createElement('div',{className:'lknow-loc-other'},
@@ -758,7 +772,12 @@ function KnowledgeCard({item,onChange}){
   );
 }
 
-function KnowledgeSection(){
+function knowledgeRowIsComplete(r){
+  const entries=r.entries||[];
+  const entriesOk=entries.length>0&&entries.every(e=>String(e.name||'').trim()!==''&&(e.location||[]).length>0);
+  return entriesOk&&(r.methods||[]).length>0&&(r.outcomes||[]).length>0;
+}
+function KnowledgeSection({onValidChange}){
   const [rows,setRows]=React.useState(window.LF_KNOWLEDGE.map(r=>({
     id:r.id,
     entries:[{id:Date.now()+r.id,knowType:r.type==='existing'?'existing':'new',name:r.type==='existing'?(r.contentId||''):(r.topic||''),location:r.type==='existing'?['kmsi']:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],
@@ -766,27 +785,46 @@ function KnowledgeSection(){
   })));
   function update(next){setRows(rows.map(r=>r.id===next.id?next:r));}
   function addRow(){setRows([...rows,{id:Date.now(),entries:[{id:Date.now()+1,knowType:'existing',name:'',location:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],methods:[],outcomes:[],outcomesOther:'',before:'',after:''}]);}
+  const allValid=rows.every(knowledgeRowIsComplete);
+  React.useEffect(()=>{onValidChange&&onValidChange(allValid);},[allValid]);
   return React.createElement(SectionCard,{title:'ส่วนที่ 6 — องค์ความรู้ที่ใช้ / องค์ความรู้ใหม่ที่เกิดขึ้นจากการปรับปรุงกระบวนการ'},
     rows.map(item=>React.createElement(KnowledgeCard,{key:item.id,item,onChange:update}))
+  );
+}
+
+function EffectivenessAndPointSection({onValidChange}){
+  const [effValid,setEffValid]=React.useState(true);
+  const [pointValid,setPointValid]=React.useState(false);
+  React.useEffect(()=>{onValidChange&&onValidChange(effValid&&pointValid);},[effValid,pointValid]);
+  return React.createElement(React.Fragment,null,
+    React.createElement(EffectivenessSection,{onValidChange:setEffValid}),
+    React.createElement('div',{className:'lqir-spacer'}),
+    React.createElement(PointSection,{onValidChange:setPointValid})
   );
 }
 
 const LF_STEPS=[
 {key:'meta',label:'ข้อมูลพื้นฐาน',hint:'กรอกข้อมูลพื้นฐานของกระบวนการและผู้เกี่ยวข้อง',Component:MetaSection},
 {key:'diagram-before',label:'แผนภาพก่อนปรับปรุง',hint:'แนบแผนภาพกระบวนการก่อนการปรับปรุง (Work Flow/SIPOC)',Component:DiagramBeforeSection},
-{key:'effectiveness',label:'ผลการดำเนินงานตามตัวชี้วัด',hint:'ทบทวนผลการดำเนินงานตามตัวชี้วัดย้อนหลัง 3 ปี และระบุ Critical/Control Point',Component:function(){return React.createElement(React.Fragment,null,React.createElement(EffectivenessSection,null),React.createElement('div',{className:'lqir-spacer'}),React.createElement(PointSection,null));}},
+{key:'effectiveness',label:'ผลการดำเนินงานตามตัวชี้วัด',hint:'ทบทวนผลการดำเนินงานตามตัวชี้วัดย้อนหลัง 3 ปี และระบุ Critical/Control Point',Component:EffectivenessAndPointSection},
 {key:'issues',label:'ประเด็นพิจารณา',hint:'ระบุประเด็นพิจารณาสำหรับการปรับปรุงกระบวนการ และบันทึกกิจกรรม QIR',Component:IssuesPrioritiesSection},
 {key:'diagram-after',label:'ผลการปรับปรุงกระบวนการ',hint:'แนบแผนภาพกระบวนการหลังการปรับปรุง',Component:DiagramAfterSection},
 {key:'nextyear',label:'ตัวชี้วัดปีถัดไป',hint:'กำหนดตัวชี้วัดและเป้าหมายสำหรับปีถัดไป',Component:NextYearMetricsSection},
 {key:'knowledge',label:'องค์ความรู้',hint:'บันทึกองค์ความรู้เดิมและองค์ความรู้ใหม่',Component:KnowledgeSection}
 ];
 
-function Stepper({step,setStep}){
+function Stepper({step,setStep,stepValid}){
   return React.createElement('div',{className:'lstepper'},
-    LF_STEPS.map((s,i)=>React.createElement('button',{key:s.key,type:'button',className:'lstepper-item'+(i===step?' is-active':'')+(i<step?' is-done':''),onClick:()=>setStep(i)},
-      React.createElement('span',{className:'lstepper-num'},i<step?React.createElement(Icon,{name:'check',size:13}):i),
-      React.createElement('span',{className:'lstepper-label'},s.label)
-    ))
+    LF_STEPS.map((s,i)=>{
+      const isDone=i<step;
+      const isInvalid=stepValid&&stepValid[i]===false;
+      const cls='lstepper-item'+(i===step?' is-active':'')+(isDone?' is-done':'')+(isInvalid?' is-warning':'');
+      const icon=isInvalid?React.createElement(Icon,{name:'alert-circle',size:13}):isDone?React.createElement(Icon,{name:'check',size:13}):i;
+      return React.createElement('button',{key:s.key,type:'button',className:cls,onClick:()=>setStep(i)},
+        React.createElement('span',{className:'lstepper-num'},icon),
+        React.createElement('span',{className:'lstepper-label'},s.label)
+      );
+    })
   );
 }
 
@@ -843,6 +881,28 @@ function ExportPdfModal({onClose,onConfirm}){
   );
 }
 
+function IncompleteStepsModal({stepIndexes,onClose,onGoTo}){
+  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
+    React.createElement('div',{className:'modal-card lincomplete-modal',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'lincomplete-body'},
+        React.createElement('span',{className:'lincomplete-icon'},React.createElement(Icon,{name:'alert-triangle',size:28})),
+        React.createElement('h3',null,'กรอกข้อมูลไม่ครบถ้วน'),
+        React.createElement('p',null,'กรุณากลับไปกรอกข้อมูลในขั้นตอนต่อไปนี้ให้ครบก่อนบันทึก')
+      ),
+      React.createElement('div',{className:'lincomplete-list'},
+        stepIndexes.map(i=>React.createElement('button',{key:LF_STEPS[i].key,type:'button',className:'lincomplete-item',onClick:()=>onGoTo(i)},
+          React.createElement('span',{className:'lincomplete-item-icon'},React.createElement(Icon,{name:'alert-triangle',size:15})),
+          React.createElement('span',{className:'lincomplete-item-text'},(i+1)+'. '+LF_STEPS[i].label),
+          React.createElement(Icon,{name:'chevron-right',size:16})
+        ))
+      ),
+      React.createElement('div',{className:'lmodal-foot'},
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ปิด')
+      )
+    )
+  );
+}
+
 function SaveAllConfirmModal({onClose,onConfirm}){
   return React.createElement('div',{className:'modal-overlay',onClick:onClose},
     React.createElement('div',{className:'modal-card lsaveconfirm-modal',onClick:e=>e.stopPropagation()},
@@ -869,10 +929,34 @@ function App(){
   const [exportToast,setExportToast]=React.useState(null);
   const [exportModalOpen,setExportModalOpen]=React.useState(false);
   const [pendingExport,setPendingExport]=React.useState(null);
+  const [stepValid,setStepValid]=React.useState(()=>LF_STEPS.map(()=>true));
+  const [incompleteSteps,setIncompleteSteps]=React.useState(null);
   const stepContentRef=React.useRef(null);
   const exportRef=React.useRef(null);
+  const lastStepIndex=LF_STEPS.length-1;
+  const prevStepRef=React.useRef(step);
+  function setStepValidAt(i,valid){
+    setStepValid(prev=>{
+      if(prev[i]===valid)return prev;
+      const next=[...prev];next[i]=valid;return next;
+    });
+  }
+  function findIncompleteSteps(){return LF_STEPS.map((s,i)=>i).filter(i=>stepValid[i]===false);}
   React.useEffect(()=>{if(!draftToast)return;const t=setTimeout(()=>setDraftToast(null),2200);return()=>clearTimeout(t);},[draftToast]);
   React.useEffect(()=>{if(!exportToast)return;const t=setTimeout(()=>setExportToast(null),3200);return()=>clearTimeout(t);},[exportToast]);
+  React.useEffect(()=>{
+    const arrivedAtLast=step===lastStepIndex&&prevStepRef.current!==lastStepIndex;
+    prevStepRef.current=step;
+    if(arrivedAtLast){
+      const incomplete=findIncompleteSteps();
+      if(incomplete.length>0)setIncompleteSteps(incomplete);
+    }
+  },[step,stepValid]);
+  function handleFinalSaveClick(){
+    const incomplete=findIncompleteSteps();
+    if(incomplete.length>0){setIncompleteSteps(incomplete);return;}
+    setSaveConfirmOpen(true);
+  }
   function confirmSaveAll(){
     try{localStorage.setItem('lfo_just_saved','1');}catch(e){}
     window.location.href='/learning-form-overview';
@@ -931,7 +1015,6 @@ function App(){
     return()=>{cancelled=true;};
   },[pendingExport]);
   const m=window.LF_META;
-  const StepComponent=LF_STEPS[step].Component;
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lcontent'},
@@ -954,16 +1037,20 @@ function App(){
         )
       ),
       React.createElement('div',{className:'lstep-layout'},
-        React.createElement(Stepper,{step,setStep}),
+        React.createElement(Stepper,{step,setStep,stepValid}),
         React.createElement('div',{className:'lstep-main'},
-          React.createElement('div',{ref:stepContentRef,className:'lstep-content'},React.createElement(StepComponent)),
+          React.createElement('div',{ref:stepContentRef,className:'lstep-content'},
+            LF_STEPS.map((s,i)=>React.createElement('div',{key:s.key,style:i===step?undefined:{display:'none'}},
+              React.createElement(s.Component,{onValidChange:valid=>setStepValidAt(i,valid)})
+            ))
+          ),
           React.createElement('div',{className:'lstep-nav'},
             React.createElement(Button,{variant:'secondary',size:'md',isDisabled:step===0,leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:()=>setStep(s=>Math.max(0,s-1))},'ย้อนกลับ'),
             React.createElement('span',{className:'lstep-nav-count'},'ขั้นตอน '+(step+1)+' / '+LF_STEPS.length),
             React.createElement('div',{className:'lstep-nav-right'},
               React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'save-01',size:16}),onClick:()=>{try{localStorage.setItem('lf_draft_started','1');}catch(e){}setDraftToast('บันทึกร่างเรียบร้อยแล้ว');}},'บันทึกร่าง'),
               step<LF_STEPS.length-1?React.createElement(Button,{variant:'primary',size:'md',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>setStep(s=>Math.min(LF_STEPS.length-1,s+1))},'ถัดไป'):
-              React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:()=>setSaveConfirmOpen(true)},'บันทึกทั้งหมด')
+              React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'check',size:16}),onClick:handleFinalSaveClick},'บันทึกทั้งหมด')
             )
           )
         )
@@ -986,6 +1073,7 @@ function App(){
     guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)}),
     exportModalOpen&&React.createElement(ExportPdfModal,{onClose:()=>setExportModalOpen(false),onConfirm:startExport}),
     saveConfirmOpen&&React.createElement(SaveAllConfirmModal,{onClose:()=>setSaveConfirmOpen(false),onConfirm:confirmSaveAll}),
+    incompleteSteps&&React.createElement(IncompleteStepsModal,{stepIndexes:incompleteSteps,onClose:()=>setIncompleteSteps(null),onGoTo:i=>{setStep(i);setIncompleteSteps(null);}}),
     draftToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),draftToast),
     exportToast&&React.createElement('div',{className:'toast'},React.createElement(Icon,{name:'check',size:16}),exportToast)
   );

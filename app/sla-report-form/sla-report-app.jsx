@@ -56,15 +56,20 @@ function computeStatus(result,target){
   return Number(result)>=Number(target)?'pass':'fail';
 }
 
+function itemIsComplete(item){
+  const status=computeStatus(item.result,item.target);
+  const detailOk=item.detail.trim().length>0;
+  const improvementOk=status!=='fail'||item.improvement.trim().length>0;
+  const resultOk=item.result!==''&&!isNaN(Number(item.result));
+  return resultOk&&detailOk&&improvementOk;
+}
+
 function ReportItem({item,onChange,variant}){
   const isQuarterly=variant==='quarterly';
   const [open,setOpen]=React.useState(item.status==='returned');
   const status=computeStatus(item.result,item.target);
   const isSubmitted=item.status==='submitted';
-  const detailOk=item.detail.trim().length>0;
-  const improvementOk=status!=='fail'||item.improvement.trim().length>0;
-  const resultOk=item.result!==''&&!isNaN(Number(item.result));
-  const canSubmit=resultOk&&detailOk&&improvementOk&&!isSubmitted;
+  React.useEffect(()=>{if(isSubmitted)setOpen(false);},[isSubmitted]);
 
   function set(field,value){onChange({...item,[field]:value});}
 
@@ -119,9 +124,8 @@ function ReportItem({item,onChange,variant}){
       ),
       React.createElement(Textarea,{label:'รายละเอียดการดำเนินงาน',placeholder:'อธิบายรายละเอียดการดำเนินงาน...',isRequired:true,isDisabled:isSubmitted,value:item.detail,onChange:v=>set('detail',v)}),
       status==='fail'&&React.createElement(Textarea,{label:'แนวทางการแก้ไขปรับปรุง',placeholder:'ระบุแนวทางแก้ไข เนื่องจากผลไม่ผ่านเกณฑ์...',isRequired:true,isDisabled:isSubmitted,value:item.improvement,onChange:v=>set('improvement',v)}),
-      React.createElement('div',{className:'report-item-footer'},
-        isSubmitted?React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งให้ กนอ. เรียบร้อยแล้ว'):
-        React.createElement(Button,{variant:'primary',size:'md',isDisabled:!canSubmit,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>{set('status','submitted');setOpen(false);}},'ยืนยัน ส่ง กนอ.')
+      isSubmitted&&React.createElement('div',{className:'report-item-footer'},
+        React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งให้ กนอ. เรียบร้อยแล้ว')
       )
     )
   );
@@ -136,6 +140,10 @@ function App(){
   const p=tab==='monthly'?window.SLA_REPORT_PERIOD:window.SLA_REPORT_QUARTER_PERIOD;
   const pendingCount=activeItems.filter(i=>i.status!=='submitted').length;
   function updateItem(next){setActiveItems(activeItems.map(i=>i.id===next.id?next:i));}
+  const pendingItems=activeItems.filter(i=>i.status!=='submitted');
+  const incompleteCount=pendingItems.filter(i=>!itemIsComplete(i)).length;
+  const canSubmitAll=pendingItems.length>0&&incompleteCount===0;
+  function submitAll(){setActiveItems(activeItems.map(i=>i.status==='submitted'?i:{...i,status:'submitted'}));}
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'rcontent'},
@@ -154,6 +162,12 @@ function App(){
       React.createElement(HierarchyIntro,{tab,setTab}),
       React.createElement('div',{className:'report-list'},
         activeItems.map(item=>React.createElement(ReportItem,{key:item.id,item,onChange:updateItem,variant:tab}))
+      ),
+      React.createElement('div',{className:'report-submit-bar'},
+        pendingItems.length===0?
+          React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งรายงานครบทุกรายการแล้ว'):
+          incompleteCount>0&&React.createElement('span',{className:'report-submit-hint'},'ยังกรอกข้อมูลที่จำเป็นไม่ครบ '+incompleteCount+' รายการ'),
+        React.createElement(Button,{variant:'primary',size:'md',isDisabled:!canSubmitAll,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:submitAll},'ยืนยัน ส่ง กนอ.')
       )
     )
   );
