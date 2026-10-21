@@ -143,8 +143,7 @@ function TopBar({role,setRoleKey}){
       React.createElement('div',{className:'brand-mark'},
         React.createElement(Image,{className:'brand-logo',src:'/sla-logo.svg',alt:'SLA',width:36,height:36}),
         React.createElement('div',{className:'brand-word'},
-          React.createElement('span',{className:'brand-word-title'},'PEA-SLA'),
-          React.createElement('span',{className:'brand-word-sub'},'Tracking System')
+          React.createElement('span',{className:'brand-word-title'},'SLA Tracking')
         )
       ),
       React.createElement('nav',{className:'topnav'},

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 const {Button,Badge,Avatar,InputField}=window.DesignSystem_cbd181;
 
 function Sidebar(){
@@ -9,6 +10,7 @@ function Sidebar(){
       React.createElement('span',{className:'tsb-brand-text'},'SLA Tracking')
     ),
     React.createElement('nav',{className:'tsb-nav'},
+      React.createElement(Link,{href:'/',className:'tsb-item tsb-item--back'},React.createElement(Icon,{name:'home',size:19}),React.createElement('span',null,'กลับหน้าหลัก')),
       React.createElement('a',{href:'#',className:'tsb-item'},React.createElement(Icon,{name:'layout-grid',size:19}),React.createElement('span',null,'แดชบอร์ด'),React.createElement(Icon,{name:'chevron-down',size:15,className:'tsb-item-chevron'})),
       React.createElement('div',{className:'tsb-group'},
         React.createElement(Button,{variant:'tertiary',size:'md',className:'tsb-item tsb-group-head',leadingIcon:React.createElement(Icon,{name:'clock',size:19}),trailingIcon:React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:15}),onClick:()=>setOpen(v=>!v)},'ติดตามสถานะ'),

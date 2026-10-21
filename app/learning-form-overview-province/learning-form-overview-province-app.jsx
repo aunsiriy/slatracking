@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Badge,Avatar}=window.DesignSystem_cbd181;
+const {Button,Avatar}=window.DesignSystem_cbd181;
 
 function TopBar(){
   return React.createElement('header',{className:'ttb'},
@@ -8,7 +8,7 @@ function TopBar(){
       React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
       React.createElement('span',{className:'ttb-divider'}),
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
+      React.createElement('span',{className:'ttb-title'},'SLA Tracking')
     ),
     React.createElement('div',{className:'ttb-right'},
       React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
@@ -25,31 +25,10 @@ function Breadcrumb(){
   );
 }
 
-function KpiCards({year,scope}){
-  const items=window.LFO_ITEMS.filter(it=>it.scope===scope&&(scope!=='own'||it.year===year));
-  const total=items.length;
-  const pendingCount=items.filter(it=>it.status==='pending').length;
-  const doneCount=items.filter(it=>it.status==='certified').length;
-  const cards=[
-    {icon:'book',label:'Learning Form ทั้งหมด',value:total,color:'brand'},
-    {icon:'clock',label:'ยังไม่รายงาน',value:pendingCount,color:'warning'},
-    {icon:'calendar',label:'เสร็จสิ้น',value:doneCount,color:'success'}
-  ];
-  return React.createElement('div',{className:'lfkpi-grid'},
-    cards.map((c,i)=>React.createElement('div',{key:i,className:'card lfkpi-card'},
-      React.createElement('span',{className:`lfkpi-icon lfkpi-icon--${c.color}`},React.createElement(Icon,{name:c.icon,size:18})),
-      React.createElement('div',null,
-        React.createElement('div',{className:'lfkpi-value'},c.value),
-        React.createElement('div',{className:'lfkpi-label'},c.label)
-      )
-    ))
-  );
-}
-
 function MenuCards({onGuide}){
   const cards=[
-    {icon:'help-circle',title:'คำอธิบายแบบฟอร์ม',desc:'รายละเอียดการกรอกข้อมูลส่วนที่ 0-7 ของ Learning Form พร้อมคำนิยามแต่ละหัวข้อ',cta:'ดูคำอธิบาย',variant:'secondary',onClick:onGuide},
-    {icon:'download-01',title:'Export Learning Form',desc:'ดาวน์โหลดแบบฟอร์มที่กรอกแล้วเป็นไฟล์ PDF / Excel เพื่อจัดเก็บหรือส่งต่อ',cta:'Export',href:'/learning-form-export',variant:'secondary'}
+    {icon:'help-circle',title:'คำอธิบายแบบฟอร์ม',desc:'รายละเอียดการกรอกข้อมูลส่วนที่ 0-7 ของ Learning Form พร้อมคำนิยามแต่ละหัวข้อ',cta:'ดูคำอธิบาย',onClick:onGuide},
+    {icon:'download-01',title:'Export Learning Form',desc:'ดาวน์โหลดแบบฟอร์มที่กรอกแล้วเป็นไฟล์ PDF / Excel เพื่อจัดเก็บหรือส่งต่อ',cta:'Export',href:'/learning-form-export',disabled:true}
   ];
   return React.createElement('div',{className:'lfmenu-grid'},
     cards.map((c,i)=>React.createElement('div',{key:i,className:'card lfmenu-card'},
@@ -58,61 +37,8 @@ function MenuCards({onGuide}){
       ),
       React.createElement('h3',{className:'lfmenu-title'},c.title),
       React.createElement('p',{className:'lfmenu-desc'},c.desc),
-      React.createElement(Button,{variant:c.variant||'primary',size:'md',className:'lfmenu-cta-corner',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>{if(c.onClick)c.onClick();else window.location.href=c.href;}},c.cta)
+      React.createElement(Button,{variant:'secondary',size:'md',className:'lfmenu-cta-corner',isDisabled:!!c.disabled,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>{if(c.disabled)return;if(c.onClick)c.onClick();else window.location.href=c.href;}},c.cta)
     ))
-  );
-}
-
-function RecentList({year,setYear,scope,setScope}){
-  const [line,setLine]=React.useState('สายงานดิจิทัลและการสื่อสาร');
-  const [otherYear,setOtherYear]=React.useState('all');
-  const [search,setSearch]=React.useState('');
-  function parseDate(d){const[dd,mm,yy]=d.split('/').map(Number);return new Date(yy,mm-1,dd).getTime();}
-  const lineOptions=Array.from(new Set(['สายงานดิจิทัลและการสื่อสาร',...window.LFO_ITEMS.filter(it=>it.scope==='other').map(it=>it.line)]));
-  const otherYearOptions=Array.from(new Set(window.LFO_ITEMS.filter(it=>it.scope==='other').map(it=>it.process)));
-  const items=window.LFO_ITEMS.filter(it=>it.scope===scope&&(scope!=='own'||it.year===year))
-    .filter(it=>scope!=='other'||line==='all'||it.line===line)
-    .filter(it=>scope!=='other'||otherYear==='all'||it.process===otherYear)
-    .filter(it=>scope!=='other'||!search.trim()||it.dept.toLowerCase().includes(search.trim().toLowerCase()))
-    .slice().sort((a,b)=>parseDate(b.date)-parseDate(a.date));
-  return React.createElement('div',{className:'card lflist-card'},
-    React.createElement('div',{className:'lflist-head'},
-      React.createElement('h3',null,'Learning Form ล่าสุด'),
-    ),
-    scope==='other'&&React.createElement('div',{className:'lfscope-filters'},
-      React.createElement('div',{className:'lfscope-search'},
-        React.createElement(Icon,{name:'search',size:15}),
-        React.createElement('input',{placeholder:'ค้นหาฝ่าย...',value:search,onChange:e=>setSearch(e.target.value)})
-      ),
-      React.createElement(window.SelectMenu,{style:{width:'224px'},value:line,onChange:setLine,options:[{value:'all',label:'ทุกสายงาน'},...lineOptions.map(l=>({value:l,label:l}))]}),
-      React.createElement(window.SelectMenu,{style:{width:'180px'},value:otherYear,onChange:setOtherYear,options:[{value:'all',label:'ทุกปี'},...otherYearOptions.map(p=>({value:p,label:p}))]}),
-      React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'search',size:15})},'ค้นหา'),
-      React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{setSearch('');setLine('all');}},'ล้างค่า')
-    ),
-    items.length===0?React.createElement('div',{className:'lflist-empty'},'ไม่มี Learning Form ในปีที่เลือก'):
-    React.createElement('table',{className:'lftable'},
-      React.createElement('thead',null,
-        React.createElement('tr',null,
-          scope==='other'&&React.createElement('th',null,'ฝ่ายที่รับผิดชอบ'),
-          React.createElement('th',null,'ประจำปี'),
-          React.createElement('th',null,'ผู้บันทึกข้อมูล'),
-          React.createElement('th',null,'วันที่ดำเนินการ'),
-          React.createElement('th',null,'สถานะ')
-        )
-      ),
-      React.createElement('tbody',null,
-        items.map((it,i)=>{
-          const s=window.LFO_STATUS_MAP[it.status];
-          return React.createElement('tr',{key:i,className:'lftable-row',onClick:()=>{window.location.href='/learning-form';}},
-            scope==='other'&&React.createElement('td',null,it.dept),
-            React.createElement('td',null,it.process),
-            React.createElement('td',null,it.unit),
-            React.createElement('td',null,it.date),
-            React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'}))
-          );
-        })
-      )
-    )
   );
 }
 
@@ -138,26 +64,17 @@ function FormGuideModal({onClose}){
   );
 }
 
+function LearningFormEmpty(){
+  return React.createElement('div',{className:'card lfempty-card'},
+    React.createElement(Image,{src:'/assets/mascot-searching.png',alt:'',width:112,height:112,className:'lfempty-img'}),
+    React.createElement('h3',{className:'lfempty-title'},'ยังไม่เปิดใช้งาน Learning Form สำหรับการไฟฟ้าจังหวัด'),
+    React.createElement('p',{className:'lfempty-text'},'ส่วนนี้อยู่ระหว่างรอสรุปแนวทางการจัดทำ Learning Form ของหน่วยงานระดับ กฟฟ. เมื่อกำหนดเรียบร้อยแล้วจะเปิดให้กรอกและติดตามสถานะได้ที่หน้านี้'),
+    React.createElement(Button,{variant:'primary',size:'md',className:'lfempty-cta',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>{window.location.href='/p1-p11-overview';}},'ทำ QIR ของตัวเอง')
+  );
+}
+
 function App(){
-  const [year,setYear]=React.useState(window.LFO_YEARS[0]);
-  const [scope,setScope]=React.useState('own');
   const [guideOpen,setGuideOpen]=React.useState(false);
-  const [savedToast,setSavedToast]=React.useState(false);
-  const [hasDraft,setHasDraft]=React.useState(false);
-  React.useEffect(()=>{
-    try{setHasDraft(localStorage.getItem('lf_draft_started')==='1');}catch(e){}
-  },[]);
-  React.useEffect(()=>{
-    let saved=false;
-    try{saved=localStorage.getItem('lfo_just_saved')==='1';}catch(e){}
-    if(saved){
-      const item=window.LFO_ITEMS.find(it=>it.scope==='own'&&it.status==='pending');
-      if(item)item.status='certified';
-      try{localStorage.removeItem('lfo_just_saved');}catch(e){}
-      setSavedToast(true);
-      setTimeout(()=>setSavedToast(false),3500);
-    }
-  },[]);
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'lfcontent'},
@@ -165,18 +82,13 @@ function App(){
       React.createElement('div',{className:'lfpage-head'},
         React.createElement('div',null,
           React.createElement('h1',null,'ภาพรวม PEA Learning Form — การไฟฟ้าจังหวัด'),
-          React.createElement('p',null,'สรุปจำนวน Learning Form ของคุณ และเลือกระดับหน่วยงานเพื่อเริ่มกรอกหรือทบทวนข้อมูล')
-        ),
-        React.createElement('div',{className:'lfpage-head-actions'},
-          React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>{window.location.href='/p1-p11-overview';}},'ทำ QIR ของตัวเอง')
+          React.createElement('p',null,'ดูคำอธิบายแบบฟอร์มของ Learning Form')
         )
       ),
       React.createElement(MenuCards,{onGuide:()=>setGuideOpen(true)}),
-      React.createElement(KpiCards,{year,scope}),
-      React.createElement(RecentList,{year,setYear,scope,setScope})
+      React.createElement(LearningFormEmpty)
     ),
-    guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)}),
-    savedToast&&React.createElement('div',{className:'ltoast'},React.createElement(Icon,{name:'check-circle',size:16}),'บันทึกทั้งหมดเรียบร้อยแล้ว')
+    guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)})
   );
 }
 

@@ -8,7 +8,7 @@ function TopBar(){
       React.createElement(Link,{className:'rtop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
       React.createElement(Image,{className:'rtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'rtop-word'},
-        React.createElement('span',{className:'rtop-title'},'PEA-SLA Tracking System'),
+        React.createElement('span',{className:'rtop-title'},'SLA Tracking'),
         React.createElement('span',{className:'rtop-sub'},'รายงานผลการดำเนินงาน SLA')
       )
     )
@@ -49,14 +49,18 @@ function computeStatus(result,target){
   return Number(result)>=Number(target)?'pass':'fail';
 }
 
+function itemIsComplete(item){
+  const status=computeStatus(item.result,item.target);
+  const detailOk=item.detail.trim().length>0;
+  const improvementOk=status!=='fail'||item.improvement.trim().length>0;
+  const resultOk=item.result!==''&&!isNaN(Number(item.result));
+  return resultOk&&detailOk&&improvementOk;
+}
+
 function ReportItem({item,onChange}){
   const [open,setOpen]=React.useState(item.status==='returned');
   const status=computeStatus(item.result,item.target);
   const isSubmitted=item.status==='submitted';
-  const detailOk=item.detail.trim().length>0;
-  const improvementOk=status!=='fail'||item.improvement.trim().length>0;
-  const resultOk=item.result!==''&&!isNaN(Number(item.result));
-  const canSubmit=resultOk&&detailOk&&improvementOk&&!isSubmitted;
 
   function set(field,value){onChange({...item,[field]:value});}
 
@@ -70,12 +74,14 @@ function ReportItem({item,onChange}){
 
   return React.createElement('div',{className:'card report-item'+(isSubmitted?' is-submitted':'')},
     React.createElement('button',{className:'report-item-head',onClick:()=>setOpen(v=>!v)},
-      React.createElement('div',{className:'report-item-tags'},
-        React.createElement('span',{className:'ba-tag'},item.level0+' · '+item.level0Label),
-        React.createElement('span',{className:'ba-tag'},item.level1+' · '+item.level1Label),
-        React.createElement('span',{className:'ba-tag ba-tag--sub'},item.level2+' · '+item.level2Label)
+      React.createElement('div',{className:'report-item-left'},
+        React.createElement('div',{className:'report-item-tags'},
+          React.createElement('span',{className:'ba-tag'},item.level0+' · '+item.level0Label),
+          React.createElement('span',{className:'ba-tag'},item.level1+' · '+item.level1Label),
+          React.createElement('span',{className:'ba-tag ba-tag--sub'},item.level2+' · '+item.level2Label)
+        ),
+        React.createElement('div',{className:'report-item-title'},item.slaName)
       ),
-      React.createElement('div',{className:'report-item-title'},item.slaName),
       React.createElement('div',{className:'report-item-head-right'},
         statusBadge,
         item.status==='returned'&&!isSubmitted&&React.createElement('span',{className:'return-flag'},React.createElement(Icon,{name:'alert-triangle',size:14}),'ต้องแก้ไข'),
@@ -112,9 +118,8 @@ function ReportItem({item,onChange}){
       ),
       React.createElement(Textarea,{label:'รายละเอียดการดำเนินงาน',placeholder:'อธิบายรายละเอียดการดำเนินงาน...',isRequired:true,isDisabled:isSubmitted,value:item.detail,onChange:v=>set('detail',v)}),
       status==='fail'&&React.createElement(Textarea,{label:'แนวทางการแก้ไขปรับปรุง',placeholder:'ระบุแนวทางแก้ไข เนื่องจากผลไม่ผ่านเกณฑ์...',isRequired:true,isDisabled:isSubmitted,value:item.improvement,onChange:v=>set('improvement',v)}),
-      React.createElement('div',{className:'report-item-footer'},
-        isSubmitted?React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งให้ กนอ. เรียบร้อยแล้ว'):
-        React.createElement(Button,{variant:'primary',size:'md',isDisabled:!canSubmit,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:()=>{set('status','submitted');setOpen(false);}},'ยืนยัน ส่ง กนอ.')
+      isSubmitted&&React.createElement('div',{className:'report-item-footer'},
+        React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งให้ กนอ. เรียบร้อยแล้ว')
       )
     )
   );
@@ -125,6 +130,10 @@ function App(){
   const p=window.SLA_REPORT_L2_PERIOD;
   const pendingCount=items.filter(i=>i.status!=='submitted').length;
   function updateItem(next){setItems(items.map(i=>i.id===next.id?next:i));}
+  const pendingItems=items.filter(i=>i.status!=='submitted');
+  const incompleteCount=pendingItems.filter(i=>!itemIsComplete(i)).length;
+  const canSubmitAll=pendingItems.length>0&&incompleteCount===0;
+  function submitAll(){setItems(items.map(i=>i.status==='submitted'?i:{...i,status:'submitted'}));}
   return React.createElement(React.Fragment,null,
     React.createElement(TopBar),
     React.createElement('main',{className:'rcontent'},
@@ -143,6 +152,12 @@ function App(){
       React.createElement(HierarchyIntro),
       React.createElement('div',{className:'report-list'},
         items.map(item=>React.createElement(ReportItem,{key:item.id,item,onChange:updateItem}))
+      ),
+      React.createElement('div',{className:'report-submit-bar'},
+        pendingItems.length===0?
+          React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งรายงานครบทุกรายการแล้ว'):
+          incompleteCount>0&&React.createElement('span',{className:'report-submit-hint'},'ยังกรอกข้อมูลที่จำเป็นไม่ครบ '+incompleteCount+' รายการ'),
+        React.createElement(Button,{variant:'primary',size:'md',isDisabled:!canSubmitAll,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:submitAll},'ยืนยัน ส่ง กนอ.')
       )
     )
   );

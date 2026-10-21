@@ -10,7 +10,7 @@ function TopBar(){
       React.createElement('span',{className:'qtop-divider'}),
       React.createElement(Image,{className:'qtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'qtop-word'},
-        React.createElement('span',{className:'qtop-title'},'PEA-SLA Tracking System'),
+        React.createElement('span',{className:'qtop-title'},'SLA Tracking'),
         React.createElement('span',{className:'qtop-sub'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)')
       )
     )

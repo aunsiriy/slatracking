@@ -25,7 +25,7 @@ function TopBar(){
     React.createElement('span',{className:'ttb-divider'}),
     React.createElement(Image,{className:'ttb-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:28,height:28}),
     React.createElement('div',{className:'ttb-word'},
-      React.createElement('span',{className:'ttb-title'},'PEA-SLA Tracking System'),
+      React.createElement('span',{className:'ttb-title'},'SLA Tracking'),
       React.createElement('span',{className:'ttb-sub'},'Export Learning Form / QIR')
     )
   );

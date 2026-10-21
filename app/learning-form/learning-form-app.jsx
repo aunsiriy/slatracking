@@ -15,11 +15,11 @@ const MAX_DIAGRAM_FILE_SIZE=25*1024*1024;
 
 function TopBar(){
   return React.createElement('header',{className:'ltop'},
-    React.createElement(Link,{className:'ltop-back',href:'/learning-form-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
+    React.createElement(Link,{className:'ltop-back',href:window.LF_BACK},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
     React.createElement('div',{className:'ltop-left'},
       React.createElement(Image,{className:'ltop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ltop-word'},
-        React.createElement('span',{className:'ltop-title'},'PEA-SLA Tracking System'),
+        React.createElement('span',{className:'ltop-title'},'SLA Tracking'),
         React.createElement('span',{className:'ltop-sub'},'Learning Form & QIR')
       )
     )
@@ -30,7 +30,7 @@ function Breadcrumb(){
   return React.createElement('div',{className:'lbreadcrumb'},
     React.createElement(Link,{href:'/'},'หน้าหลัก'),
     React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement(Link,{href:'/learning-form-overview'},'ภาพรวม Learning Form'),
+    React.createElement(Link,{href:window.LF_BACK},'ภาพรวม Learning Form'),
     React.createElement(Icon,{name:'chevron-right',size:14}),
     React.createElement('span',{className:'is-current'},'Learning Form · '+window.LF_META.processName)
   );

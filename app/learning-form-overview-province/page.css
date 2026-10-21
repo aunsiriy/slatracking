@@ -74,6 +74,11 @@ button{font-family:inherit}
 .lfscope-search{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;background:#fff;border:1px solid var(--pea-border-secondary);border-radius:8px;padding:8px 12px;color:var(--pea-text-tertiary)}
 .lfscope-search input{border:none;outline:none;font-size:13px;flex:1;color:var(--pea-text-primary)}
 .lflist-empty{padding:32px 0;text-align:center;font-size:13.5px;color:var(--pea-text-tertiary)}
+.lfempty-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:48px 32px}
+.lfempty-img{width:112px;height:112px;object-fit:contain;opacity:.9;margin-bottom:4px}
+.lfempty-title{font-size:17px;font-weight:700;color:var(--pea-text-primary);margin:0}
+.lfempty-text{font-size:13.5px;line-height:1.6;color:var(--pea-text-tertiary);margin:0 0 6px;max-width:520px}
+.lfempty-cta{margin-top:4px}
 .lftable{width:100%;border-collapse:collapse}
 .lftable th{text-align:left;font-size:12.5px;font-weight:600;color:var(--pea-text-tertiary);padding:0 12px 12px;border-bottom:1px solid var(--pea-border-tertiary)}
 .lftable td{padding:14px 12px;font-size:13.5px;color:var(--pea-text-primary);border-bottom:1px solid var(--pea-border-tertiary)}

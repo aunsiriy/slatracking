@@ -43,14 +43,15 @@ button{font-family:inherit}
 .report-list{display:flex;flex-direction:column;gap:14px}
 .report-item{overflow:hidden}
 .report-item.is-submitted{opacity:.75}
-.report-item-head{width:100%;background:none;border:none;text-align:left;padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.report-item-head{width:100%;background:none;border:none;text-align:left;padding:18px 20px;cursor:pointer;display:flex;flex-direction:row;align-items:flex-start;justify-content:space-between;gap:16px}
+.report-item-left{display:flex;flex-direction:column;gap:8px;min-width:0}
 .report-item-tags{display:flex;gap:8px;flex-wrap:wrap}
 .ba-tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary)}
 .ba-tag--sub{background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary)}
 .report-item-title{font-size:15.5px;font-weight:700;color:var(--pea-text-primary)}
-.report-item-head-right{display:flex;align-items:center;gap:10px}
+.report-item-head-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .return-flag{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--pea-fg-warning-primary)}
-.report-item-chevron{color:var(--pea-border-primary);transition:transform .2s ease;margin-left:auto}
+.report-item-chevron{color:var(--pea-border-primary);transition:transform .2s ease}
 .report-item-chevron.is-open{transform:rotate(180deg)}
 .report-item-body{padding:0 20px 22px;display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--pea-border-tertiary);padding-top:18px}
 .return-note{display:flex;gap:8px;align-items:flex-start;background:var(--pea-utility-warning-50);border:1px solid var(--pea-utility-warning-200);color:var(--pea-utility-warning-700);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5}
@@ -59,5 +60,7 @@ button{font-family:inherit}
 .report-field-static{font-size:14px;color:var(--pea-text-primary);padding:9px 12px;background:var(--pea-bg-secondary);border-radius:8px;border:1px solid var(--pea-border-tertiary)}
 .report-item-footer{display:flex;justify-content:flex-end}
 .submitted-note{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-fg-success-primary)}
+.report-submit-bar{display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:20px;flex-wrap:wrap}
+.report-submit-hint{font-size:13px;color:var(--pea-fg-warning-primary);font-weight:600}
 
 @media (max-width:720px){.report-grid{grid-template-columns:1fr}.intro-tabs{padding-left:0}}

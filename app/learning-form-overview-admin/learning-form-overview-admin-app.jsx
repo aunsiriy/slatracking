@@ -8,7 +8,7 @@ function TopBar(){
       React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับหน้าหลัก'),
       React.createElement('span',{className:'ttb-divider'}),
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'PEA-SLA Tracking System')
+      React.createElement('span',{className:'ttb-title'},'SLA Tracking')
     ),
     React.createElement('div',{className:'ttb-right'},
       React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
@@ -274,7 +274,7 @@ function App(){
           React.createElement('h1',null,'ภาพรวม Learning Form'),
           React.createElement('p',null,'สรุปจำนวน Learning Form ทั้งองค์กร และติดตามความคืบหน้าของแต่ละหน่วยงาน')
         ),
-        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>{window.location.href='/learning-form';}},'สร้าง Learning Form ของตัวเอง')
+        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:()=>{window.location.href='/learning-form?back=%2Flearning-form-overview-admin';}},'สร้าง Learning Form ของตัวเอง')
       ),
       React.createElement(MenuCards,{onGuide:()=>setGuideOpen(true)}),
       React.createElement(SubmissionDashboard,null),

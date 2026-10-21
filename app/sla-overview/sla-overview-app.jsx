@@ -14,7 +14,7 @@ function TopBar(){
       React.createElement(Link,{className:'otop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
       React.createElement(Image,{className:'otop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'otop-word'},
-        React.createElement('span',{className:'otop-title'},'PEA-SLA Tracking System'),
+        React.createElement('span',{className:'otop-title'},'SLA Tracking'),
         React.createElement('span',{className:'otop-sub'},'ภาพรวมการรายงานผล SLA')
       )
     )
