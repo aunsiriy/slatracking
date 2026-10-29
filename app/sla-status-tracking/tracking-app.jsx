@@ -7,7 +7,7 @@ function Sidebar(){
   return React.createElement('aside',{className:'tsb'},
     React.createElement('div',{className:'tsb-brand'},
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'tsb-logo',width:36,height:36}),
-      React.createElement('span',{className:'tsb-brand-text'},'SLA Tracking')
+      React.createElement('span',{className:'tsb-brand-text'},'SLA Tracking System')
     ),
     React.createElement('nav',{className:'tsb-nav'},
       React.createElement(Link,{href:'/',className:'tsb-item tsb-item--back'},React.createElement(Icon,{name:'home',size:19}),React.createElement('span',null,'กลับหน้าหลัก')),

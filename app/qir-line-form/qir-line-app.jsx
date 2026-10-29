@@ -50,7 +50,7 @@ function TopBar(){
       React.createElement(Link,{href:'/qir-line-overview',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
       React.createElement('span',{className:'ttb-divider'}),
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking')
+      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
     ),
     React.createElement('div',{className:'ttb-right'},
       React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
@@ -70,7 +70,9 @@ function Breadcrumb({current}){
 }
 
 function HistoryCard({history}){
-  const items=(history||[]).slice().reverse();
+  const [desc,setDesc]=React.useState(true);
+  const base=history||[];
+  const items=desc?base.slice().reverse():base.slice();
   return React.createElement('div',{className:'card lsection'},
     React.createElement('div',{className:'lsection-head'},
       React.createElement('div',null,
@@ -79,12 +81,29 @@ function HistoryCard({history}){
       )
     ),
     items.length
-      ?React.createElement('ul',{className:'qlf-history'},
-        items.map((h,i)=>React.createElement('li',{key:i,className:'qlf-history-item'},
-          React.createElement('span',{className:'qlf-history-dot'+(i===0?' is-latest':'')}),
-          React.createElement('span',{className:'qlf-history-action'},h.action),
-          React.createElement('span',{className:'qlf-history-at'},h.at)
-        ))
+      ?React.createElement('div',{className:'qlf-htable-wrap'},
+        React.createElement('table',{className:'qlf-htable'},
+          React.createElement('thead',null,
+            React.createElement('tr',null,
+              React.createElement('th',null,
+                React.createElement('button',{type:'button',className:'qlf-hsort',onClick:()=>setDesc(!desc)},
+                  'วันที่ / เวลา',React.createElement(Icon,{name:'switch-vertical-01',size:14})
+                )
+              ),
+              React.createElement('th',null,'ผู้ดำเนินการ'),
+              React.createElement('th',null,'ตำแหน่ง/สังกัด'),
+              React.createElement('th',null,'รายละเอียด')
+            )
+          ),
+          React.createElement('tbody',null,
+            items.map((h,i)=>React.createElement('tr',{key:i},
+              React.createElement('td',null,h.at),
+              React.createElement('td',null,h.by||'-'),
+              React.createElement('td',null,h.role||'-'),
+              React.createElement('td',null,h.action)
+            ))
+          )
+        )
       )
       :React.createElement('div',{className:'qlf-empty'},'ยังไม่มีประวัติ')
   );
@@ -272,32 +291,85 @@ function ConfirmSaveModal({onCancel,onConfirm,title,text}){
   );
 }
 
-function ViewMode({year,stored,selectedGroups,onEdit}){
-  return React.createElement(React.Fragment,null,
-    React.createElement('div',{className:'qlf-confirm-sections'},
-      React.createElement('fieldset',{className:'qlf-fieldset',disabled:true},
-        React.createElement(SectionCard,{
-          title:'QIR ของสายงาน (เพิ่มโดยผู้คัดเลือก)',
-          hint:'ข้อมูลนี้อยู่ในสถานะส่งคัดเลือกแล้ว — กด "แก้ไข" เพื่อปรับปรุง'},
-          (stored.ownGroups&&stored.ownGroups.length>0)
-            ?React.createElement(QirGroupList,{qirGroups:stored.ownGroups,setGroupProposal:()=>{},setGroupProcess:()=>{},updateQir:()=>{},addQirRow:()=>{},removeQirRow:()=>{},duplicateGroup:()=>{},removeGroup:()=>{}})
-            :React.createElement('div',{className:'qlf-empty'},'ไม่มี QIR ของสายงานที่เพิ่มเอง')
-        ),
-        React.createElement(SectionCard,{
-          title:'QIR ของฝ่ายที่คัดเลือก ('+(stored.selectedIds||[]).length+')',
-          hint:'ข้อเสนอ QIR ของฝ่ายที่สายงานคัดเลือกไว้'},
-          selectedGroups.length>0
-            ?React.createElement('div',{className:'qlf-dept-list'},
-                selectedGroups.map(grp=>React.createElement(DeptBlock,{key:grp.id,dept:grp.dept,proposals:grp.proposals}))
+function OwnQirReadOnly({qirGroups}){
+  return React.createElement('div',{className:'qlf-dept-block'},
+    React.createElement('div',{className:'qlf-prop-list'},
+      qirGroups.map((g,gi)=>{
+        const total=g.rows.reduce((s,r)=>s+(Number(r.weight)||0),0);
+        return React.createElement('div',{key:g.id,className:'qlf-prop-card'},
+          qirGroups.length>1&&React.createElement('span',{className:'qlf-prop-card-tag'},
+            React.createElement(Icon,{name:'flag-01',size:13}),'กลุ่ม QIR ที่ '+(gi+1)
+          ),
+          React.createElement('div',{className:'qlf-dept-info'},
+            React.createElement('div',{className:'qlf-dept-info-items'},
+              React.createElement('div',{className:'qlf-dept-info-item'},
+                React.createElement('span',{className:'qlf-dept-info-label'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)'),
+                React.createElement('span',{className:'qlf-dept-info-value'},g.proposal||'-')
+              ),
+              React.createElement('div',{className:'qlf-dept-info-item'},
+                React.createElement('span',{className:'qlf-dept-info-label'},'สอดคล้องกับกระบวนการ'),
+                React.createElement('span',{className:'qlf-dept-info-value'},qlfProcessLabel(g.processKey))
               )
-            :React.createElement('div',{className:'qlf-empty'},'ไม่ได้เลือกข้อเสนอ QIR ของฝ่ายใด')
+            )
+          ),
+          React.createElement('table',{className:'ltable'},
+            React.createElement('thead',null,React.createElement('tr',null,['รายการ','กิจกรรมที่จะดำเนินการ','น้ำหนัก'].map((h,i)=>React.createElement('th',{key:i},h)))),
+            React.createElement('tbody',null,g.rows.map((r,i)=>React.createElement('tr',{key:r.id||i},
+              React.createElement('td',null,i+1),
+              React.createElement('td',null,r.activity),
+              React.createElement('td',{className:'lqir-weight'},r.weight)
+            )))
+          ),
+          React.createElement('div',{className:'qlf-dept-foot'},
+            React.createElement('span',null,'น้ำหนักรวม'),
+            React.createElement('span',{className:'lqir-total'},total)
+          )
+        );
+      })
+    )
+  );
+}
+
+function ViewTabs({active,setActive}){
+  const tabs=[{key:'detail',label:'รายละเอียดผลการคัดเลือก'},{key:'history',label:'ประวัติการดำเนินการ'}];
+  return React.createElement('div',{className:'qlf-view-tabs'},
+    tabs.map(t=>React.createElement('button',{
+      key:t.key,type:'button',
+      className:'qlf-view-tab'+(active===t.key?' is-active':''),
+      onClick:()=>setActive(t.key)},t.label))
+  );
+}
+
+function ViewMode({year,stored,selectedGroups,onEdit}){
+  const [tab,setTab]=React.useState('detail');
+  return React.createElement(React.Fragment,null,
+    React.createElement(ViewTabs,{active:tab,setActive:setTab}),
+    tab==='detail'
+      ?React.createElement('div',{className:'qlf-confirm-sections'},
+          React.createElement(SectionCard,{
+            title:'QIR ของสายงาน (เพิ่มโดยผู้คัดเลือก)',
+            hint:'ข้อมูลนี้อยู่ในสถานะส่งคัดเลือกแล้ว — กด "แก้ไข" เพื่อปรับปรุง'},
+            (stored.ownGroups&&stored.ownGroups.length>0)
+              ?React.createElement(OwnQirReadOnly,{qirGroups:stored.ownGroups})
+              :React.createElement('div',{className:'qlf-empty'},'ไม่มี QIR ของสายงานที่เพิ่มเอง')
+          ),
+          React.createElement(SectionCard,{
+            title:'QIR ของฝ่ายที่คัดเลือก ('+(stored.selectedIds||[]).length+')',
+            hint:'ข้อเสนอ QIR ของฝ่ายที่สายงานคัดเลือกไว้'},
+            selectedGroups.length>0
+              ?React.createElement('div',{className:'qlf-dept-list'},
+                  selectedGroups.map(grp=>React.createElement(DeptBlock,{key:grp.id,dept:grp.dept,proposals:grp.proposals}))
+                )
+              :React.createElement('div',{className:'qlf-empty'},'ไม่ได้เลือกข้อเสนอ QIR ของฝ่ายใด')
+          )
         )
-      ),
-      React.createElement(HistoryCard,{history:stored.history})
-    ),
-    React.createElement('div',{className:'qlf-actions'},
-      React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/qir-line-overview';}},'ย้อนกลับ'),
-      React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:onEdit},'แก้ไข')
+      :React.createElement(HistoryCard,{history:stored.history}),
+    React.createElement('div',{className:'qlf-view-spacer'}),
+    React.createElement('div',{className:'qlf-sticky-actions'},
+      React.createElement('div',{className:'qlf-sticky-actions-inner'},
+        React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/qir-line-overview';}},'ย้อนกลับ'),
+        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:onEdit},'แก้ไข')
+      )
     )
   );
 }
@@ -373,7 +445,7 @@ function App(){
         React.createElement(Button,{variant:'tertiary',size:'sm',onClick:()=>{setEditing(false);setStep(0);}},'ยกเลิกการแก้ไข')
       ),
       viewMode
-        ?React.createElement(ViewMode,{year:QLF_YEAR,stored:QLF_STORED,selectedGroups,onEdit:()=>{setEditing(true);setStep(0);}})
+        ?React.createElement(ViewMode,{year:QLF_YEAR,stored:QLF_STORED,selectedGroups,onEdit:()=>{setEditing(true);setStep(1);}})
         :React.createElement('div',{className:'qlf-layout'},
             React.createElement(Stepper,{step,setStep}),
             React.createElement('div',{className:'qlf-main'},

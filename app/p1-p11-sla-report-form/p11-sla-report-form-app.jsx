@@ -26,7 +26,7 @@ function TopBar(){
     React.createElement('div',{className:'ptop-left'},
       React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ptop-word'},
-        React.createElement('span',{className:'ptop-title'},'SLA Tracking'),
+        React.createElement('span',{className:'ptop-title'},'SLA Tracking System'),
         React.createElement('span',{className:'ptop-sub'},'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)')
       )
     )

@@ -19,7 +19,7 @@ function TopBar(){
     React.createElement('div',{className:'ltop-left'},
       React.createElement(Image,{className:'ltop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
       React.createElement('div',{className:'ltop-word'},
-        React.createElement('span',{className:'ltop-title'},'SLA Tracking'),
+        React.createElement('span',{className:'ltop-title'},'SLA Tracking System'),
         React.createElement('span',{className:'ltop-sub'},'Learning Form & QIR')
       )
     )

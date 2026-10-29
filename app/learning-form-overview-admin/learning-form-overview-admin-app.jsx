@@ -8,7 +8,7 @@ function TopBar(){
       React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับหน้าหลัก'),
       React.createElement('span',{className:'ttb-divider'}),
       React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking')
+      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
     ),
     React.createElement('div',{className:'ttb-right'},
       React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
