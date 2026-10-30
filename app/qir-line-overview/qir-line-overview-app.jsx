@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Badge,Avatar}=window.DesignSystem_cbd181;
+const {Button,Avatar}=window.DesignSystem_cbd181;
 
 const QLO_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
 const QLO_ROWS=[
@@ -9,11 +9,6 @@ const QLO_ROWS=[
   {year:'2567',recorder:'ธงชัย มีนวล',picked:5,lineAdded:1,date:'28/09/2567',status:'submitted'},
   {year:'2566',recorder:'ธงชัย มีนวล',picked:4,lineAdded:0,date:'01/10/2566',status:'submitted'}
 ];
-const QLO_STATUS={
-  submitted:{label:'ส่งคัดเลือกแล้ว',color:'success'},
-  pending:{label:'ยังไม่ได้ส่งคัดเลือก',color:'warning'}
-};
-
 function TopBar(){
   return React.createElement('header',{className:'ttb'},
     React.createElement('div',{className:'ttb-left'},
@@ -39,12 +34,10 @@ function Breadcrumb(){
 
 function KpiCards({rows}){
   const total=rows.length;
-  const submitted=rows.filter(r=>r.status==='submitted').length;
-  const pending=total-submitted;
+  const latestYear=total?rows.map(r=>Number(r.year)).sort((a,b)=>b-a)[0]:null;
   const cards=[
     {icon:'calendar',label:'รอบปีทั้งหมด',value:total,color:'brand'},
-    {icon:'check-circle',label:'ส่งคัดเลือกแล้ว',value:submitted,color:'success'},
-    {icon:'clock',label:'ยังไม่ได้ส่ง',value:pending,color:'warning'}
+    {icon:'check-circle',label:'ปีล่าสุดที่ส่ง',value:latestYear?'ปี '+latestYear:'—',color:'success'}
   ];
   return React.createElement('div',{className:'qlo-kpi-grid'},
     cards.map((c,i)=>React.createElement('div',{key:i,className:'card qlo-kpi-card'},
@@ -70,19 +63,20 @@ function mergeRow(r){
 }
 
 function App(){
-  const rows=QLO_ROWS.map(mergeRow);
+  // The history table is a record of what's actually happened, so only years with a
+  // real submitted selection belong in it — a year nobody has picked yet isn't "history".
+  const rows=QLO_ROWS.map(mergeRow).filter(r=>r.status==='submitted');
   const [yearFilter,setYearFilter]=React.useState('all');
   const [search,setSearch]=React.useState('');
   const yearOptions=rows.map(r=>r.year);
   const q=search.trim().toLowerCase();
   const filtered=rows
     .filter(r=>yearFilter==='all'||r.year===yearFilter)
-    .filter(r=>!q||[r.year,r.recorder,(QLO_STATUS[r.status]||{}).label,r.date].join(' ').toLowerCase().includes(q));
+    .filter(r=>!q||[r.year,r.recorder,r.date].join(' ').toLowerCase().includes(q));
   const hasFilter=yearFilter!=='all'||q!=='';
   function clearFilter(){setYearFilter('all');setSearch('');}
   function openRow(r){
-    if(r.status==='submitted')window.location.href='/qir-line-form?year='+r.year+'&mode=view';
-    else window.location.href='/qir-line-form?year='+r.year;
+    window.location.href='/qir-line-form?year='+r.year+'&mode=view';
   }
   function goSelect(){
     const cur=QLO_ROWS.map(mergeRow).find(r=>r.status!=='submitted');
@@ -107,43 +101,48 @@ function App(){
             React.createElement('p',{className:'lsection-hint'},'แต่ละปีระบุว่าได้ส่งผลการคัดเลือก QIR ของสายงานเรียบร้อยแล้วหรือยัง')
           )
         ),
-        React.createElement('div',{className:'qlo-filters'},
+        rows.length>0&&React.createElement('div',{className:'qlo-filters'},
           React.createElement('div',{className:'qlo-search'},
             React.createElement(Icon,{name:'search',size:15}),
-            React.createElement('input',{placeholder:'ค้นหาปี / ผู้คัดเลือก / สถานะ...',value:search,onChange:e=>setSearch(e.target.value)})
+            React.createElement('input',{placeholder:'ค้นหาปี / ผู้คัดเลือก...',value:search,onChange:e=>setSearch(e.target.value)})
           ),
           React.createElement(window.SelectMenu,{style:{width:'170px'},value:yearFilter,onChange:setYearFilter,options:[{value:'all',label:'ทุกปี'},...yearOptions.map(y=>({value:y,label:'ประจำปี '+y}))]}),
           hasFilter&&React.createElement(Button,{variant:'secondary',size:'md',onClick:clearFilter},'ล้างค่า')
         ),
-        filtered.length===0
+        rows.length===0
           ?React.createElement('div',{className:'qlo-empty'},
-            React.createElement(Icon,{name:'search',size:22}),
-            React.createElement('span',{className:'qlo-empty-title'},'ไม่พบข้อมูลตามที่ค้นหา'),
-            React.createElement('span',{className:'qlo-empty-sub'},'ลองปรับคำค้นหรือเลือกปีใหม่'),
-            React.createElement(Button,{variant:'secondary',size:'sm',onClick:clearFilter},'ล้างตัวกรอง')
+            React.createElement(Icon,{name:'file-text',size:22}),
+            React.createElement('span',{className:'qlo-empty-title'},'ยังไม่มีประวัติการคัดเลือก'),
+            React.createElement('span',{className:'qlo-empty-sub'},'เมื่อส่งผลการคัดเลือก QIR ของสายงานในปีใด ประวัติของปีนั้นจะมาแสดงที่นี่'),
+            React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:goSelect},'คัดเลือกประจำปี')
           )
-          :React.createElement('table',{className:'ltable qlo-table'},
-            React.createElement('thead',null,React.createElement('tr',null,
-              ['ประจำปี','ผู้คัดเลือก','ข้อเสนอที่คัดเลือก','QIR ของสายงาน','วันที่ส่ง','สถานะ',''].map((h,i)=>React.createElement('th',{key:i},h))
-            )),
-            React.createElement('tbody',null,filtered.map(r=>{
-              const s=QLO_STATUS[r.status];
-              return React.createElement('tr',{key:r.year,className:'qlo-row',onClick:()=>openRow(r)},
-                React.createElement('td',null,'ปี '+r.year),
-                React.createElement('td',null,r.recorder),
-                React.createElement('td',null,r.picked?r.picked+' ข้อเสนอ':'—'),
-                React.createElement('td',null,r.lineAdded?r.lineAdded+' รายการ':'—'),
-                React.createElement('td',null,
-                  React.createElement('div',null,r.date),
-                  r.lastEditedAt&&React.createElement('div',{className:'qlo-edited'},'แก้ไขล่าสุด '+r.lastEditedAt)
-                ),
-                React.createElement('td',null,React.createElement(Badge,{label:s.label,type:'pill-color',color:s.color,size:'sm'})),
-                React.createElement('td',{className:'qlo-row-action'},
-                  React.createElement(Button,{variant:'tertiary',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:14}),onClick:e=>{e.stopPropagation();openRow(r);}},r.status==='submitted'?'ดูรายละเอียด':'คัดเลือก')
+          :filtered.length===0
+            ?React.createElement('div',{className:'qlo-empty'},
+              React.createElement(Icon,{name:'search',size:22}),
+              React.createElement('span',{className:'qlo-empty-title'},'ไม่พบข้อมูลตามที่ค้นหา'),
+              React.createElement('span',{className:'qlo-empty-sub'},'ลองปรับคำค้นหรือเลือกปีใหม่'),
+              React.createElement(Button,{variant:'secondary',size:'sm',onClick:clearFilter},'ล้างตัวกรอง')
+            )
+            :React.createElement('table',{className:'ltable qlo-table'},
+              React.createElement('thead',null,React.createElement('tr',null,
+                ['ประจำปี','ผู้คัดเลือก','ข้อเสนอที่คัดเลือก','QIR ของสายงาน','วันที่ส่ง',''].map((h,i)=>React.createElement('th',{key:i},h))
+              )),
+              React.createElement('tbody',null,filtered.map(r=>
+                React.createElement('tr',{key:r.year,className:'qlo-row',onClick:()=>openRow(r)},
+                  React.createElement('td',null,'ปี '+r.year),
+                  React.createElement('td',null,r.recorder),
+                  React.createElement('td',null,r.picked?r.picked+' ข้อเสนอ':'—'),
+                  React.createElement('td',null,r.lineAdded?r.lineAdded+' รายการ':'—'),
+                  React.createElement('td',null,
+                    React.createElement('div',null,r.date),
+                    r.lastEditedAt&&React.createElement('div',{className:'qlo-edited'},'แก้ไขล่าสุด '+r.lastEditedAt)
+                  ),
+                  React.createElement('td',{className:'qlo-row-action'},
+                    React.createElement(Button,{variant:'tertiary',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:14}),onClick:e=>{e.stopPropagation();openRow(r);}},'ดูรายละเอียด')
+                  )
                 )
-              );
-            }))
-          )
+              ))
+            )
       )
     )
   );

@@ -331,12 +331,15 @@ function OwnQirReadOnly({qirGroups}){
 }
 
 function ViewTabs({active,setActive}){
-  const tabs=[{key:'detail',label:'รายละเอียดผลการคัดเลือก'},{key:'history',label:'ประวัติการดำเนินการ'}];
-  return React.createElement('div',{className:'qlf-view-tabs'},
+  const tabs=[
+    {key:'detail',label:'รายละเอียดผลการคัดเลือก',icon:'clipboard-check'},
+    {key:'history',label:'ประวัติการดำเนินการ',icon:'clock-rewind'}
+  ];
+  return React.createElement('nav',{className:'qlf-view-tabs'},
     tabs.map(t=>React.createElement('button',{
       key:t.key,type:'button',
       className:'qlf-view-tab'+(active===t.key?' is-active':''),
-      onClick:()=>setActive(t.key)},t.label))
+      onClick:()=>setActive(t.key)},React.createElement(Icon,{name:t.icon,size:18}),t.label))
   );
 }
 
