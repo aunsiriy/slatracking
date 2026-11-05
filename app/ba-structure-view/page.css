@@ -4,12 +4,6 @@ h1,h3{font-family:"IBM Plex Sans Thai",sans-serif;margin:0}
 a{color:var(--pea-text-brand-secondary);text-decoration:none}
 a:hover{color:var(--pea-text-brand-secondary-hover)}
 .icon{display:inline-block;flex-shrink:0}
-.bv-header{background:#fff;border-bottom:1px solid var(--pea-border-secondary);padding:18px 28px;display:flex;align-items:center;gap:18px}
-.bv-back{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary);flex-shrink:0}
-.bv-back:hover{color:var(--pea-text-brand-secondary)}
-.bv-header-title{display:flex;align-items:center;gap:14px;flex:1}
-.bv-header-title h1{font-size:19px;font-weight:700}
-.bv-header-title p{margin:2px 0 0;font-size:13px;color:var(--pea-text-tertiary)}
 .bv-page{max-width:1320px;margin:0 auto;padding:24px 28px 60px}
 .bv-layout{display:grid;grid-template-columns:340px 1fr;gap:0;background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px;overflow:hidden;align-items:start}
 .bv-tree-panel{border-right:1px solid var(--pea-border-secondary);background:#fff;padding:14px;display:flex;flex-direction:column;gap:10px;align-self:stretch}
@@ -36,8 +30,7 @@ a:hover{color:var(--pea-text-brand-secondary-hover)}
 .bv-card-meta-grid>div>div{font-size:13.5px;color:var(--pea-text-primary);font-weight:500;margin-top:2px}
 .bv-empty{height:100%;min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--pea-text-tertiary);font-size:14px}
 .bv-empty-sub{font-size:13.5px;color:var(--pea-text-tertiary);padding:20px 0}
-.bv-page-tabs-wrap{background:#fff;border-bottom:1px solid var(--pea-border-secondary)}
-.bv-page-tabs{max-width:1320px;margin:0 auto;padding:16px 28px 0;display:flex;gap:2px;overflow-x:auto}
+.bv-page-tabs{display:flex;gap:2px;overflow-x:auto}
 .bv-page-tab{display:flex;align-items:center;gap:8px;border:1px solid transparent;border-bottom:none;background:none;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary);padding:12px 18px;border-radius:8px 8px 0 0;white-space:nowrap;margin-bottom:-1px;transition:background .12s,color .12s}
 .bv-page-tab .icon{background-color:currentColor}
 .bv-page-tab:hover:not(.is-active){background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}

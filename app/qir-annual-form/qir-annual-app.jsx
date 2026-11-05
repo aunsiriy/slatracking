@@ -1,31 +1,5 @@
-import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Badge,Checkbox,Textarea,InputField}=window.DesignSystem_cbd181;
 const QA_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
-
-function TopBar(){
-  return React.createElement('header',{className:'qtop'},
-    React.createElement('div',{className:'qtop-left'},
-      React.createElement(Link,{className:'qtop-back',href:'/p1-p11-overview'+(QA_VIEW?'?view=1':'')},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
-      React.createElement('span',{className:'qtop-divider'}),
-      React.createElement(Image,{className:'qtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'qtop-word'},
-        React.createElement('span',{className:'qtop-title'},'SLA Tracking System'),
-        React.createElement('span',{className:'qtop-sub'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)')
-      )
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'qbreadcrumb'},
-    React.createElement(Link,{href:'/'},'ข้อเสนอโอกาสการปรับปรุงฯ (QIR)'),
-    React.createElement(Icon,{name:'chevron-right',size:13}),
-    React.createElement(Link,{href:'/p1-p11-overview'+(QA_VIEW?'?view=1':'')},'P1-P11 / QIR ประจำปี'),
-    React.createElement(Icon,{name:'chevron-right',size:13}),
-    React.createElement('span',{className:'is-current'},'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)')
-  );
-}
 
 function CriteriaList(){
   const [checked,setChecked]=React.useState({2:true});
@@ -108,16 +82,15 @@ function ActivityTable(){
 function App(){
   const m=window.QIR_ANNUAL_META;
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'920px',
+      backHref:'/p1-p11-overview'+(QA_VIEW?'?view=1':''),
+      systemSubtitle:'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)',
+      breadcrumb:[{label:'ข้อเสนอโอกาสการปรับปรุงฯ (QIR)',href:'/'},{label:'P1-P11 / QIR ประจำปี',href:'/p1-p11-overview'+(QA_VIEW?'?view=1':'')},{label:'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)'}],
+      title:React.createElement(React.Fragment,null,m.division,QA_VIEW&&React.createElement('span',{style:{marginLeft:'16px'}},React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm'}))),
+      actions:React.createElement('button',{className:'qexport-btn'},'ส่งออกข้อมูล',React.createElement(Icon,{name:'chevron-down',size:14})),
+      subtitle:'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR) ประจำปี '+m.year
+    }),
     React.createElement('main',{className:'qcontent'},
-      React.createElement(Breadcrumb),
-      React.createElement('div',{className:'qpage-head'},
-        React.createElement('div',null,
-          React.createElement('h1',null,m.division,QA_VIEW&&React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm',style:{marginLeft:'10px'}})),
-          React.createElement('p',null,'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR) ประจำปี '+m.year)
-        ),
-        React.createElement('button',{className:'qexport-btn'},'ส่งออกข้อมูล',React.createElement(Icon,{name:'chevron-down',size:14}))
-      ),
       React.createElement('fieldset',{className:'qform-fieldset',disabled:QA_VIEW},
         React.createElement('div',{className:'card qsection'},
           React.createElement('div',{className:'qsection-head'},

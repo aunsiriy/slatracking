@@ -1,22 +1,7 @@
-import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Badge}=window.DesignSystem_cbd181;
 const PS_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
 
 const SUM_MONTHS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-
-function TopBar(){
-  return React.createElement('header',{className:'ptop'},
-    React.createElement(Link,{className:'ptop-back',href:'/p1-p11-overview'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
-    React.createElement('div',{className:'ptop-left'},
-      React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'ptop-word'},
-        React.createElement('span',{className:'ptop-title'},'SLA Tracking System'),
-        React.createElement('span',{className:'ptop-sub'},'สรุปรายงานภาพรวม P1-P11')
-      )
-    )
-  );
-}
 
 function StatusIcon({color}){
   return React.createElement('span',{className:`pstatus-icon pstatus-icon--${color}`},React.createElement(Icon,{name:'file-search-02',size:14}));
@@ -45,26 +30,22 @@ function App(){
     try{setReported(JSON.parse(localStorage.getItem('p11_reported_'+y)||'{}'));}catch(e){}
   },[]);
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1400px',
+      backHref:'/p1-p11-overview',
+      systemSubtitle:'สรุปรายงานภาพรวม P1-P11',
+      breadcrumb:[
+        {label:'ข้อเสนอโอกาสในการปรับปรุงฯ (QIR)',href:'/learning-form-overview'},
+        {label:'P1-P11 / QIR ประจำปี',href:'/p1-p11-overview'},
+        {label:'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)'}
+      ],
+      title:unit,
+      actions:React.createElement(Button,{variant:'secondary',size:'md',trailingIcon:React.createElement(Icon,{name:'chevron-down',size:15})},'ส่งออกข้อมูล'),
+      subtitle:'สรุปรายงานภาพรวม P1-P11 ประจำปี '+year
+    }),
     React.createElement('main',{className:'pcontent'},
-      React.createElement('nav',{className:'psum-crumb'},
-        React.createElement(Link,{href:'/learning-form-overview'},'ข้อเสนอโอกาสในการปรับปรุงฯ (QIR)'),
-        React.createElement(Icon,{name:'chevron-right',size:14}),
-        React.createElement(Link,{href:'/p1-p11-overview'},'P1-P11 / QIR ประจำปี'),
-        React.createElement(Icon,{name:'chevron-right',size:14}),
-        React.createElement('span',{className:'is-current'},'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)')
-      ),
-      React.createElement('div',{className:'psum-head'},
-        React.createElement('h1',null,unit),
-        React.createElement('p',null,'สรุปรายงานภาพรวม P1-P11 ประจำปี '+year)
-      ),
-      React.createElement('div',{className:'psum-divider'}),
       React.createElement('div',{className:'plegend-row'},
         React.createElement('span',{className:'plegend-label'},'สถานะ QIR :'),
-        window.P11_STATUS_LEGEND.map(s=>React.createElement('span',{key:s.key,className:'plegend-item'},React.createElement(StatusIcon,{color:s.color}),s.label)),
-        React.createElement('div',{className:'psum-export'},
-          React.createElement(Button,{variant:'secondary',size:'md',trailingIcon:React.createElement(Icon,{name:'chevron-down',size:15})},'ส่งออกข้อมูล')
-        )
+        window.P11_STATUS_LEGEND.map(s=>React.createElement('span',{key:s.key,className:'plegend-item'},React.createElement(StatusIcon,{color:s.color}),s.label))
       ),
       React.createElement('div',{className:'card ptable-card'},
         React.createElement('table',{className:'ptable psum-table'},

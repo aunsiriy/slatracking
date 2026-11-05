@@ -7,21 +7,7 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.otop{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;background:#fff;border-bottom:1px solid var(--pea-border-secondary)}
-.otop-left{display:flex;align-items:center;gap:10px}
-.otop-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
-.otop-word{display:flex;flex-direction:column;line-height:1.2}
-.otop-title{font-family:var(--pea-font-family-display);font-weight:700;font-size:15px}
-.otop-sub{font-size:11px;color:var(--pea-text-tertiary)}
-.otop-back{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-secondary);padding:8px 12px;border-radius:8px}
-.otop-back:hover{background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
-
 .ocontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
-.obreadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pea-text-tertiary);margin-bottom:16px}
-.obreadcrumb .is-current{color:var(--pea-text-brand-secondary);font-weight:600}
-.opage-head{margin-bottom:22px}
-.opage-head h1{font-size:26px;font-weight:700;margin-bottom:6px}
-.opage-head p{font-size:14px;color:var(--pea-text-tertiary)}
 
 .okpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
 .okpi-card{padding:18px 20px;display:flex;align-items:center;gap:14px}

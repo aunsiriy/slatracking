@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 const {Button,Badge,InputField,Textarea}=window.DesignSystem_cbd181;
 
@@ -6,30 +5,9 @@ const SLA_FORM_GUIDE=[
 {part:'ขั้นที่ 1',title:'เลือกรายการทางซ้าย',desc:'กล่อง "ต้องกรอก" ทางซ้ายมือจะเรียงรายการให้อัตโนมัติ โดยเริ่มจากรายการที่เลยกำหนดส่งก่อน ตามด้วยรายการที่ยังไม่ถึงกำหนด คลิกรายการใดก็ได้เพื่อเปิดกรอกทางขวามือ'},
 {part:'ขั้นที่ 2',title:'กรอกข้อมูลทางขวาแล้วกด "ถัดไป"',desc:'กรอกผลการดำเนินงาน (%) ระบบจะแจ้งผ่าน/ไม่ผ่านทันที ตามด้วยรายละเอียดการดำเนินงาน และแนวทางแก้ไข (กรณีผลไม่ผ่านเกณฑ์) แล้วกด "ถัดไป" เพื่อไปยังรายการถัดไปที่ยังไม่ครบ หากกดตอนกรอกไม่ครบ ช่องที่ขาดจะขึ้นกรอบสีแดงให้แก้ไข'},
 {part:'ขั้นที่ 3',title:'กด "ยืนยันส่งทั้งหมด"',desc:'เมื่อกรอกครบทุกรายการ ตัวเลขในกล่อง "ต้องกรอก" จะเปลี่ยนเป็นเครื่องหมายถูกสีเขียว และปุ่ม "ถัดไป" ทางขวาจะกดไม่ได้เพราะไม่มีรายการให้ไปต่อแล้ว ให้กดปุ่ม "ยืนยันส่งทั้งหมด" ที่แถบด้านล่างสุดของหน้าเพื่อส่งรายงานทั้งหมดให้ กนอ. ในครั้งเดียว'},
-{part:'สัญลักษณ์',title:'สีสถานะในแถบรอบรายงาน',desc:'เขียว = ผ่าน SLA, แดง = ไม่ผ่าน SLA หรือเลยกำหนดส่งของรอบปัจจุบัน, เทา = ยังไม่ถึงรอบ ทุกรอบกดเข้าไปดูหรือกรอกล่วงหน้าได้ตลอด แม้เป็นรอบที่ยังไม่ถึงกำหนดส่งจริง'},
-{part:'หมายเหตุ',title:'ประเภทรายงานที่ต้องกรอก',desc:'แอดมินจะมอบหมายให้แต่ละฝ่ายทำรายงานเพียงประเภทเดียวเท่านั้น คือ "รายงานผล SLA รายเดือน" หรือ "รายงานผลตัวชี้วัดกระบวนการ รายไตรมาส" อย่างใดอย่างหนึ่ง ไม่มีฝ่ายใดต้องทำทั้งสองแบบพร้อมกัน หน้านี้จะแสดงเฉพาะประเภทที่ฝ่ายของท่านได้รับมอบหมาย'},
+{part:'สัญลักษณ์',title:'สีสถานะในแถบรอบรายงาน',desc:'เขียว = ผ่าน SLA, แดง = ไม่ผ่าน SLA หรือเลยกำหนดส่งของรอบปัจจุบัน, เทา = ยังไม่ถึงรอบ รอบที่ยังไม่ถึงกำหนด (สีเทา) ยังไม่สามารถกรอกข้อมูลได้ ระบบจะเปิดให้กรอกเมื่อถึงรอบนั้นจริง'},
 {part:'หมายเหตุ',title:'แก้ไขรายการที่ยืนยันแล้วได้',desc:'รายการที่ "รายงานแล้ว" สามารถกด "แก้ไขข้อมูล" เพื่อปรับผลการดำเนินงาน รายละเอียด หรือแนวทางแก้ไขได้ภายหลัง แต่จะแก้ไขได้เฉพาะผู้ที่มีรายชื่อเป็นผู้มีสิทธิ์กรอกของรายการนั้นเท่านั้น ทุกครั้งที่แก้ไขจะถูกบันทึกไว้ใน "ประวัติการแก้ไข" ของรายการนั้น'}
 ];
-
-function TopBar(){
-  return React.createElement('header',{className:'rtop'},
-    React.createElement('div',{className:'rtop-left'},
-      React.createElement(Link,{className:'rtop-back',href:'/'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
-      React.createElement(Image,{className:'rtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'rtop-word'},
-        React.createElement('span',{className:'rtop-title'},'SLA Tracking System')
-      )
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'rbreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'รายงานผล SLA (ระดับฝ่าย)')
-  );
-}
 
 function FormGuideModal({onClose}){
   const [open,setOpen]=React.useState(0);
@@ -49,24 +27,6 @@ function FormGuideModal({onClose}){
           open===i&&React.createElement('p',{className:'lfguide-item-desc'},g.desc)
         ))
       )
-    )
-  );
-}
-
-const ASSIGNMENT_DEMO_OPTIONS=[
-  {key:'monthly',label:'มอบหมาย: รายงานผล SLA รายเดือน'},
-  {key:'quarterly',label:'มอบหมาย: รายงานผลตัวชี้วัดกระบวนการ รายไตรมาส'}
-];
-
-function AssignmentDemoControl({assignedType,setAssignedType}){
-  return React.createElement('div',{className:'assign-demo'},
-    React.createElement('div',{className:'assign-demo-label'},
-      React.createElement(Icon,{name:'settings',size:14}),
-      'สาธิต: แอดมินมอบหมายให้ฝ่ายนี้ทำ'
-    ),
-    React.createElement('div',{className:'assign-demo-opts'},
-      ASSIGNMENT_DEMO_OPTIONS.map(o=>React.createElement('button',{key:o.key,type:'button',
-        className:'assign-demo-opt'+(assignedType===o.key?' is-active':''),onClick:()=>setAssignedType(o.key)},o.label))
     )
   );
 }
@@ -92,8 +52,8 @@ function PeriodBox({period,isSelected,onSelect,summary}){
   );
 }
 
-function PeriodBar({tab,selectedKey,onSelect,itemsForPeriodKey,activeItem,onOpenHistory}){
-  const periods=tab==='monthly'?window.SLA_REPORT_PERIODS_MONTHLY:window.SLA_REPORT_PERIODS_QUARTERLY;
+function PeriodBar({selectedKey,onSelect,itemsForPeriodKey,activeItem,onOpenHistory}){
+  const periods=window.SLA_REPORT_PERIODS_MONTHLY;
   return React.createElement('div',{className:'period-bar'},
     React.createElement('div',{className:'period-bar-head'},
       React.createElement('span',{className:'period-bar-title'},'รอบรายงาน · ปี 2569'),
@@ -108,7 +68,7 @@ function PeriodBar({tab,selectedKey,onSelect,itemsForPeriodKey,activeItem,onOpen
         )
       )
     ),
-    React.createElement('div',{className:'period-grid period-grid--'+tab},
+    React.createElement('div',{className:'period-grid period-grid--monthly'},
       periods.map(p=>React.createElement(PeriodBox,{key:p.key,period:p,isSelected:p.key===selectedKey,onSelect,summary:periodSummary(itemsForPeriodKey(p.key))}))
     )
   );
@@ -208,19 +168,14 @@ function sortPending(items){
 
 function itemLabel(item){return item.slaName||item.metricName;}
 
-// Every period still ahead of the current one gets its own blank, fully editable item set
-// (seeded from the current period's metadata) so it can be filled in advance — not just
-// viewed. Already-reported past periods stay read-only, driven off each item's `history`
-// instead (see snapshotItems in App).
-function blankItemFromBase(it){
-  return {...it,status:'not_reported',result:'',detail:'',improvement:'',preparer:'',first_confirmed_at:null,historyLog:[]};
-}
+// Only the current period keeps a live, editable item set. Periods still ahead of it
+// ("upcoming") are not reachable for filling in advance — selecting one shows a
+// "ยังไม่ถึงรอบ" notice instead (see isUpcomingPeriod in App). Already-reported past
+// periods stay read-only too, driven off each item's `history` instead (see itemsForPeriodKey).
 function buildInitialEditable(periods,baseItems){
   const map={};
-  periods.forEach(p=>{
-    if(p.isCurrent)map[p.key]=baseItems;
-    else if(p.status==='upcoming')map[p.key]=baseItems.map(blankItemFromBase);
-  });
+  const current=periods.find(p=>p.isCurrent);
+  if(current)map[current.key]=baseItems;
   return map;
 }
 
@@ -410,8 +365,7 @@ function HistoryLogModal({item,onClose}){
   );
 }
 
-function ReportPanel({item,onChange,onSaveEdit,variant,pendingIndex,pendingTotal,allPendingComplete,onPrev,onNext,isHistorical}){
-  const isQuarterly=variant==='quarterly';
+function ReportPanel({item,onChange,onSaveEdit,pendingIndex,pendingTotal,allPendingComplete,onPrev,onNext,isHistorical}){
   const isSubmitted=item.status==='submitted';
   const status=computeStatus(item.result,item.target);
   const [showMissing,setShowMissing]=React.useState(false);
@@ -443,7 +397,7 @@ function ReportPanel({item,onChange,onSaveEdit,variant,pendingIndex,pendingTotal
       React.createElement('span',{className:'ba-tag ba-tag--sub'},item.level1+' · '+item.level1Label)
     ),
     React.createElement('div',{className:'panel-title-group'},
-      React.createElement('span',{className:'panel-title-kicker'},isQuarterly?'ตัวชี้วัดกระบวนการ':'ข้อตกลงการให้บริการ (SLA)'),
+      React.createElement('span',{className:'panel-title-kicker'},'ข้อตกลงการให้บริการ (SLA)'),
       React.createElement('h2',{className:'panel-title'},itemLabel(item))
     ),
     React.createElement(StatusMetaRow,{item}),
@@ -452,7 +406,7 @@ function ReportPanel({item,onChange,onSaveEdit,variant,pendingIndex,pendingTotal
         React.createElement('span',{className:'report-field-label'},'ค่าเป้าหมาย (กำหนดโดย กนอ.)'),
         React.createElement('div',{className:'report-field-static'},item.target+'%')
       ),
-      !isQuarterly&&React.createElement('div',{className:'report-field'},
+      React.createElement('div',{className:'report-field'},
         React.createElement('span',{className:'report-field-label'},'ผู้รับบริการ SLA'),
         React.createElement('div',{className:'report-field-static'},item.customer)
       ),
@@ -501,7 +455,7 @@ function ReportPanel({item,onChange,onSaveEdit,variant,pendingIndex,pendingTotal
             isHistorical?null:(editable?
               React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:()=>setIsEditing(true)},'แก้ไขข้อมูล'):
               React.createElement('span',{className:'panel-no-edit-note'},React.createElement(Icon,{name:'lock-01',size:13}),'คุณไม่มีสิทธิ์แก้ไขรายการนี้')),
-            React.createElement('button',{type:'button',className:'panel-log-link',onClick:()=>setLogOpen(true)},React.createElement(Icon,{name:'clock',size:14}),'ประวัติการแก้ไข')
+            React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'clock',size:16}),onClick:()=>setLogOpen(true)},'ประวัติการแก้ไข')
           )
         ),
       logOpen&&React.createElement(HistoryLogModal,{item,onClose:()=>setLogOpen(false)})
@@ -537,33 +491,35 @@ function PanelEmpty(){
   );
 }
 
+function UpcomingPeriodNotice({periodLabel,onBack}){
+  return React.createElement('div',{className:'card panel-card panel-empty'},
+    React.createElement(Icon,{name:'clock',size:28}),
+    React.createElement('div',{className:'panel-empty-title'},'ยังไม่ถึงรอบ '+periodLabel),
+    React.createElement('div',{className:'panel-empty-desc'},'รอบรายงานนี้ยังไม่เปิดให้กรอกข้อมูล ระบบจะเปิดให้กรอกเมื่อถึงรอบ'),
+    React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'corner-up-left',size:16}),onClick:onBack},'กลับไปรอบปัจจุบัน')
+  );
+}
+
 function App(){
   // Every department is assigned exactly one report type by the admin — never both.
-  const [assignedType,setAssignedType]=React.useState(window.SLA_REPORT_DEPT.assignedReportType||'monthly');
-  const [tab,setTab]=React.useState(assignedType);
   const [guideOpen,setGuideOpen]=React.useState(false);
   const [historyOpen,setHistoryOpen]=React.useState(false);
-  const p=tab==='monthly'?window.SLA_REPORT_PERIOD:window.SLA_REPORT_QUARTER_PERIOD;
-  const periods=tab==='monthly'?window.SLA_REPORT_PERIODS_MONTHLY:window.SLA_REPORT_PERIODS_QUARTERLY;
+  const p=window.SLA_REPORT_PERIOD;
+  const periods=window.SLA_REPORT_PERIODS_MONTHLY;
   const currentPeriodKey=(periods.find(pr=>pr.isCurrent)||periods[0]).key;
-  const baseItems=tab==='monthly'?window.SLA_REPORT_ITEMS:window.SLA_REPORT_QUARTERLY_ITEMS;
+  const baseItems=window.SLA_REPORT_ITEMS;
 
-  // The current period plus every period still ahead of it each keep their own live,
-  // editable item set (ปัจจุบัน + กรอกล่วงหน้า) — only already-reported past periods are
-  // read-only, driven off each item's history instead (see snapshotItems below).
-  const [monthlyEditable,setMonthlyEditable]=React.useState(()=>buildInitialEditable(window.SLA_REPORT_PERIODS_MONTHLY,window.SLA_REPORT_ITEMS));
-  const [quarterlyEditable,setQuarterlyEditable]=React.useState(()=>buildInitialEditable(window.SLA_REPORT_PERIODS_QUARTERLY,window.SLA_REPORT_QUARTERLY_ITEMS));
-  const editableByPeriod=tab==='monthly'?monthlyEditable:quarterlyEditable;
-  const setEditableByPeriod=tab==='monthly'?setMonthlyEditable:setQuarterlyEditable;
+  // Only the current period keeps a live, editable item set — periods still ahead of it
+  // ("upcoming") show a "ยังไม่ถึงรอบ" notice instead, and already-reported past periods
+  // stay read-only, driven off each item's history instead (see itemsForPeriodKey below).
+  const [editableByPeriod,setEditableByPeriod]=React.useState(()=>buildInitialEditable(window.SLA_REPORT_PERIODS_MONTHLY,window.SLA_REPORT_ITEMS));
 
-  const [selectedMonthKey,setSelectedMonthKey]=React.useState(null);
-  const [selectedQuarterKey,setSelectedQuarterKey]=React.useState(null);
-  const selectedPeriodKey=(tab==='monthly'?selectedMonthKey:selectedQuarterKey)||currentPeriodKey;
-  const setSelectedPeriodKey=tab==='monthly'?setSelectedMonthKey:setSelectedQuarterKey;
+  const [rawSelectedPeriodKey,setSelectedPeriodKey]=React.useState(null);
+  const selectedPeriodKey=rawSelectedPeriodKey||currentPeriodKey;
   const selectedPeriod=periods.find(pr=>pr.key===selectedPeriodKey);
   const isEditablePeriod=!!editableByPeriod[selectedPeriodKey];
-  const isFuturePeriod=isEditablePeriod&&selectedPeriodKey!==currentPeriodKey;
-  const isReadOnlyHistoricalView=!isEditablePeriod;
+  const isUpcomingPeriod=selectedPeriod&&selectedPeriod.status==='upcoming';
+  const isReadOnlyHistoricalView=!isEditablePeriod&&!isUpcomingPeriod;
 
   // Single source of truth for "what are this period's items" — the sidebar, the monthly
   // summary table, and the period-bar's per-box ratios all call this instead of keeping their
@@ -588,17 +544,10 @@ function App(){
   const incompleteCount=livePendingItems.filter(i=>!itemIsComplete(i)).length;
   const canSubmitAll=livePendingItems.length>0&&incompleteCount===0;
 
-  React.useEffect(()=>{
-    setTab(assignedType);
-  },[assignedType]);
-
-  const [activeId,setActiveId]=React.useState(null);
-  React.useEffect(()=>{
-    setSelectedPeriodKey(null);
-    const list=tab==='monthly'?window.SLA_REPORT_ITEMS:window.SLA_REPORT_QUARTERLY_ITEMS;
-    const pend=sortPending(list.filter(i=>i.status!=='submitted'));
-    setActiveId(pend[0]?pend[0].id:(list[0]?list[0].id:null));
-  },[tab]);
+  const [activeId,setActiveId]=React.useState(()=>{
+    const pend=sortPending(baseItems.filter(i=>i.status!=='submitted'));
+    return pend[0]?pend[0].id:(baseItems[0]?baseItems[0].id:null);
+  });
 
   function selectPeriod(key){
     setSelectedPeriodKey(key);
@@ -670,44 +619,45 @@ function App(){
   }
 
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
-    React.createElement('main',{className:'rcontent'},
-      React.createElement(Breadcrumb),
-      React.createElement(AssignmentDemoControl,{assignedType,setAssignedType}),
-      React.createElement('div',{className:'rpage-head'},
-        React.createElement('div',{className:'rpage-head-top'},
-          React.createElement('div',null,
-            React.createElement('h1',null,tab==='monthly'?'รายงานผลการดำเนินงาน SLA (ระดับฝ่าย)':'รายงานผลตัวชี้วัดกระบวนการ (ระดับฝ่าย)'),
-            React.createElement('div',{className:'rpage-head-subtitle'},window.SLA_REPORT_DEPT.name)
-          ),
-          React.createElement('div',{className:'rpage-head-actions'},
-            React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายรายละเอียด'),
-            React.createElement(Link,{className:'rlevel-switch',href:'/sla-report-form-level2'},'สลับไปหน้ารายงานระดับกอง',React.createElement(Icon,{name:'arrow-right',size:14}))
-          )
-        ),
+    React.createElement(window.PageHeader,{maxWidth:'1180px',
+      backHref:'/',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'รายงานผล SLA (ระดับฝ่าย)'}],
+      title:'รายงานผลการดำเนินงาน SLA (ระดับฝ่าย)',
+      actions:React.createElement(React.Fragment,null,
+        React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายรายละเอียด'),
+        React.createElement(Link,{className:'rlevel-switch',href:'/sla-report-form-level2'},'สลับไปหน้ารายงานระดับกอง',React.createElement(Icon,{name:'arrow-right',size:14}))
+      ),
+      subtitle:React.createElement(React.Fragment,null,
+        React.createElement('div',{className:'rpage-head-subtitle'},window.SLA_REPORT_DEPT.name),
         React.createElement('div',{className:'rpage-head-meta'},
           isReadOnlyHistoricalView?
             React.createElement(Badge,{label:'รอบ '+selectedPeriod.label+' 2569 · ย้อนหลัง',type:'pill-color',color:'gray',icon:'dot',size:'md'}):
-          isFuturePeriod?
-            React.createElement(Badge,{label:'รอบ '+selectedPeriod.label+' 2569 · กรอกล่วงหน้า',type:'pill-color',color:'blue',icon:'dot',size:'md'}):
+          isUpcomingPeriod?
+            React.createElement(Badge,{label:'รอบ '+selectedPeriod.label+' 2569 · ยังไม่ถึงรอบ',type:'pill-color',color:'gray',icon:'dot',size:'md'}):
             React.createElement(Badge,{label:'รอบ '+p.name,type:'pill-color',color:'brand',icon:'dot',size:'md'}),
-          !isReadOnlyHistoricalView&&!isFuturePeriod&&React.createElement('span',{className:'rpage-deadline'},React.createElement(Icon,{name:'clock',size:14}),'กำหนดส่ง '+p.deadline)
+          !isReadOnlyHistoricalView&&!isUpcomingPeriod&&React.createElement('span',{className:'rpage-deadline'},React.createElement(Icon,{name:'clock',size:14}),'กำหนดส่ง '+p.deadline)
         )
-      ),
-      React.createElement(PeriodBar,{tab,selectedKey:selectedPeriodKey,onSelect:selectPeriod,itemsForPeriodKey,activeItem,onOpenHistory:()=>setHistoryOpen(true)}),
-      React.createElement('div',{className:'report-layout'},
-        React.createElement('div',{className:'sidebar-col'},
-          React.createElement(PendingList,{items:pendingItems,activeId,onSelect:setActiveId}),
-          React.createElement(SubmittedList,{items:submittedItems,activeId,onSelect:setActiveId})
+      )
+    }),
+    React.createElement('main',{className:'rcontent'},
+      React.createElement(PeriodBar,{selectedKey:selectedPeriodKey,onSelect:selectPeriod,itemsForPeriodKey,activeItem,onOpenHistory:()=>setHistoryOpen(true)}),
+      isUpcomingPeriod?
+        React.createElement('div',{className:'report-layout report-layout--upcoming'},
+          React.createElement(UpcomingPeriodNotice,{periodLabel:selectedPeriod.label+' 2569',onBack:()=>selectPeriod(currentPeriodKey)})
+        ):
+        React.createElement('div',{className:'report-layout'},
+          React.createElement('div',{className:'sidebar-col'},
+            React.createElement(PendingList,{items:pendingItems,activeId,onSelect:setActiveId}),
+            React.createElement(SubmittedList,{items:submittedItems,activeId,onSelect:setActiveId})
+          ),
+          React.createElement('div',{className:'panel-col'},
+            activeItem?React.createElement(ReportPanel,{
+              item:activeItem,onChange:updateItem,onSaveEdit:saveSubmittedEdit,
+              pendingIndex:activePendingIndex,pendingTotal:livePendingItems.length,
+              allPendingComplete,onPrev:goPrev,onNext:goNext,isHistorical:isReadOnlyHistoricalView
+            }):React.createElement(PanelEmpty)
+          )
         ),
-        React.createElement('div',{className:'panel-col'},
-          activeItem?React.createElement(ReportPanel,{
-            item:activeItem,onChange:updateItem,onSaveEdit:saveSubmittedEdit,variant:tab,
-            pendingIndex:activePendingIndex,pendingTotal:livePendingItems.length,
-            allPendingComplete,onPrev:goPrev,onNext:goNext,isHistorical:isReadOnlyHistoricalView
-          }):React.createElement(PanelEmpty)
-        )
-      ),
       React.createElement('div',{className:'report-submit-spacer'})
     ),
     isReadOnlyHistoricalView?
@@ -722,12 +672,20 @@ function App(){
           React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'corner-up-left',size:16}),onClick:()=>selectPeriod(currentPeriodKey)},'กลับไปรอบปัจจุบัน')
         )
       ):
+    isUpcomingPeriod?
       React.createElement('div',{className:'report-submit-bar'},
         React.createElement('div',{className:'report-submit-left'},
-          isFuturePeriod&&React.createElement('span',{className:'report-submit-future-note'},
+          React.createElement('span',{className:'report-submit-history-note'},
             React.createElement(Icon,{name:'clock',size:15}),
-            'กำลังกรอกล่วงหน้า รอบ '+selectedPeriod.label+' 2569'
-          ),
+            'ยังไม่ถึงรอบ '+selectedPeriod.label+' 2569 — ยังไม่สามารถกรอกข้อมูลได้'
+          )
+        ),
+        React.createElement('div',{className:'report-submit-right'},
+          React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'corner-up-left',size:16}),onClick:()=>selectPeriod(currentPeriodKey)},'กลับไปรอบปัจจุบัน')
+        )
+      ):
+      React.createElement('div',{className:'report-submit-bar'},
+        React.createElement('div',{className:'report-submit-left'},
           livePendingItems.length===0?
             React.createElement('span',{className:'submitted-note'},React.createElement(Icon,{name:'check',size:16}),'ส่งรายงานครบทุกรายการแล้ว'):
             incompleteCount>0&&React.createElement('span',{className:'report-submit-hint'},

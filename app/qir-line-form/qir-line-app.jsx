@@ -1,73 +1,6 @@
-import Image from 'next/image';
-import Link from 'next/link';
-const {Button,Badge,InputField,Checkbox,Avatar}=window.DesignSystem_cbd181;
-
-const QLF_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
-const QLF_DEPT_SUBMISSIONS=[
-  {id:'fpj',dept:'ฝ่ายพัฒนาระบบดิจิทัล (ฝพจ.)',proposals:[
-    {id:'fpj-1',proposal:'ปรับปรุงตัวชี้วัดกระบวนการให้สะท้อนประสิทธิภาพและครอบคลุมผลลัพธ์',processKey:'s131',
-     activities:[
-       {name:'จัดทำแนวทางปรับปรุงตัวชี้วัดกระบวนการ',weight:50},
-       {name:'สื่อสารและอบรมการใช้ตัวชี้วัดชุดใหม่ให้หน่วยงานในสังกัด',weight:50}
-     ]},
-    {id:'fpj-2',proposal:'ลดระยะเวลาการอนุมัติงานพัฒนาระบบด้วยเวิร์กโฟลว์ดิจิทัล',processKey:'s132',
-     activities:[
-       {name:'ออกแบบเวิร์กโฟลว์อนุมัติอิเล็กทรอนิกส์',weight:60},
-       {name:'นำร่องใช้งานกับ 2 กระบวนการหลัก',weight:40}
-     ]}
-  ]},
-  {id:'fdk',dept:'ฝ่ายกลยุทธ์ดิจิทัลและบริหารจัดการข้อมูล (ฝดข.)',proposals:[
-    {id:'fdk-1',proposal:'ยกระดับการบูรณาการข้อมูลระหว่างระบบให้เป็นมาตรฐานเดียวกัน',processKey:'s132',
-     activities:[
-       {name:'ทบทวนสถาปัตยกรรมข้อมูลองค์กรและจัดทำ Data Catalog กลาง',weight:60},
-       {name:'กำหนดมาตรฐานการแลกเปลี่ยนข้อมูลระหว่างระบบ',weight:40}
-     ]}
-  ]},
-  {id:'fpd',dept:'ฝ่ายปฏิบัติการและบำรุงรักษาระบบดิจิทัล (ฝปด.)',proposals:[
-    {id:'fpd-1',proposal:'รวมศูนย์การเฝ้าระวังและแจ้งเตือนระบบให้ตอบสนองได้เร็วขึ้น',processKey:'s131',
-     activities:[
-       {name:'รวมศูนย์การเฝ้าระวังและแจ้งเตือนระบบ (Monitoring & Alerting)',weight:100}
-     ]}
-  ]},
-  {id:'frs',dept:'ฝ่ายระบบสื่อสาร (ฝรส.)',proposals:[
-    {id:'frs-1',proposal:'จัดทำมาตรฐานการเชื่อมต่อโครงข่ายสื่อสารภายใน',processKey:'s132',
-     activities:[
-       {name:'จัดทำเอกสารมาตรฐานการเชื่อมต่อโครงข่ายสื่อสาร',weight:100}
-     ]},
-    {id:'frs-2',proposal:'ยกระดับความมั่นคงปลอดภัยของโครงข่ายสื่อสาร',processKey:'s132',
-     activities:[
-       {name:'ประเมินช่องโหว่และจัดทำแผนป้องกันเชิงรุก',weight:40},
-       {name:'ติดตั้งระบบเฝ้าระวังภัยคุกคามโครงข่าย',weight:60}
-     ]}
-  ]}
-];
-function qlfProcessLabel(key){const p=(window.LF_BA_PROCESS_OPTIONS||[]).find(x=>x.key===key);return p?p.label:key;}
+const {Button,Badge,InputField,Checkbox}=window.DesignSystem_cbd181;
+const {QLF_LINE_NAME,QLF_DEPT_SUBMISSIONS,qlfProcessLabel}=window;
 const QLF_STEPS=['คัดเลือก QIR ของฝ่าย','สรุปและยืนยัน'];
-
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/qir-line-overview',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
-      React.createElement('span',{className:'ttb-divider'}),
-      React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
-    ),
-    React.createElement('div',{className:'ttb-right'},
-      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
-      React.createElement(Avatar,{variant:'text',size:'sm',text:'สด'})
-    )
-  );
-}
-
-function Breadcrumb({current}){
-  return React.createElement('div',{className:'lfbreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement(Link,{href:'/qir-line-overview'},'ภาพรวม QIR สายงาน'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},current||'คัดเลือก QIR สายงาน')
-  );
-}
 
 function HistoryCard({history}){
   const [desc,setDesc]=React.useState(true);
@@ -343,10 +276,8 @@ function ViewTabs({active,setActive}){
   );
 }
 
-function ViewMode({year,stored,selectedGroups,onEdit}){
-  const [tab,setTab]=React.useState('detail');
+function ViewMode({tab,stored,selectedGroups}){
   return React.createElement(React.Fragment,null,
-    React.createElement(ViewTabs,{active:tab,setActive:setTab}),
     tab==='detail'
       ?React.createElement('div',{className:'qlf-confirm-sections'},
           React.createElement(SectionCard,{
@@ -366,14 +297,7 @@ function ViewMode({year,stored,selectedGroups,onEdit}){
               :React.createElement('div',{className:'qlf-empty'},'ไม่ได้เลือกข้อเสนอ QIR ของฝ่ายใด')
           )
         )
-      :React.createElement(HistoryCard,{history:stored.history}),
-    React.createElement('div',{className:'qlf-view-spacer'}),
-    React.createElement('div',{className:'qlf-sticky-actions'},
-      React.createElement('div',{className:'qlf-sticky-actions-inner'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:()=>{window.location.href='/qir-line-overview';}},'ย้อนกลับ'),
-        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:onEdit},'แก้ไข')
-      )
-    )
+      :React.createElement(HistoryCard,{history:stored.history})
   );
 }
 
@@ -392,6 +316,7 @@ function App(){
   const [qirGroups,setQirGroups]=React.useState(()=>QLF_STORED?JSON.parse(JSON.stringify(QLF_STORED.ownGroups||[])):[]);
   const [confirmOpen,setConfirmOpen]=React.useState(false);
   const [saveToast,setSaveToast]=React.useState(false);
+  const [viewTab,setViewTab]=React.useState('detail');
   function setGroupProposal(gid,text){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,proposal:text}:g));}
   function setGroupProcess(gid,key){setQirGroups(qirGroups.map(g=>g.id===gid?{...g,processKey:key}:g));}
   function updateQir(gid,rid,field,value){setQirGroups(qirGroups.map(g=>g.id!==gid?g:{...g,rows:g.rows.map(r=>r.id===rid?{...r,[field]:value}:r)}));}
@@ -427,28 +352,35 @@ function App(){
   const headText=viewMode
     ?'รายละเอียดผลการคัดเลือก QIR ของสายงานประจำปี '+QLF_YEAR
     :(isEdit?'แก้ไขผลการคัดเลือก QIR ของสายงานประจำปี '+QLF_YEAR:'คัดเลือก QIR ของฝ่ายภายใต้สายงาน แล้วสรุปยืนยันผลการคัดเลือก');
+  const headerTitle=React.createElement(React.Fragment,null,
+    'QIR สายงาน · ประจำปี '+QLF_YEAR,
+    (viewMode||isEdit)&&React.createElement('span',{style:{marginLeft:'16px'}},React.createElement(Badge,{label:'ส่งคัดเลือกแล้ว',type:'pill-color',color:'success',size:'sm'}))
+  );
+  const headerSubtitle=React.createElement(React.Fragment,null,
+    React.createElement('p',{style:{margin:0}},headText),
+    QLF_STORED&&React.createElement('p',{className:'qlf-head-meta'},
+      'ส่งเมื่อ '+QLF_STORED.submittedAt+(QLF_STORED.lastEditedAt?' · แก้ไขล่าสุด '+QLF_STORED.lastEditedAt:'')
+    )
+  );
+  const headerActions=viewMode&&React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:()=>{setEditing(true);setStep(1);}},'แก้ไข');
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1080px',
+      backHref:'/qir-line-overview',
+      avatarText:'สด',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR สายงาน',href:'/qir-line-overview'},{label:viewMode?'รายละเอียด QIR สายงาน':(isEdit?'แก้ไข QIR สายงาน':'คัดเลือก QIR สายงาน')}],
+      title:headerTitle,
+      actions:headerActions,
+      subtitle:headerSubtitle,
+      tabs:viewMode?React.createElement(ViewTabs,{active:viewTab,setActive:setViewTab}):null
+    }),
     React.createElement('main',{className:'lfcontent'},
-      React.createElement(Breadcrumb,{current:viewMode?'รายละเอียด QIR สายงาน':(isEdit?'แก้ไข QIR สายงาน':'คัดเลือก QIR สายงาน')}),
-      React.createElement('div',{className:'lfpage-head'},
-        React.createElement('div',null,
-          React.createElement('h1',null,'QIR สายงาน · ประจำปี '+QLF_YEAR,
-            (viewMode||isEdit)&&React.createElement(Badge,{label:'ส่งคัดเลือกแล้ว',type:'pill-color',color:'success',size:'sm',style:{marginLeft:'10px'}})
-          ),
-          React.createElement('p',null,headText),
-          QLF_STORED&&React.createElement('p',{className:'qlf-head-meta'},
-            'ส่งเมื่อ '+QLF_STORED.submittedAt+(QLF_STORED.lastEditedAt?' · แก้ไขล่าสุด '+QLF_STORED.lastEditedAt:'')
-          )
-        )
-      ),
       isEdit&&React.createElement('div',{className:'qlf-edit-banner'},
         React.createElement(Icon,{name:'alert-triangle',size:16}),
         React.createElement('span',null,'กำลังแก้ไขผลการคัดเลือกที่ส่งแล้ว — เมื่อบันทึก ระบบจะบันทึกวันที่แก้ไขไว้ในประวัติ'),
         React.createElement(Button,{variant:'tertiary',size:'sm',onClick:()=>{setEditing(false);setStep(0);}},'ยกเลิกการแก้ไข')
       ),
       viewMode
-        ?React.createElement(ViewMode,{year:QLF_YEAR,stored:QLF_STORED,selectedGroups,onEdit:()=>{setEditing(true);setStep(1);}})
+        ?React.createElement(ViewMode,{tab:viewTab,stored:QLF_STORED,selectedGroups})
         :React.createElement('div',{className:'qlf-layout'},
             React.createElement(Stepper,{step,setStep}),
             React.createElement('div',{className:'qlf-main'},

@@ -1,29 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Badge,Avatar}=window.DesignSystem_cbd181;
-
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
-      React.createElement('span',{className:'ttb-divider'}),
-      React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
-    ),
-    React.createElement('div',{className:'ttb-right'},
-      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
-      React.createElement(Avatar,{variant:'text',size:'sm',text:'สด'})
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'lfbreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'ภาพรวม Learning Form')
-  );
-}
 
 function DueBanner(){
   return React.createElement('div',{className:'lfdue-banner'},
@@ -177,18 +152,15 @@ function App(){
     }
   },[]);
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1080px',
+      backHref:'/',
+      avatarText:'สด',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม Learning Form'}],
+      title:'ภาพรวม PEA Learning Form — ฝ่ายพัฒนาระบบดิจิทัล',
+      actions:React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:hasDraft?'edit-01':'plus',size:16}),onClick:()=>{window.location.href='/learning-form';}},hasDraft?'แก้ไข Learning Form ประจำปี':'สร้าง Learning Form ประจำปี'),
+      subtitle:'สรุปจำนวน Learning Form ของคุณ และเลือกระดับหน่วยงานเพื่อเริ่มกรอกหรือทบทวนข้อมูล'
+    }),
     React.createElement('main',{className:'lfcontent'},
-      React.createElement(Breadcrumb),
-      React.createElement('div',{className:'lfpage-head'},
-        React.createElement('div',null,
-          React.createElement('h1',null,'ภาพรวม PEA Learning Form — ฝ่ายพัฒนาระบบดิจิทัล'),
-          React.createElement('p',null,'สรุปจำนวน Learning Form ของคุณ และเลือกระดับหน่วยงานเพื่อเริ่มกรอกหรือทบทวนข้อมูล')
-        ),
-        React.createElement('div',{className:'lfpage-head-actions'},
-          React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:hasDraft?'edit-01':'plus',size:16}),onClick:()=>{window.location.href='/learning-form';}},hasDraft?'แก้ไข Learning Form ประจำปี':'สร้าง Learning Form ประจำปี')
-        )
-      ),
       React.createElement(DueBanner),
       React.createElement(MenuCards,{onGuide:()=>setGuideOpen(true)}),
       React.createElement(KpiCards,{year,scope}),

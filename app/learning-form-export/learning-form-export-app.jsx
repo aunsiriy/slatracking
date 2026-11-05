@@ -1,4 +1,3 @@
-import Image from 'next/image';
 const {Button}=window.DesignSystem_cbd181;
 
 const EX_YEARS=['2569','2568','2567','2566'];
@@ -19,18 +18,6 @@ const EX_REPORTS=[
 const EX_SCOPES=[['line','เฉพาะสายงานของตัวเอง'],['own','เฉพาะหน่วยงานของตัวเอง']];
 const EX_FORMATS=[['xlsx','Excel (.xlsx)'],['pdf','PDF']];
 
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('a',{className:'back-link',href:'#',onClick:e=>{e.preventDefault();history.back();}},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
-    React.createElement('span',{className:'ttb-divider'}),
-    React.createElement(Image,{className:'ttb-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:28,height:28}),
-    React.createElement('div',{className:'ttb-word'},
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking System'),
-      React.createElement('span',{className:'ttb-sub'},'Export Learning Form / QIR')
-    )
-  );
-}
-
 function App(){
   const [years,setYears]=React.useState(['2569']);
   const [reports,setReports]=React.useState(['quarterly']);
@@ -43,17 +30,14 @@ function App(){
   const pickedReports=EX_REPORTS.filter(r=>reports.includes(r.key));
   React.useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),2600);return()=>clearTimeout(t);},[toast]);
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1180px',
+      onBack:()=>history.back(),
+      systemSubtitle:'Export Learning Form / QIR',
+      breadcrumb:[{label:'ภาพรวม Learning Form',href:'/learning-form-overview'},{label:'Export Learning Form / QIR'}],
+      title:'Export Learning Form / QIR',
+      subtitle:'เลือกปีและชุดรายงานที่ต้องการ — ระบบจะ generate ไฟล์พร้อมใช้งานสำหรับการประชุมโดยไม่ต้องคัดลอกข้อมูลเอง'
+    }),
     React.createElement('main',{className:'excontent'},
-      React.createElement('nav',{className:'excrumb'},
-        React.createElement('a',{href:'#',onClick:e=>{e.preventDefault();history.back();}},'ภาพรวม Learning Form'),
-        React.createElement(Icon,{name:'chevron-right',size:14}),
-        React.createElement('span',{className:'is-current'},'Export Learning Form / QIR')
-      ),
-      React.createElement('div',{className:'exhead'},
-        React.createElement('h1',null,'Export Learning Form / QIR'),
-        React.createElement('p',null,'เลือกปีและชุดรายงานที่ต้องการ — ระบบจะ generate ไฟล์พร้อมใช้งานสำหรับการประชุมโดยไม่ต้องคัดลอกข้อมูลเอง')
-      ),
       React.createElement('div',{className:'exgrid'},
         React.createElement('div',{className:'excol'},
           React.createElement('div',{className:'card exsection'},

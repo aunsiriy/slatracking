@@ -1,6 +1,7 @@
 'use client';
 
 import '@/src/shared/icons.jsx';
+import '@/src/shared/page-header.jsx';
 import '@/src/shared/p11-overview-data.jsx';
 import App from './p11-summary-app.jsx';
 import './page.css';

@@ -6,20 +6,7 @@ a:hover{color:var(--pea-text-brand-secondary-hover)}
 button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
-.ttb{height:64px;display:flex;align-items:center;gap:14px;padding:0 28px;background:#fff;border-bottom:1px solid var(--pea-border-secondary);position:sticky;top:0;z-index:10}
-.back-link{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary)}
-.back-link:hover{color:var(--pea-text-brand-secondary)}
-.ttb-divider{width:1px;height:20px;background:var(--pea-border-secondary)}
-.ttb-logo{width:28px;height:28px}
-.ttb-word{display:flex;flex-direction:column}
-.ttb-title{font-family:"IBM Plex Sans Thai";font-weight:700;font-size:16px;line-height:1.25}
-.ttb-sub{font-size:11.5px;color:var(--pea-text-tertiary)}
 .excontent{max-width:1180px;margin:0 auto;padding:28px 24px 80px}
-.excrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pea-text-tertiary);margin-bottom:16px}
-.excrumb .is-current{color:var(--pea-text-brand-secondary);font-weight:600}
-.exhead{margin-bottom:22px}
-.exhead h1{font-size:26px;font-weight:700;margin-bottom:6px}
-.exhead p{font-size:14px;color:var(--pea-text-tertiary);margin:0;line-height:1.6}
 .exgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
 .excol{display:flex;flex-direction:column;gap:16px}
 .exsection{padding:20px 22px}

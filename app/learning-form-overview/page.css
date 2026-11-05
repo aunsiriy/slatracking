@@ -8,22 +8,7 @@ button{font-family:inherit}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 .ba-tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary);white-space:nowrap}
 
-.ttb{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#fff;border-bottom:1px solid var(--pea-border-secondary);position:sticky;top:0;z-index:10}
-.ttb-left{display:flex;align-items:center;gap:14px}
-.back-link{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary)}
-.back-link:hover{color:var(--pea-text-brand-secondary)}
-.ttb-divider{width:1px;height:20px;background:var(--pea-border-secondary)}
-.ttb-logo{width:28px;height:28px}
-.ttb-title{font-family:"IBM Plex Sans Thai";font-weight:700;font-size:16px}
-.ttb-right{display:flex;align-items:center;gap:12px}
-
 .lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
-.lfbreadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pea-text-tertiary);margin-bottom:16px}
-.lfbreadcrumb .is-current{color:var(--pea-text-brand-secondary);font-weight:600}
-.lfpage-head{margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.lfpage-head h1{font-size:26px;font-weight:700;margin-bottom:6px}
-.lfpage-head p{font-size:14px;color:var(--pea-text-tertiary);margin:0}
-.lfpage-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(10,13,18,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:24px}
 .modal-card{background:#fff;border-radius:16px;width:640px;max-width:100%;max-height:calc(100vh - 48px);overflow-y:auto;box-shadow:0 20px 48px rgba(0,0,0,.2)}

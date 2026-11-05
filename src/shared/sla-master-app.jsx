@@ -1,6 +1,6 @@
 import { ORG_TREE } from '@/src/shared/org-tree-data.js';
 
-const {Button:SmButton,Badge:SmBadge,InputField:SmInputField,Toggle:SmToggle,Radio:SmRadio,Textarea:SmTextarea}=window.DesignSystem_cbd181;
+const {Button:SmButton,Badge:SmBadge,InputField:SmInputField,Toggle:SmToggle,Textarea:SmTextarea}=window.DesignSystem_cbd181;
 
 function Toast({message,onDone}){
   React.useEffect(()=>{const t=setTimeout(onDone,2600);return ()=>clearTimeout(t);},[]);
@@ -126,16 +126,14 @@ function SlaFormFai({initial,unitName,onClose,onSubmit}){
   const [slaAgreement,setSlaAgreement]=React.useState(initial?initial.slaAgreement:'');
   const [servedBy,setServedBy]=React.useState(initial?initial.servedBy:'');
   const [preparer,setPreparer]=React.useState(initial?initial.preparer:window.CURRENT_USER.employeeId);
-  const [periodType,setPeriodType]=React.useState(initial?initial.periodType:'quarter');
-  const [values,setValues]=React.useState(initial?initial.values:periodDefaults('quarter'));
+  const periodType='month';
+  const [values,setValues]=React.useState(initial&&initial.periodType==='month'?initial.values:periodDefaults('month'));
   const [source,setSource]=React.useState(initial?initial.source:'');
   const [status,setStatus]=React.useState(initial?initial.status!=='inactive':true);
 
   const l1Options=l.l1.filter(x=>x.parent===level0);
   function changeLevel0(v){setLevel0(v);setLevel1('');}
-  function changePeriodType(v){setPeriodType(v);setValues(periodDefaults(v));}
   function setVal(k,v){setValues(o=>({...o,[k]:v}));}
-  const avg=periodType==='quarter'?avgOf(values):null;
   const isValid=level0&&level1&&name.trim()!==''&&preparer.trim()!=='';
 
   return React.createElement('div',{className:'sla-form-page'},
@@ -160,21 +158,13 @@ function SlaFormFai({initial,unitName,onClose,onSubmit}){
         ),
         React.createElement(SmInputField,{fieldType:'default',label:'ผู้รับบริการ SLA',placeholder:'เช่น หน่วยงานที่เกี่ยวข้อง, ผู้ใช้งาน, ทุกหน่วยงาน',size:'md',value:servedBy,onChange:setServedBy}),
         React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'ประเภทการรายงาน'),
-          React.createElement('div',{className:'period-radio-row'},
-            React.createElement(SmRadio,{size:'sm',name:'period-type-fai',value:'quarter',label:'รายไตรมาส',isChecked:periodType==='quarter',onChange:()=>changePeriodType('quarter')}),
-            React.createElement(SmRadio,{size:'sm',name:'period-type-fai',value:'month',label:'รายเดือน (12 เดือน)',isChecked:periodType==='month',onChange:()=>changePeriodType('month')})
-          )
-        ),
-        React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'ค่าเป้าหมาย ตามผลการรายงาน ('+(periodType==='quarter'?'Q1–Q4 ตัวเลข':'ม.ค.–ธ.ค. Free Text')+')'),
-          React.createElement('div',{className:'period-grid','data-period':periodType},
+          React.createElement('label',{className:'modal-label'},'ค่าเป้าหมาย ตามผลการรายงาน (ม.ค.–ธ.ค. Free Text)'),
+          React.createElement('div',{className:'period-grid','data-period':'month'},
             Object.keys(values).map(k=>React.createElement('div',{key:k,className:'period-cell'},
-              React.createElement('span',{className:'period-cell-label'},periodType==='quarter'?k:monthLabel(k)),
-              periodType==='quarter'?React.createElement('input',{type:'number',className:'period-input',value:values[k],onChange:e=>setVal(k,e.target.value)}):React.createElement('input',{type:'text',className:'period-input',value:values[k],onChange:e=>setVal(k,e.target.value)})
+              React.createElement('span',{className:'period-cell-label'},monthLabel(k)),
+              React.createElement('input',{type:'text',className:'period-input',value:values[k],onChange:e=>setVal(k,e.target.value)})
             ))
-          ),
-          periodType==='quarter'&&React.createElement('div',{className:'period-avg'},'ค่าเฉลี่ยอัตโนมัติ: ',React.createElement('strong',null,avg!==null?avg:'—'))
+          )
         ),
         React.createElement(SmInputField,{fieldType:'default',label:'แหล่งข้อมูลตรวจสอบ',placeholder:'เช่น ระบบสารบรรณอิเล็กทรอนิกส์ (ddoc.pea.co.th) / KM-Si',size:'md',value:source,onChange:setSource}),
         React.createElement('div',{className:'modal-field'},
@@ -521,7 +511,7 @@ function SlaPanel(){
   return React.createElement('div',{className:'card panel'},
     !modal&&React.createElement('div',{className:'panel-head'},
       React.createElement('div',null,
-        React.createElement('h2',null,'ตั้งค่า SLA Master'),
+        React.createElement('h2',null,'ตั้งค่า SLA Master ปี '+year),
         React.createElement('p',null,'กำหนด KPI/SLA ต้นแบบ ผูกกับโครงสร้าง BA และค่าเป้าหมายรายงวด')
       ),
       React.createElement('div',{className:'panel-head-actions'},

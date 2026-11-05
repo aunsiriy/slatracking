@@ -7,21 +7,7 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.ttb{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#fff;border-bottom:1px solid var(--pea-border-secondary);position:sticky;top:0;z-index:10}
-.ttb-left{display:flex;align-items:center;gap:14px}
-.back-link{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary)}
-.back-link:hover{color:var(--pea-text-brand-secondary)}
-.ttb-divider{width:1px;height:20px;background:var(--pea-border-secondary)}
-.ttb-logo{width:28px;height:28px}
-.ttb-title{font-family:"IBM Plex Sans Thai";font-weight:700;font-size:16px}
-.ttb-right{display:flex;align-items:center;gap:12px}
-
 .lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
-.lfbreadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pea-text-tertiary);margin-bottom:16px}
-.lfbreadcrumb .is-current{color:var(--pea-text-brand-secondary);font-weight:600}
-.lfpage-head{margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.lfpage-head h1{font-size:26px;font-weight:700;margin-bottom:6px}
-.lfpage-head p{font-size:14px;color:var(--pea-text-tertiary);margin:0}
 
 .lsection{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
 .lsection-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -121,14 +107,11 @@ button{font-family:inherit}
 .qlf-hsort{display:inline-flex;align-items:center;gap:6px;border:none;background:none;padding:0;font:inherit;text-transform:inherit;letter-spacing:inherit;color:inherit;cursor:pointer}
 .qlf-hsort .icon{color:var(--pea-text-quaternary)}
 
-.qlf-view-tabs{display:flex;gap:2px;margin-bottom:22px}
-.qlf-view-tab{display:flex;align-items:center;gap:8px;border:none;background:none;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary);padding:12px 18px;border-radius:8px;white-space:nowrap;transition:background .12s,color .12s}
+.qlf-view-tabs{display:flex;gap:2px;padding:4px}
+.qlf-view-tab{display:flex;align-items:center;gap:8px;border:1.5px solid transparent;background:none;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary);padding:10.5px 18px;border-radius:8px;white-space:nowrap;transition:background .12s,color .12s,border-color .12s}
 .qlf-view-tab .icon{background-color:currentColor}
 .qlf-view-tab:hover:not(.is-active){background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
-.qlf-view-tab.is-active{color:var(--pea-fg-brand-primary);background:var(--pea-bg-brand-primary)}
+.qlf-view-tab.is-active{color:var(--pea-fg-brand-primary);background:var(--pea-bg-brand-primary);border-color:var(--pea-border-brand)}
 .qlf-view-tab.is-active .icon{background-color:var(--pea-fg-brand-primary)}
+.qlf-view-tab:focus{border-bottom-left-radius:0;border-bottom-right-radius:0}
 
-.qlf-view-spacer{height:84px}
-.qlf-sticky-actions{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--pea-border-secondary);box-shadow:0 -4px 16px rgba(16,24,40,.06)}
-.qlf-sticky-actions-inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px}
-@media (max-width:720px){.qlf-sticky-actions-inner{padding:12px 16px}.qlf-sticky-actions-inner>*{flex:1}}

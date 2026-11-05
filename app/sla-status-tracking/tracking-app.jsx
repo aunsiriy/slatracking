@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-const {Button,Badge,Avatar,InputField}=window.DesignSystem_cbd181;
+const {Button,Badge,InputField}=window.DesignSystem_cbd181;
 
 function Sidebar(){
   const [open,setOpen]=React.useState(true);
@@ -24,30 +24,6 @@ function Sidebar(){
       React.createElement('a',{href:'#',className:'tsb-item'},React.createElement(Icon,{name:'alert-triangle',size:19}),React.createElement('span',null,'แจ้งปัญหาและข้อเสนอแนะ')),
       React.createElement('a',{href:'#',className:'tsb-item'},React.createElement(Icon,{name:'help-circle',size:19}),React.createElement('span',null,'FAQs'))
     )
-  );
-}
-
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('div',{className:'ttb-left'},
-      React.createElement(Button,{variant:'tertiary',size:'sm',leadingIcon:React.createElement(Icon,{name:'chevron-left',size:18}),onClick:()=>{window.location.href='/';}},'กลับ'),
-      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'layout-grid',size:19}),'aria-label':'เมนู'})
-    ),
-    React.createElement('div',{className:'ttb-right'},
-      React.createElement('div',{className:'icon-btn-wrap'},
-        React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
-        React.createElement('span',{className:'ttb-dot'})
-      ),
-      React.createElement(Avatar,{variant:'text',size:'sm',text:'มจ'})
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'breadcrumb'},
-    React.createElement('span',null,'ติดตามสถานะ'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'P2 : กระบวนการแก้กระแสไฟฟ้าขัดข้อง')
   );
 }
 
@@ -131,15 +107,18 @@ function App(){
   return React.createElement('div',{className:'shell'},
     React.createElement(Sidebar,null),
     React.createElement('div',{className:'main-col'},
-      React.createElement(TopBar,null),
+      React.createElement(window.PageHeader,{maxWidth:'1400px',
+        backHref:'/',
+        avatarText:'มจ',
+        breadcrumb:[{label:'ติดตามสถานะ'},{label:'P2 : กระบวนการแก้กระแสไฟฟ้าขัดข้อง'}],
+        title:'P2 : กระบวนการแก้กระแสไฟฟ้าขัดข้อง',
+        tabs:React.createElement(Tabs,{active:tab,setActive:setTab})
+      }),
       React.createElement('main',{className:'content'},
-        React.createElement(Breadcrumb,null),
-        React.createElement('h1',{className:'page-title'},'P2 : กระบวนการแก้กระแสไฟฟ้าขัดข้อง'),
         React.createElement(KpiCards,null),
         React.createElement(SearchBar,null),
         React.createElement(FilterChips,null),
         React.createElement('div',{className:'card table-card'},
-          React.createElement(Tabs,{active:tab,setActive:setTab}),
           React.createElement('div',{className:'table-scroll'},React.createElement(DataTable,null)),
           React.createElement(TablePagination,null)
         )

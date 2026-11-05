@@ -1,29 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Avatar}=window.DesignSystem_cbd181;
-
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
-      React.createElement('span',{className:'ttb-divider'}),
-      React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
-    ),
-    React.createElement('div',{className:'ttb-right'},
-      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
-      React.createElement(Avatar,{variant:'text',size:'sm',text:'สด'})
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'lfbreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'ภาพรวม Learning Form — การไฟฟ้าจังหวัด')
-  );
-}
 
 function MenuCards({onGuide}){
   const cards=[
@@ -76,15 +52,14 @@ function LearningFormEmpty(){
 function App(){
   const [guideOpen,setGuideOpen]=React.useState(false);
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1080px',
+      backHref:'/',
+      avatarText:'สด',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม Learning Form — การไฟฟ้าจังหวัด'}],
+      title:'ภาพรวม PEA Learning Form — การไฟฟ้าจังหวัด',
+      subtitle:'ดูคำอธิบายแบบฟอร์มของ Learning Form'
+    }),
     React.createElement('main',{className:'lfcontent'},
-      React.createElement(Breadcrumb),
-      React.createElement('div',{className:'lfpage-head'},
-        React.createElement('div',null,
-          React.createElement('h1',null,'ภาพรวม PEA Learning Form — การไฟฟ้าจังหวัด'),
-          React.createElement('p',null,'ดูคำอธิบายแบบฟอร์มของ Learning Form')
-        )
-      ),
       React.createElement(MenuCards,{onGuide:()=>setGuideOpen(true)}),
       React.createElement(LearningFormEmpty)
     ),

@@ -3,6 +3,12 @@ const LF_BA_PROCESS_OPTIONS=[
 {key:'s131',label:'E6.2 กระบวนการบริหารจัดการโครงการ',objective:'เพื่อพัฒนาและปรับปรุงระบบงาน/กระบวนการให้สอดคล้องกับแผนยุทธศาสตร์และความต้องการของหน่วยงาน'},
 {key:'s132',label:'E6.3 กระบวนการพัฒนาระบบดิจิทัล',objective:'เพื่อทบทวนและออกแบบโครงสร้างองค์กรให้เหมาะสมกับภารกิจและทิศทางการดำเนินงานในอนาคต'}
 ];
+const LF_QIR_CRITERIA_OPTIONS=[
+{key:'revenue',label:'1 เพิ่มรายได้จากการดำเนินงาน ลดค่าใช้จ่ายจากการปรับปรุงการดำเนินงาน'},
+{key:'hours',label:'2. ลดชั่วโมงการทำงาน'},
+{key:'headcount',label:'3. ลดจำนวนพนักงานในการดำเนินงาน'},
+{key:'digital',label:'4. ใช้ระบบ Digital / Automation มาใช้ ลดขั้นตอนการดำเนินงาน'}
+];
 const LF_FORM_YEAR_FALLBACK='2569';
 const LF_META={year:'2568',formYear:LF_FORM_YEAR_FALLBACK,ba:'S1.3',baLabel:'กระบวนการพัฒนาองค์กรและบริหารการเปลี่ยนแปลง',
  processName:(typeof window!=='undefined'&&window.lfFormTitle)?window.lfFormTitle(LF_FORM_YEAR_FALLBACK):'แบบฟอร์มการประเมินและปรับปรุงกระบวนการของ กฟภ. ประจำปี '+LF_FORM_YEAR_FALLBACK,
@@ -142,5 +148,5 @@ const LF_STATUS=LF_FILL_BY_STATUS[lfQueryParam('status')]?lfQueryParam('status')
 const LF_REF=lfQueryParam('ref');
 const LF_BACK=lfQueryParam('back')||'/learning-form-overview';
 function lfFill(step){return (LF_FILL_BY_STATUS[LF_STATUS]||[])[step]||'empty';}
-Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_QIR_ACTIVITIES,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee,
+Object.assign(window,{LF_YEARS,LF_META,LF_ANALYSIS_OPTIONS,LF_FOLLOWUP_OPTIONS,LF_LEADING_METRICS,LF_LAGGING_METRICS,LF_ISSUES,LF_PRIORITY_DURATIONS,LF_PRIORITIES,LF_QIR_ACTIVITIES,LF_QIR_CRITERIA_OPTIONS,LF_KNOWLEDGE,LF_QIR_QUARTERLY_REPORT,LF_QIR_ANNUAL_REPORT,LF_CONTROL_CRITERIA,LF_BA_PROCESS_OPTIONS,LF_CURRENT_USER,LF_EMPLOYEES,LF_AVATARS,lfLookupEmployee,
   LF_STATUS,LF_REF,LF_BACK,lfFill});

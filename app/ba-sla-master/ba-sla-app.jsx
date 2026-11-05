@@ -1,8 +1,6 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import { ORG_TREE } from '@/src/shared/org-tree-data.js';
 
-const {Button,Badge,Avatar,InputField,Toggle,FeaturedIcon}=window.DesignSystem_cbd181;
+const {Button,Badge,InputField,Toggle,FeaturedIcon}=window.DesignSystem_cbd181;
 
 const TABS=[
 {key:'org',icon:'building',label:'ตั้งค่าหน่วยงาน'},
@@ -10,26 +8,9 @@ const TABS=[
 {key:'sla',icon:'file-text',label:'ตั้งค่า SLA Master'}
 ];
 
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
-      React.createElement('span',{className:'ttb-divider'}),
-      React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'BA & SLA Master')
-    ),
-    React.createElement('div',{className:'ttb-right'},
-      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
-      React.createElement(Avatar,{variant:'text',size:'sm',text:'สด'})
-    )
-  );
-}
-
 function TopTabs({active,setActive}){
-  return React.createElement('div',{className:'top-tabs-wrap'},
-    React.createElement('nav',{className:'top-tabs'},
-      TABS.map(t=>React.createElement(Button,{key:t.key,variant:'tertiary',size:'md',className:'top-tab'+(active===t.key?' is-active':''),leadingIcon:React.createElement(Icon,{name:t.icon,size:18}),onClick:()=>setActive(t.key)},t.label))
-    )
+  return React.createElement('nav',{className:'top-tabs'},
+    TABS.map(t=>React.createElement(Button,{key:t.key,variant:'tertiary',size:'md',className:'top-tab'+(active===t.key?' is-active':''),leadingIcon:React.createElement(Icon,{name:t.icon,size:18}),onClick:()=>setActive(t.key)},t.label))
   );
 }
 
@@ -55,7 +36,7 @@ function filterTree(nodes,search){
   function walk(list){
     return list.reduce((acc,n)=>{
       const children=n.children?walk(n.children):[];
-      const selfMatch=n.name.toLowerCase().includes(s)||n.code.toLowerCase().includes(s)||n.level.toLowerCase().includes(s);
+      const selfMatch=n.name.toLowerCase().includes(s)||n.code.toLowerCase().includes(s)||n.level.toLowerCase().includes(s)||deriveOrgAbbr(n.name,n.level).toLowerCase().includes(s);
       if(selfMatch||children.length){
         acc.push({...n,children,_forceOpen:true});
       }
@@ -63,6 +44,61 @@ function filterTree(nodes,search){
     },[]);
   }
   return walk(nodes);
+}
+
+// Known real PEA abbreviations for units named explicitly elsewhere in this app's mock
+// data — kept exact so this column agrees with every other page, everything else falls
+// back to the generic heuristic below.
+const ORG_ABBR_OVERRIDES={
+  'สายงานดิจิทัลและการสื่อสาร':'สายงาน ดส.',
+  'ฝ่ายพัฒนาระบบดิจิทัล':'ฝพจ.',
+  'กองออกแบบและพัฒนาระบบดิจิทัล 1':'กอพ. 1'
+};
+// Unit names rarely break into space-separated words, so a plain word-initial
+// abbreviation isn't possible — this maps the recurring vocabulary in this org chart
+// to the consonant PEA conventionally uses for it. Anything not listed here falls back
+// to its own first character, so every row still gets a short, deterministic mock value.
+const ORG_ABBR_WORD_LETTER={
+  'ดิจิทัล':'จ','สื่อสาร':'ส','พัฒนา':'พ','ระบบ':'ร','ออกแบบ':'อ','บริหาร':'บ','ปฏิบัติ':'ป',
+  'วิศวกรรม':'ว','บริการ':'บ','จัดการ':'จ','วางแผน':'ว','ยุทธศาสตร์':'ย','องค์กร':'อ',
+  'เปลี่ยนแปลง':'ปล','ทรัพยากร':'ทบ','บุคคล':'บค','กฎหมาย':'กม','ตรวจสอบ':'ตส','ลูกค้า':'ลค',
+  'ตลาด':'ตล','ธุรกิจ':'ธก','เทคโนโลยี':'ทค','สารสนเทศ':'สท','สิ่งแวดล้อม':'สว','ความปลอดภัย':'คป',
+  'คุณภาพ':'คภ','งบประมาณ':'งป','ประชาสัมพันธ์':'ปช','การเงิน':'งก','บัญชี':'บช','ก่อสร้าง':'กส',
+  'สถานีไฟฟ้า':'สฟ','สายไฟฟ้า':'สฟ','มิเตอร์':'มต','คลังพัสดุ':'คพ','ซ่อมบำรุง':'ซบ','ตรวจการ':'ตก',
+  'จำหน่าย':'จน','ไฟฟ้า':'ฟฟ','มาตรฐาน':'มฐ','จัดซื้อ':'จซ','จัดจ้าง':'จจ','ประเมินผล':'ปม',
+  'แผนงาน':'ผง','สนับสนุน':'สน','เครือข่าย':'คข','อุปกรณ์':'อป','โยธา':'ยธ'
+};
+const ORG_ABBR_SKIP_WORDS=['และ','การ','ของ','ที่','ใน','เพื่อ','ให้','ด้วย','เป็น','ต่อ','จาก','ไป','มา','กับ','หรือ','แห่ง','งาน'];
+const ORG_ABBR_LEVEL_PREFIX={
+  'กลุ่มเครือข่ายและบริการ':{word:'สายงาน',letters:''},'กลุ่มธุรกิจจำหน่าย บริการ':{word:'สายงาน',letters:''},
+  'กลุ่มธุรกิจลงทุน':{word:'สายงาน',letters:''},'กลุ่มยุทธศาสตร์พัฒนา':{word:'สายงาน',letters:''},
+  'กลุ่มสนับสนุน':{word:'สายงาน',letters:''},'สายงาน':{word:'สายงาน',letters:''},
+  'ฝ่าย/สำนัก':{word:'',letters:'ฝ'},'กอง/ร.ร.ช่าง กฟภ./สนง.':{word:'',letters:'กอ'},'แผนก/ส่วนงาน':{word:'',letters:'ผ'}
+};
+function deriveOrgAbbr(name,level){
+  if(ORG_ABBR_OVERRIDES[name])return ORG_ABBR_OVERRIDES[name];
+  const trailingNumMatch=name.match(/\s*(\d+)\s*$/);
+  const trailingNum=trailingNumMatch?trailingNumMatch[1]:'';
+  let body=(trailingNumMatch?name.slice(0,trailingNumMatch.index):name).trim();
+  const prefix=ORG_ABBR_LEVEL_PREFIX[level];
+  if(prefix){
+    if(prefix.word&&body.startsWith(prefix.word))body=body.slice(prefix.word.length);
+    else if(!prefix.word){
+      ['ฝ่าย','สำนัก','กอง','แผนก'].forEach(w=>{if(body.startsWith(w))body=body.slice(w.length);});
+    }
+  }
+  const letters=[];
+  let rest=body;
+  while(rest.length&&letters.length<2){
+    const skip=ORG_ABBR_SKIP_WORDS.find(w=>rest.startsWith(w));
+    if(skip){rest=rest.slice(skip.length);continue;}
+    const known=Object.keys(ORG_ABBR_WORD_LETTER).find(w=>rest.startsWith(w));
+    if(known){letters.push(ORG_ABBR_WORD_LETTER[known]);rest=rest.slice(known.length);continue;}
+    letters.push(rest[0]);
+    rest=rest.slice(1);
+  }
+  const head=(prefix&&prefix.word?prefix.word+' ':'')+(prefix?prefix.letters:'');
+  return head+letters.join('')+'.'+(trailingNum?' '+trailingNum:'');
 }
 
 function OrgTreeNode({node,depth,allOpen}){
@@ -73,8 +109,8 @@ function OrgTreeNode({node,depth,allOpen}){
   return React.createElement('div',{className:'org-node'},
     React.createElement('div',{className:'org-row',style:{paddingLeft:depth*24}},
       hasChildren?React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'org-caret',onClick:()=>setOpen(v=>!v),leadingIcon:React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:15})}):React.createElement('span',{className:'org-caret-spacer'}),
-      node.code&&React.createElement('span',{className:'org-code'},node.code),
       React.createElement('span',{className:'org-name'},node.name),
+      React.createElement('span',{className:'org-abbr'},deriveOrgAbbr(node.name,node.level)),
       React.createElement(Badge,{label:node.status==='active'?'ใช้งาน':'ปิดใช้งาน',type:'pill-color',color:node.status==='active'?'success':'gray',size:'sm'})
     ),
     hasChildren&&open&&React.createElement('div',{className:'org-children'},
@@ -109,7 +145,7 @@ function OrgPanel(){
   return React.createElement('div',{className:'card panel'},
     React.createElement('div',{className:'panel-head'},
       React.createElement('div',null,
-        React.createElement('h2',null,'ตั้งค่าหน่วยงาน'),
+        React.createElement('h2',null,'ตั้งค่าหน่วยงาน ปี '+year),
         React.createElement('p',null,'โครงสร้างหน่วยงานเรียงลำดับตามลำดับชั้นขององค์กร ดึงข้อมูลจากฐานข้อมูลองค์กร')
       ),
       React.createElement('div',{className:'panel-head-actions'},
@@ -132,6 +168,11 @@ function OrgPanel(){
         React.createElement(Button,{variant:'secondary',size:'sm',onClick:()=>setAllOpen(o=>o===false?null:false)},'ยุบทั้งหมด')
       )
     ),
+    filtered.length>0&&React.createElement('div',{className:'org-tree-head'},
+      React.createElement('span',{className:'org-tree-head-name'},'ชื่อหน่วยงาน'),
+      React.createElement('span',{className:'org-tree-head-abbr'},'ตัวย่อ'),
+      React.createElement('span',{className:'org-tree-head-status'},'สถานะ')
+    ),
     React.createElement('div',{className:'org-tree'},
       filtered.length?filtered.map(n=>React.createElement(OrgTreeNode,{key:n.id,node:n,depth:0,allOpen})):
       React.createElement('div',{className:'org-empty'},'ไม่พบหน่วยงานที่ตรงกับเงื่อนไข')
@@ -152,6 +193,17 @@ function treeInsert(nodes,parentId,child){
     if(n.children)return {...n,children:treeInsert(n.children,parentId,child)};
     return n;
   });
+}
+function arrayMove(arr,from,to){
+  const copy=[...arr];
+  const [moved]=copy.splice(from,1);
+  copy.splice(to,0,moved);
+  return copy;
+}
+// After a drag-reorder, siblings' codes are regenerated as <parentCode>.<position> so
+// the numbering always reflects the new order — never left stale from before the move.
+function renumberSiblings(children,parentCode){
+  return children.map((c,i)=>({...c,code:parentCode+'.'+(i+1)}));
 }
 function countChildren(node){return node.children?node.children.length:0;}
 function ownUnitCount(node){
@@ -199,7 +251,7 @@ function ArchSearchResults({results,onJump}){
 const ARCH_LEVEL_COLOR={0:'purple',1:'blue',2:'warning'};
 const ARCH_LEVEL_HINT={0:'กระบวนการทำงานที่สำคัญ - ระดับสายงานเป็นผู้รับผิดชอบ',1:'กระบวนการทำงาน (Work Process) ระดับฝ่ายเป็นผู้รับผิดชอบ',2:'งาน (Job) · กอง รับผิดชอบ'};
 
-function ArchNodeModal({title,groupLabel,levelLabel,initial,onClose,onSubmit,codeExample}){
+function ArchNodeModal({title,groupLabel,levelLabel,initial,onClose,onSubmit,codeExample,year,ancestors}){
   const [code,setCode]=React.useState(initial?initial.code:'');
   const [name,setName]=React.useState(initial?initial.name:'');
   const [unitList,setUnitList]=React.useState(initial&&initial.unit?initial.unit.split(',').map(s=>s.trim()).filter(Boolean):[]);
@@ -213,13 +265,24 @@ function ArchNodeModal({title,groupLabel,levelLabel,initial,onClose,onSubmit,cod
   return React.createElement('div',{className:'modal-overlay',onClick:onClose},
     React.createElement('div',{className:'modal-card',onClick:e=>e.stopPropagation()},
       React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,title),
+        React.createElement('div',{className:'modal-head-text'},
+          React.createElement('h3',null,title),
+          year&&React.createElement('p',{className:'modal-head-sub'},'ประจำปี '+year)
+        ),
         React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,className:'modal-close',leadingIcon:React.createElement(Icon,{name:'x',size:18}),onClick:onClose,'aria-label':'ปิด'})
       ),
       React.createElement('div',{className:'modal-body'},
         React.createElement('div',{className:'modal-field'},
-          React.createElement('label',{className:'modal-label'},'อยู่ในกลุ่ม / ระดับ'),
-          React.createElement('div',{className:'modal-field-static'},groupLabel+' — '+levelLabel)
+          React.createElement('label',{className:'modal-label'},'อยู่ภายใต้'),
+          React.createElement('div',{className:'modal-path'},
+            React.createElement('span',{className:'modal-path-item'},groupLabel),
+            (ancestors||[]).map((a,i)=>React.createElement(React.Fragment,{key:i},
+              React.createElement(Icon,{name:'chevron-right',size:12,className:'modal-path-sep'}),
+              React.createElement('span',{className:'modal-path-item'},a.code+' '+a.name)
+            )),
+            React.createElement(Icon,{name:'chevron-right',size:12,className:'modal-path-sep'}),
+            React.createElement('span',{className:'modal-path-item modal-path-current'},levelLabel)
+          )
         ),
         React.createElement(InputField,{fieldType:'default',label:React.createElement(React.Fragment,null,'รหัส (Code) ',React.createElement('span',{className:'modal-label-required'},'*')),placeholder:codeExample||'เช่น S1, S2',size:'md',value:code,onChange:setCode}),
         React.createElement(InputField,{fieldType:'default',label:React.createElement(React.Fragment,null,'ชื่อ (Name) ',React.createElement('span',{className:'modal-label-required'},'*')),placeholder:'ระบุชื่อกระบวนการ/งาน',size:'md',value:name,onChange:setName}),
@@ -279,9 +342,11 @@ function ArchDeleteModal({node,onClose,onConfirm}){
   );
 }
 
-function ArchLevel2Row({node,l0,l1,group,onEdit,onDelete}){
+function ArchLevel2Row({node,l0,l1,group,index,onEdit,onDelete,onReorder}){
   const [open,setOpen]=React.useState(false);
   const [editing,setEditing]=React.useState(false);
+  const [dragOver,setDragOver]=React.useState(false);
+  const [dragging,setDragging]=React.useState(false);
   const [code,setCode]=React.useState(node.code);
   const [name,setName]=React.useState(node.name);
   const [unitList,setUnitList]=React.useState(node.unit?node.unit.split(',').map(s=>s.trim()).filter(Boolean):[]);
@@ -292,8 +357,21 @@ function ArchLevel2Row({node,l0,l1,group,onEdit,onDelete}){
   function startEdit(e){e.stopPropagation();setEditing(true);setOpen(true);}
   function cancelEdit(){setEditing(false);setCode(node.code);setName(node.name);setUnitList(node.unit?node.unit.split(',').map(s=>s.trim()).filter(Boolean):[]);setStatus(node.status);}
   function save(){onEdit({...node,code,name,unit:unitList.join(', '),status});setEditing(false);}
-  return React.createElement('div',{className:'arch-l2-item'},
+  return React.createElement('div',{className:'arch-l2-item'+(dragOver?' is-drag-over':'')+(dragging?' is-dragging':''),
+    onDragOver:e=>{e.preventDefault();e.stopPropagation();e.dataTransfer.dropEffect='move';},
+    onDragEnter:e=>{e.preventDefault();e.stopPropagation();if(!dragging)setDragOver(true);},
+    onDragLeave:e=>{e.stopPropagation();setDragOver(false);},
+    onDrop:e=>{
+      e.preventDefault();e.stopPropagation();setDragOver(false);
+      const from=Number(e.dataTransfer.getData('text/plain'));
+      if(!Number.isNaN(from)&&from!==index)onReorder(from,index);
+    }
+  },
     React.createElement('div',{className:'arch-l2-row',onClick:()=>!editing&&setOpen(v=>!v)},
+      React.createElement('span',{className:'arch-drag-handle',draggable:true,onClick:e=>e.stopPropagation(),
+        onDragStart:e=>{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(index));setDragging(true);},
+        onDragEnd:()=>setDragging(false)
+      },React.createElement(Icon,{name:'switch-vertical-01',size:14})),
       React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:14,className:'arch-l2-caret'}),
       React.createElement(Badge,{label:'LEVEL 2',type:'pill-color',color:ARCH_LEVEL_COLOR[2],size:'sm'}),
       React.createElement('span',{className:'arch-code'},node.code),
@@ -338,11 +416,26 @@ function ArchLevel2Row({node,l0,l1,group,onEdit,onDelete}){
   );
 }
 
-function ArchLevel1Row({node,group,l0,onEdit,onDelete,onAddL2,onEditL2,onDeleteL2}){
+function ArchLevel1Row({node,group,l0,index,onEdit,onDelete,onAddL2,onEditL2,onDeleteL2,onReorder,onReorderL2}){
   const [open,setOpen]=React.useState(false);
+  const [dragOver,setDragOver]=React.useState(false);
+  const [dragging,setDragging]=React.useState(false);
   const hasChildren=node.children&&node.children.length>0;
-  return React.createElement('div',{className:'arch-l1-card'},
+  return React.createElement('div',{className:'arch-l1-card'+(dragOver?' is-drag-over':'')+(dragging?' is-dragging':''),
+    onDragOver:e=>{e.preventDefault();e.dataTransfer.dropEffect='move';},
+    onDragEnter:e=>{e.preventDefault();if(!dragging)setDragOver(true);},
+    onDragLeave:()=>setDragOver(false),
+    onDrop:e=>{
+      e.preventDefault();setDragOver(false);
+      const from=Number(e.dataTransfer.getData('text/plain'));
+      if(!Number.isNaN(from)&&from!==index)onReorder(from,index);
+    }
+  },
     React.createElement('div',{className:'arch-l1-row'},
+      React.createElement('span',{className:'arch-drag-handle',draggable:true,
+        onDragStart:e=>{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(index));setDragging(true);},
+        onDragEnd:()=>setDragging(false)
+      },React.createElement(Icon,{name:'switch-vertical-01',size:15})),
       React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,onClick:()=>setOpen(v=>!v),leadingIcon:React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:15})}),
       React.createElement(Badge,{label:'LEVEL 1',type:'pill-color',color:ARCH_LEVEL_COLOR[1],size:'sm'}),
       React.createElement('span',{className:'arch-code'},node.code),
@@ -356,13 +449,13 @@ function ArchLevel1Row({node,group,l0,onEdit,onDelete,onAddL2,onEditL2,onDeleteL
     ),
     open&&React.createElement('div',{className:'arch-l2-list'},
       React.createElement('div',{className:'arch-l2-list-hint'},'LEVEL 2 งาน (Jobs) ระดับกองเป็นผู้รับผิดชอบ'+(unitCount(node)?' ( '+unitCount(node)+' กอง )':'')),
-      (node.children||[]).map(c=>React.createElement(ArchLevel2Row,{key:c.id,node:c,l0,l1:node,group,onEdit:onEditL2,onDelete:onDeleteL2})),
-      React.createElement(Button,{variant:'primary',size:'sm',className:'arch-add-job-btn',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:()=>onAddL2(node)},'เพิ่ม Job')
+      (node.children||[]).map((c,i)=>React.createElement(ArchLevel2Row,{key:c.id,node:c,l0,l1:node,group,index:i,onEdit:onEditL2,onDelete:onDeleteL2,onReorder:onReorderL2})),
+      React.createElement(Button,{variant:'primary',size:'sm',className:'arch-add-job-btn',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:()=>onAddL2(node,l0)},'เพิ่ม Job')
     )
   );
 }
 
-function ArchDetail({group,selected,onAdd,onEdit,onDelete,onEditL2}){
+function ArchDetail({group,selected,onAdd,onEdit,onDelete,onEditL2,onReorderL1,onReorderL2}){
   return React.createElement('div',{className:'arch-detail'},
     React.createElement('div',{className:'arch-breadcrumb'},group.shortLabel,React.createElement(Icon,{name:'chevron-right',size:13}),selected.code),
     React.createElement('div',{className:'arch-level0-card'},
@@ -370,7 +463,7 @@ function ArchDetail({group,selected,onAdd,onEdit,onDelete,onEditL2}){
         React.createElement(Badge,{label:'LEVEL 0',type:'pill-color',color:ARCH_LEVEL_COLOR[0],size:'md'}),
         React.createElement('span',{className:'arch-level0-hint'},ARCH_LEVEL_HINT[0]+(selected.owners&&selected.owners.length?' · รับผิดชอบ '+selected.owners.length+' หน่วยงาน':'')),
         React.createElement('div',{className:'arch-row-actions'},
-          React.createElement(Button,{variant:'secondary',size:'sm',leadingIcon:React.createElement(Icon,{name:'edit',size:14}),onClick:()=>onEdit(0,selected)},'แก้ไข'),
+          React.createElement(Button,{variant:'secondary',size:'sm',leadingIcon:React.createElement(Icon,{name:'edit',size:14}),onClick:()=>onEdit(0,selected,null)},'แก้ไข'),
           React.createElement(Button,{variant:'secondary',size:'sm',className:'btn-danger-outline',leadingIcon:React.createElement(Icon,{name:'trash',size:14}),onClick:()=>onDelete(0,selected)},'ลบ')
         )
       ),
@@ -385,12 +478,14 @@ function ArchDetail({group,selected,onAdd,onEdit,onDelete,onEditL2}){
     React.createElement('div',{className:'arch-level1-head'},
       React.createElement(Badge,{label:'LEVEL 1',type:'pill-color',color:ARCH_LEVEL_COLOR[1],size:'md'}),
       React.createElement('span',{className:'arch-level0-hint'},ARCH_LEVEL_HINT[1]+(unitCount(selected)?' ( '+unitCount(selected)+' ฝ่าย )':'')),
-      React.createElement(Button,{variant:'primary',size:'sm',className:'arch-add-l1-btn',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:()=>onAdd(1,selected)},'เพิ่ม Work Process')
+      React.createElement(Button,{variant:'primary',size:'sm',className:'arch-add-l1-btn',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:()=>onAdd(1,selected,null)},'เพิ่ม Work Process')
     ),
     React.createElement('div',{className:'arch-l1-list'},
-      (selected.children||[]).map(c=>React.createElement(ArchLevel1Row,{key:c.id,node:c,group,l0:selected,
-        onEdit:n=>onEdit(1,n),onDelete:n=>onDelete(1,n),
-        onAddL2:n=>onAdd(2,n),onEditL2,onDeleteL2:n=>onDelete(2,n)
+      (selected.children||[]).map((c,i)=>React.createElement(ArchLevel1Row,{key:c.id,node:c,group,l0:selected,index:i,
+        onEdit:n=>onEdit(1,n,selected),onDelete:n=>onDelete(1,n),
+        onAddL2:(n,l0n)=>onAdd(2,n,l0n),onEditL2,onDeleteL2:n=>onDelete(2,n),
+        onReorder:(from,to)=>onReorderL1(selected.id,from,to),
+        onReorderL2:(from,to)=>onReorderL2(c.id,from,to)
       }))
     )
   );
@@ -436,6 +531,21 @@ function ArchPanel(){
     updateGroupChildren(children=>treeUpdate(children,updatedNode.id,()=>updatedNode));
     setToast('บันทึกเรียบร้อยแล้ว');
   }
+  // Drag-reorder within one parent's own children only — the moved sibling list is
+  // renumbered against the parent's own code so <parentCode>.1, .2, .3 always matches
+  // the new on-screen order.
+  function handleReorderL1(l0Id,from,to){
+    updateGroupChildren(children=>treeUpdate(children,l0Id,l0=>{
+      const reordered=renumberSiblings(arrayMove(l0.children||[],from,to),l0.code);
+      // An L1's own code can change position (and so code) here — keep its L2
+      // children's codes (which embed the parent's code as a prefix) in sync too.
+      const withL2Synced=reordered.map(l1=>l1.children?{...l1,children:renumberSiblings(l1.children,l1.code)}:l1);
+      return {...l0,children:withL2Synced};
+    }));
+  }
+  function handleReorderL2(l1Id,from,to){
+    updateGroupChildren(children=>treeUpdate(children,l1Id,l1=>({...l1,children:renumberSiblings(arrayMove(l1.children||[],from,to),l1.code)})));
+  }
   function handleDeleteConfirm(){
     const {node}=deleteCtx;
     updateGroupChildren(children=>treeDelete(children,node.id));
@@ -443,6 +553,19 @@ function ArchPanel(){
     setDeleteCtx(null);setToast('ลบเรียบร้อยแล้ว');
   }
   const levelLabelOf=l=>l===0?'LEVEL 0':l===1?'LEVEL 1 (Work Process)':'L2 (Job)';
+  function buildAncestors(ctx){
+    if(!ctx)return [];
+    const {level,parentNode,ancestorL0}=ctx;
+    if(level===1)return [{code:parentNode.code,name:parentNode.name}];
+    if(level===2)return [{code:ancestorL0.code,name:ancestorL0.name},{code:parentNode.code,name:parentNode.name}];
+    return [];
+  }
+  function buildAncestorsForEdit(ctx){
+    if(!ctx)return [];
+    const {level,ancestorL0}=ctx;
+    if(level===1&&ancestorL0)return [{code:ancestorL0.code,name:ancestorL0.name}];
+    return [];
+  }
   function codeExampleFor(level,parentNode){
     const map={governance:'เช่น S1, S2',core:'เช่น C1, C2',enable:'เช่น E1, E2'};
     if(level===0)return map[activeGroup]||'เช่น S1, S2';
@@ -454,9 +577,10 @@ function ArchPanel(){
 
   return React.createElement('div',{className:'card panel'},
     React.createElement('div',{className:'panel-head'},
-      React.createElement('div',null,React.createElement('h2',null,'PEA สถาปัตกรรมธุรกิจ (PEA Business Architecture)'),React.createElement('p',null,'โครงสร้าง 3 ระดับ : LEVEL 0 กระบวนการสำคัญ (Key Work Process) ▸ LEVEL 1 กระบวนการทำงาน (Work Process) ▸ LEVEL 2 งาน (Job)')),
+      React.createElement('div',null,React.createElement('h2',null,'PEA สถาปัตกรรมธุรกิจ (PEA Business Architecture) ปี '+archYear),React.createElement('p',null,'โครงสร้าง 3 ระดับ : LEVEL 0 กระบวนการสำคัญ (Key Work Process) ▸ LEVEL 1 กระบวนการทำงาน (Work Process) ▸ LEVEL 2 งาน (Job)')),
       React.createElement('div',{className:'panel-head-actions'},
         React.createElement(window.SelectMenu,{style:{width:'120px'},value:archYear,onChange:setArchYear,options:['2569','2568','2567'].map(y=>({value:y,label:'ปี '+y}))}),
+        React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'upload-cloud-01',size:16})},'Import Excel'),
         React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16})},'Export โครงสร้าง')
       )
     ),
@@ -484,14 +608,16 @@ function ArchPanel(){
         )
       ),
       selected?React.createElement(ArchDetail,{group,selected,
-        onAdd:(level,parentNode)=>setAddCtx({level,parentNode}),
-        onEdit:(level,node)=>setEditCtx({level,node}),
+        onAdd:(level,parentNode,ancestorL0)=>setAddCtx({level,parentNode,ancestorL0}),
+        onEdit:(level,node,ancestorL0)=>setEditCtx({level,node,ancestorL0}),
         onDelete:(level,node)=>setDeleteCtx({level,node}),
-        onEditL2:handleDirectEditL2
+        onEditL2:handleDirectEditL2,
+        onReorderL1:handleReorderL1,
+        onReorderL2:handleReorderL2
       }):React.createElement('div',{className:'arch-empty'},'ยังไม่มี Building Block ในกลุ่มนี้')
     ),
-    addCtx&&React.createElement(ArchNodeModal,{title:'เพิ่ม'+(addCtx.level===0?' Building Block':addCtx.level===1?' Work Process':' Job'),groupLabel:group.label,levelLabel:levelLabelOf(addCtx.level),codeExample:codeExampleFor(addCtx.level,addCtx.parentNode),onClose:()=>setAddCtx(null),onSubmit:handleAddSubmit}),
-    editCtx&&React.createElement(ArchNodeModal,{title:'แก้ไข '+editCtx.node.code,groupLabel:group.label,levelLabel:levelLabelOf(editCtx.level),initial:editCtx.node,codeExample:codeExampleFor(editCtx.level,null),onClose:()=>setEditCtx(null),onSubmit:handleEditSubmit}),
+    addCtx&&React.createElement(ArchNodeModal,{title:'เพิ่ม'+(addCtx.level===0?' Building Block':addCtx.level===1?' Work Process':' Job'),groupLabel:group.label,levelLabel:levelLabelOf(addCtx.level),codeExample:codeExampleFor(addCtx.level,addCtx.parentNode),year:archYear,ancestors:buildAncestors(addCtx),onClose:()=>setAddCtx(null),onSubmit:handleAddSubmit}),
+    editCtx&&React.createElement(ArchNodeModal,{title:'แก้ไข '+editCtx.node.code,groupLabel:group.label,levelLabel:levelLabelOf(editCtx.level),initial:editCtx.node,codeExample:codeExampleFor(editCtx.level,null),year:archYear,ancestors:buildAncestorsForEdit(editCtx),onClose:()=>setEditCtx(null),onSubmit:handleEditSubmit}),
     deleteCtx&&React.createElement(ArchDeleteModal,{node:deleteCtx.node,onClose:()=>setDeleteCtx(null),onConfirm:handleDeleteConfirm}),
     toast&&React.createElement(Toast,{message:toast,onDone:()=>setToast(null)})
   );
@@ -536,8 +662,13 @@ function App(){
   const panels={org:OrgPanel,sla:window.SlaPanel,arch:ArchPanel,kpi:KpiPanel,users:window.UserManagementPanel};
   const Panel=panels[tab];
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar,null),
-    React.createElement(TopTabs,{active:tab,setActive:setTab}),
+    React.createElement(window.PageHeader,{maxWidth:'1320px',
+      backHref:'/',
+      avatarText:'สด',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ตั้งค่า BA & SLA Master'}],
+      title:'ตั้งค่า BA & SLA Master',
+      tabs:React.createElement(TopTabs,{active:tab,setActive:setTab})
+    }),
     React.createElement('main',{className:'page'},
       React.createElement('div',{className:'settings-content'},React.createElement(Panel,null))
     )

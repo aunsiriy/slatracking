@@ -1,5 +1,3 @@
-import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Badge,InputField}=window.DesignSystem_cbd181;
 const SLA_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
 
@@ -19,19 +17,6 @@ const SLA_ROWS=[
 ];
 
 const SCORE_OPTIONS=['1 - น้อยที่สุด','2 - น้อย','3 - ปานกลาง','4 - มาก','5 - มากที่สุด'];
-
-function TopBar(){
-  return React.createElement('header',{className:'ptop'},
-    React.createElement('a',{className:'ptop-back',href:'#',onClick:e=>{e.preventDefault();history.back();}},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
-    React.createElement('div',{className:'ptop-left'},
-      React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'ptop-word'},
-        React.createElement('span',{className:'ptop-title'},'SLA Tracking System'),
-        React.createElement('span',{className:'ptop-sub'},'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)')
-      )
-    )
-  );
-}
 
 function SlaRow({row}){
   const [total,setTotal]=React.useState(row.total);
@@ -83,23 +68,19 @@ function App(){
     window.location.href='/p1-p11-summary?unit='+encodeURIComponent(unit)+'&year='+year;
   }
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1400px',
+      onBack:()=>{history.back();},
+      systemSubtitle:'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)',
+      breadcrumb:[
+        {label:'ข้อเสนอโอกาสในการปรับปรุงฯ (QIR)',href:'/learning-form-overview'},
+        {label:'P1-P11 / QIR ประจำปี',href:'/p1-p11-overview'+(SLA_VIEW?'?view=1':'')},
+        {label:'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)'}
+      ],
+      title:React.createElement(React.Fragment,null,unit,SLA_VIEW&&React.createElement('span',{style:{marginLeft:'16px'}},React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm'}))),
+      actions:React.createElement(Button,{variant:'secondary',size:'md',trailingIcon:React.createElement(Icon,{name:'chevron-down',size:15})},'ส่งออกข้อมูล'),
+      subtitle:'สรุปรายงานภาพรวม P1-P11 ประจำ เดือน'+month+' ปี '+year
+    }),
     React.createElement('main',{className:'pcontent'},
-      React.createElement('nav',{className:'psum-crumb'},
-        React.createElement(Link,{href:'/learning-form-overview'},'ข้อเสนอโอกาสในการปรับปรุงฯ (QIR)'),
-        React.createElement(Icon,{name:'chevron-right',size:14}),
-        React.createElement(Link,{href:'/p1-p11-overview'+(SLA_VIEW?'?view=1':'')},'P1-P11 / QIR ประจำปี'),
-        React.createElement(Icon,{name:'chevron-right',size:14}),
-        React.createElement('span',{className:'is-current'},'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)')
-      ),
-      React.createElement('div',{className:'psum-head'},
-        React.createElement('h1',null,unit,SLA_VIEW&&React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm',style:{marginLeft:'10px'}})),
-        React.createElement('p',null,'สรุปรายงานภาพรวม P1-P11 ประจำ เดือน'+month+' ปี '+year)
-      ),
-      React.createElement('div',{className:'psum-divider'}),
-      React.createElement('div',{className:'pform-toolbar'},
-        React.createElement(Button,{variant:'secondary',size:'md',trailingIcon:React.createElement(Icon,{name:'chevron-down',size:15})},'ส่งออกข้อมูล')
-      ),
       React.createElement('fieldset',{className:'pform-fieldset',disabled:SLA_VIEW},
       React.createElement('div',{className:'card ptable-card'},
         React.createElement('table',{className:'ptable pform-table'},

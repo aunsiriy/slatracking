@@ -1,15 +1,9 @@
 const SLA_REPORT_PERIOD={name:'กรกฎาคม 2569',deadline:'20 ก.ค. 2569'};
-const SLA_REPORT_QUARTER_PERIOD={name:'ไตรมาส 3/2569',deadline:'15 ก.ย. 2569'};
-// assignedReportType mocks the admin's per-department assignment: a department is
-// assigned exactly one report type (monthly SLA or quarterly process metrics) — never both.
-const SLA_REPORT_DEPT={name:'ฝ่ายบริการลูกค้า เขต 1 (ภาคเหนือ)',assignedReportType:'monthly'};
+const SLA_REPORT_DEPT={name:'ฝ่ายบริการลูกค้า เขต 1 (ภาคเหนือ)'};
 const SLA_REPORT_RECORDER='วิภาวี ศรีสุข';
 
 const MONTH_HISTORY_LABELS=['ม.ค. 2569','ก.พ. 2569','มี.ค. 2569','เม.ย. 2569','พ.ค. 2569','มิ.ย. 2569'];
 const MONTH_HISTORY_MONTHNUM=[1,2,3,4,5,6];
-const QUARTER_HISTORY_LABELS=['Q1/2569','Q2/2569'];
-// quarterly rounds are confirmed the month after each quarter closes (Q1 ends มี.ค. -> confirmed เม.ย., Q2 ends มิ.ย. -> confirmed ก.ค.)
-const QUARTER_HISTORY_MONTHNUM=[4,7];
 // one deliberately negative slot (มี.ค.) so the "ไม่ผ่าน SLA" period status has a real example to show
 const HISTORY_VARIANTS=[1,2,-5,3,1,2];
 // day-of-month the round was first confirmed — mixed on-time (<=15) and late (>15) so the
@@ -19,12 +13,11 @@ const CONFIRM_DAY_VARIANTS=[12,16,9,14,15,18];
 function genHistory(target,labels,monthNums){
  return labels.map((period,i)=>{
   const result=Math.max(0,Math.min(100,Number(target)+HISTORY_VARIANTS[i%HISTORY_VARIANTS.length]));
-  const unit=period.startsWith('Q')?'ไตรมาส':'เดือน';
   const confirmMonth=monthNums[i%monthNums.length];
   const confirmDay=CONFIRM_DAY_VARIANTS[i%CONFIRM_DAY_VARIANTS.length];
   const confirmedAt='2026-'+String(confirmMonth).padStart(2,'0')+'-'+String(confirmDay).padStart(2,'0')+'T10:00:00+07:00';
   return {period,result,target:Number(target),outcome:result>=Number(target)?'pass':'fail',recorder:SLA_REPORT_RECORDER,reported:true,confirmedAt,
-   detail:'ดำเนินการตามแผนงานประจำ'+unit+'นี้ครบถ้วน ตรวจสอบและบันทึกผลตามรอบที่กำหนด'};
+   detail:'ดำเนินการตามแผนงานประจำเดือนนี้ครบถ้วน ตรวจสอบและบันทึกผลตามรอบที่กำหนด'};
  });
 }
 
@@ -101,31 +94,6 @@ const SLA_REPORT_ITEMS=SLA_REPORT_ITEMS_RAW.map(it=>{
  if(s13)s13.history[2]={...s13.history[2],reported:false,confirmedAt:null};
 }
 
-const SLA_REPORT_QUARTERLY_ITEMS_RAW=[
-{id:101,level0:'S1',level0Label:'ระบบงานบริการลูกค้า',level1:'S1.3',level1Label:'กระบวนการติดตั้งมิเตอร์ใหม่',
- metricName:'อัตราความถูกต้องของข้อมูลติดตั้งมิเตอร์ในระบบ',target:96,source:'ระบบตรวจสอบคุณภาพข้อมูล (Data QA)',status:'not_reported',result:'',detail:'',improvement:'',preparer:'',
- authorizedPreparers:['60417','60721'],first_confirmed_at:null,historyLog:[],
- dueDate:'15 ก.ย. 2569'},
-{id:102,level0:'S2',level0Label:'ระบบงานปฏิบัติการระบบไฟฟ้า',level1:'S2.1',level1Label:'กระบวนการบำรุงรักษาระบบจำหน่าย',
- metricName:'อัตราการดำเนินการบำรุงรักษาเชิงป้องกันตามแผนไตรมาส',target:90,source:'แผนบำรุงรักษาประจำปี (PM Plan)',status:'submitted',result:'92',detail:'ดำเนินการบำรุงรักษาเชิงป้องกันครบตามแผนไตรมาสนี้',improvement:'',preparer:'60417',
- authorizedPreparers:['60417','602385'],first_confirmed_at:'2026-07-16T10:00:00+07:00',
- dueDate:'15 ก.ย. 2569'},
-{id:103,level0:'S3',level0Label:'ระบบงานบริหารลูกค้าสัมพันธ์',level1:'S3.2',level1Label:'กระบวนการตอบข้อร้องเรียน',
- metricName:'อัตราการปิดข้อร้องเรียนซ้ำภายในไตรมาส',target:85,source:'ระบบบริหารข้อร้องเรียน (CRM)',status:'submitted',result:'78',
- detail:'ปิดข้อร้องเรียนซ้ำได้ตามเป้าหมายในสองเดือนแรก แต่เดือนสุดท้ายมีเคสสะสมเพิ่มขึ้น',
- improvement:'ระบุสาเหตุที่ยอดข้อร้องเรียนซ้ำเพิ่มขึ้นในเดือนสุดท้าย และวางแผนติดตามเพิ่มเติม',preparer:'60417',
- authorizedPreparers:['60417'],first_confirmed_at:'2026-07-17T13:20:00+07:00',
- dueDate:'15 ก.ย. 2569'}
-];
-
-const SLA_REPORT_QUARTERLY_ITEMS=SLA_REPORT_QUARTERLY_ITEMS_RAW.map(it=>{
- const withHistory={...it,history:genHistory(it.target,QUARTER_HISTORY_LABELS,QUARTER_HISTORY_MONTHNUM)};
- if(withHistory.status==='submitted'&&!withHistory.historyLog){
-  withHistory.historyLog=genSeedLog(withHistory,withHistory.first_confirmed_at);
- }
- return withHistory;
-});
-
 // Period-bar status model: a reported round is either "pass" (ผ่าน SLA, green) or
 // "fail" (ไม่ผ่าน SLA, red) based on the aggregate outcome above. The current round
 // shows "overdue" (เลยกำหนด, red) once its deadline has passed while items are still
@@ -146,12 +114,5 @@ const SLA_REPORT_PERIODS_MONTHLY=[
 {key:'dec',label:'ธ.ค.',status:'upcoming'}
 ];
 
-const SLA_REPORT_PERIODS_QUARTERLY=[
-{key:'q1',label:'Q1',range:'ม.ค. - มี.ค.',status:periodOutcome(SLA_REPORT_QUARTERLY_ITEMS,0)},
-{key:'q2',label:'Q2',range:'เม.ย. - มิ.ย.',status:periodOutcome(SLA_REPORT_QUARTERLY_ITEMS,1)},
-{key:'q3',label:'Q3',range:'ก.ค. - ก.ย.',status:'overdue',isCurrent:true,pendingCount:1},
-{key:'q4',label:'Q4',range:'ต.ค. - ธ.ค.',status:'upcoming'}
-];
-
-Object.assign(window,{SLA_REPORT_PERIOD,SLA_REPORT_QUARTER_PERIOD,SLA_REPORT_DEPT,SLA_REPORT_RECORDER,
- SLA_REPORT_PERIODS_MONTHLY,SLA_REPORT_PERIODS_QUARTERLY,SLA_REPORT_ITEMS,SLA_REPORT_QUARTERLY_ITEMS});
+Object.assign(window,{SLA_REPORT_PERIOD,SLA_REPORT_DEPT,SLA_REPORT_RECORDER,
+ SLA_REPORT_PERIODS_MONTHLY,SLA_REPORT_ITEMS});

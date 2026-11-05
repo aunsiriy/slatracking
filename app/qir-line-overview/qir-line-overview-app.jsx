@@ -1,6 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
-const {Button,Avatar}=window.DesignSystem_cbd181;
+const {Button}=window.DesignSystem_cbd181;
 
 const QLO_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
 const QLO_ROWS=[
@@ -9,29 +7,6 @@ const QLO_ROWS=[
   {year:'2567',recorder:'ธงชัย มีนวล',picked:5,lineAdded:1,date:'28/09/2567',status:'submitted'},
   {year:'2566',recorder:'ธงชัย มีนวล',picked:4,lineAdded:0,date:'01/10/2566',status:'submitted'}
 ];
-function TopBar(){
-  return React.createElement('header',{className:'ttb'},
-    React.createElement('div',{className:'ttb-left'},
-      React.createElement(Link,{href:'/',className:'back-link'},React.createElement(Icon,{name:'chevron-right',size:16,style:{transform:'rotate(180deg)'}}),'กลับ'),
-      React.createElement('span',{className:'ttb-divider'}),
-      React.createElement(Image,{src:'/sla-logo.svg',alt:'SLA',className:'ttb-logo',width:28,height:28}),
-      React.createElement('span',{className:'ttb-title'},'SLA Tracking System')
-    ),
-    React.createElement('div',{className:'ttb-right'},
-      React.createElement(Button,{variant:'tertiary',size:'sm',iconOnly:true,leadingIcon:React.createElement(Icon,{name:'bell',size:19}),'aria-label':'การแจ้งเตือน'}),
-      React.createElement(Avatar,{variant:'text',size:'sm',text:'สด'})
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'lfbreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'ภาพรวม QIR สายงาน')
-  );
-}
-
 function KpiCards({rows}){
   const total=rows.length;
   const latestYear=total?rows.map(r=>Number(r.year)).sort((a,b)=>b-a)[0]:null;
@@ -83,16 +58,18 @@ function App(){
     window.location.href='/qir-line-form?year='+(cur?cur.year:QLO_ROWS[0].year);
   }
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
-    React.createElement('main',{className:'lfcontent'},
-      React.createElement(Breadcrumb),
-      React.createElement('div',{className:'lfpage-head'},
-        React.createElement('div',null,
-          React.createElement('h1',null,'ภาพรวม QIR สายงาน'),
-          React.createElement('p',null,'ติดตามสถานะการคัดเลือก QIR ระดับสายงานของ '+QLO_LINE_NAME+' ในแต่ละรอบปี')
-        ),
+    React.createElement(window.PageHeader,{maxWidth:'1080px',
+      backHref:'/',
+      avatarText:'สด',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR สายงาน'}],
+      title:'ภาพรวม QIR สายงาน',
+      actions:React.createElement(React.Fragment,null,
+        React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'trending-up',size:16}),onClick:()=>{window.location.href='/qir-quarterly-report';}},'รายงานผล QIR รายไตรมาส'),
         React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:goSelect},'คัดเลือกประจำปี')
       ),
+      subtitle:'ติดตามสถานะการคัดเลือก QIR ระดับสายงานของ '+QLO_LINE_NAME+' ในแต่ละรอบปี'
+    }),
+    React.createElement('main',{className:'lfcontent'},
       React.createElement(KpiCards,{rows}),
       React.createElement('div',{className:'card lsection'},
         React.createElement('div',{className:'lsection-head'},

@@ -1,5 +1,3 @@
-import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Badge}=window.DesignSystem_cbd181;
 
 const STATUS_MAP={
@@ -7,27 +5,6 @@ const STATUS_MAP={
   not_reported:{label:'ยังไม่รายงาน',color:'gray'},
   overdue:{label:'รายงานเกินวันที่กำหนด',color:'error'}
 };
-
-function TopBar(){
-  return React.createElement('header',{className:'otop'},
-    React.createElement('div',{className:'otop-left'},
-      React.createElement(Link,{className:'otop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
-      React.createElement(Image,{className:'otop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'otop-word'},
-        React.createElement('span',{className:'otop-title'},'SLA Tracking System'),
-        React.createElement('span',{className:'otop-sub'},'ภาพรวมการรายงานผล SLA')
-      )
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'obreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'ภาพรวมการรายงานผล SLA')
-  );
-}
 
 function KpiCards({data,showAll}){
   const k=showAll?{kpiTotal:data.kpiTotal,pass:data.pass,fail:data.fail}:data.ownKpi;
@@ -102,13 +79,14 @@ function App(){
   const [showAll,setShowAll]=React.useState(false);
   const data=window.SLA_OVERVIEW_BY_YEAR[year];
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1080px',
+      backHref:'/',
+      systemSubtitle:'ภาพรวมการรายงานผล SLA',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวมการรายงานผล SLA'}],
+      title:'ภาพรวมการรายงานผล SLA',
+      subtitle:'สรุปผลการดำเนินงาน SLA ของหน่วยงานคุณ กดดูหน่วยงานอื่นเพื่อดูภาพรวมทั้งองค์กร'
+    }),
     React.createElement('main',{className:'ocontent'},
-      React.createElement(Breadcrumb),
-      React.createElement('div',{className:'opage-head'},
-        React.createElement('h1',null,'ภาพรวมการรายงานผล SLA'),
-        React.createElement('p',null,'สรุปผลการดำเนินงาน SLA ของหน่วยงานคุณ กดดูหน่วยงานอื่นเพื่อดูภาพรวมทั้งองค์กร')
-      ),
       React.createElement(KpiCards,{data,showAll}),
       React.createElement(FeatureCards),
       React.createElement(ListSection,{data,year,setYear,showAll,setShowAll})

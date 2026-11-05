@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ORG_TREE } from '@/src/shared/org-tree-data.js';
 
 const {Button,Badge,InputField,FeaturedIcon}=window.DesignSystem_cbd181;
@@ -165,23 +164,18 @@ function BaStructureView(){
   const displayed=selectedNode?items.filter(it=>window.nodeItemMatch(selectedNode,it)):[];
 
   return React.createElement(React.Fragment,null,
-    React.createElement('header',{className:'bv-header'},
-      React.createElement(Link,{href:'/',className:'bv-back'},React.createElement(Icon,{name:'corner-up-left',size:15}),'กลับ'),
-      React.createElement('div',{className:'bv-header-title'},
-        React.createElement(FeaturedIcon,{icon:React.createElement(Icon,{name:'building',size:20}),size:'md',color:'brand'}),
-        React.createElement('div',null,
-          React.createElement('h1',null,'โครงสร้าง Business Architecture & SLA'),
-          React.createElement('p',null,'มุมมองอ้างอิงแบบดูอย่างเดียว — ไม่สามารถแก้ไขข้อมูลได้')
-        )
+    React.createElement(window.PageHeader,{maxWidth:'1320px',
+      backHref:'/',
+      title:React.createElement(React.Fragment,null,
+        'โครงสร้าง Business Architecture & SLA',
+        React.createElement('span',{style:{marginLeft:'16px'}},React.createElement(Badge,{label:'View only',type:'pill-color',color:'gray',size:'sm'}))
       ),
-      React.createElement(Badge,{label:'View only',type:'pill-color',color:'gray',size:'md'})
-    ),
-    React.createElement('div',{className:'bv-page-tabs-wrap'},
-      React.createElement('nav',{className:'bv-page-tabs'},
+      subtitle:'มุมมองอ้างอิงแบบดูอย่างเดียว — ไม่สามารถแก้ไขข้อมูลได้',
+      tabs:React.createElement('nav',{className:'bv-page-tabs'},
         React.createElement('button',{type:'button',className:'bv-page-tab'+(pageTab==='org'?' is-active':''),onClick:()=>setPageTab('org')},React.createElement(Icon,{name:'building',size:18}),'SLA ตามหน่วยงาน'),
         React.createElement('button',{type:'button',className:'bv-page-tab'+(pageTab==='bb'?' is-active':''),onClick:()=>setPageTab('bb')},React.createElement(Icon,{name:'layout-grid',size:18}),'Building Block (Business Architecture)')
       )
-    ),
+    }),
     React.createElement('main',{className:'bv-page'},
       pageTab==='bb'?React.createElement(BbView,null):
       React.createElement('div',{className:'bv-layout'},

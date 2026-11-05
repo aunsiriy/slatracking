@@ -1,21 +1,6 @@
-import Image from 'next/image';
-import Link from 'next/link';
 const {Button,Badge}=window.DesignSystem_cbd181;
 const P11_VIEW=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('view')==='1');
 const P11_VQ=P11_VIEW?'view=1':'';
-
-function TopBar(){
-  return React.createElement('header',{className:'ptop'},
-    React.createElement(Link,{className:'ptop-back',href:'/learning-form-overview-province'},React.createElement(Icon,{name:'chevron-left',size:16}),'กลับ'),
-    React.createElement('div',{className:'ptop-left'},
-      React.createElement(Image,{className:'ptop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'ptop-word'},
-        React.createElement('span',{className:'ptop-title'},'SLA Tracking System'),
-        React.createElement('span',{className:'ptop-sub'},'P1-P11 / QIR ประจำปี')
-      )
-    )
-  );
-}
 
 function StatusIcon({color}){
   return React.createElement('span',{className:`pstatus-icon pstatus-icon--${color}`},React.createElement(Icon,{name:'file-text',size:14}));
@@ -49,15 +34,16 @@ function App(){
   function removeFilter(f){setActiveFilters(activeFilters.filter(x=>x!==f));}
   function goToQir(node){window.location.href='/qir-annual-form'+(P11_VQ?'?'+P11_VQ:'');}
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
+    React.createElement(window.PageHeader,{maxWidth:'1400px',
+      backHref:'/learning-form-overview-province',
+      systemSubtitle:'P1-P11 / QIR ประจำปี',
+      title:React.createElement(React.Fragment,null,'P1-P11 / QIR ประจำปี',P11_VIEW&&React.createElement('span',{style:{marginLeft:'16px'}},React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm'}))),
+      actions:React.createElement(React.Fragment,null,
+        React.createElement(window.SelectMenu,{style:{width:'150px'},value:month,onChange:setMonth,options:window.P11_MONTHS.map(m=>({value:m,label:'เดือน '+m}))}),
+        React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:window.P11_YEARS.map(y=>({value:y,label:'ปี '+y}))})
+      )
+    }),
     React.createElement('main',{className:'pcontent'},
-      React.createElement('div',{className:'ppage-head'},
-        React.createElement('h1',null,'P1-P11 / QIR ประจำปี',P11_VIEW&&React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm',style:{marginLeft:'10px'}})),
-        React.createElement('div',{className:'ppage-head-filters'},
-          React.createElement(window.SelectMenu,{style:{width:'150px'},value:month,onChange:setMonth,options:window.P11_MONTHS.map(m=>({value:m,label:'เดือน '+m}))}),
-          React.createElement(window.SelectMenu,{style:{width:'120px'},value:year,onChange:setYear,options:window.P11_YEARS.map(y=>({value:y,label:'ปี '+y}))})
-        )
-      ),
       React.createElement('div',{className:'card psearch-card'},
         React.createElement('span',{className:'psearch-label'},'ค้นหา'),
         React.createElement('div',{className:'psearch-row'},

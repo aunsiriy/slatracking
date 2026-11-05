@@ -5,6 +5,51 @@
 // picked dept proposals, the line's own QIR groups, the submit date and
 // an edit-history log — is kept in localStorage keyed by year. Exposed as
 // window.QLF_STORE.
+//
+// The line name and the per-dept proposal catalog also live here (not just
+// in qir-line-app.jsx) so the quarterly progress report page can resolve a
+// submission's selectedIds back into full proposal + activity data too.
+
+const QLF_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
+const QLF_DEPT_SUBMISSIONS=[
+  {id:'fpj',dept:'ฝ่ายพัฒนาระบบดิจิทัล (ฝพจ.)',proposals:[
+    {id:'fpj-1',proposal:'ปรับปรุงตัวชี้วัดกระบวนการให้สะท้อนประสิทธิภาพและครอบคลุมผลลัพธ์',processKey:'s131',
+     activities:[
+       {name:'จัดทำแนวทางปรับปรุงตัวชี้วัดกระบวนการ',weight:50},
+       {name:'สื่อสารและอบรมการใช้ตัวชี้วัดชุดใหม่ให้หน่วยงานในสังกัด',weight:50}
+     ]},
+    {id:'fpj-2',proposal:'ลดระยะเวลาการอนุมัติงานพัฒนาระบบด้วยเวิร์กโฟลว์ดิจิทัล',processKey:'s132',
+     activities:[
+       {name:'ออกแบบเวิร์กโฟลว์อนุมัติอิเล็กทรอนิกส์',weight:60},
+       {name:'นำร่องใช้งานกับ 2 กระบวนการหลัก',weight:40}
+     ]}
+  ]},
+  {id:'fdk',dept:'ฝ่ายกลยุทธ์ดิจิทัลและบริหารจัดการข้อมูล (ฝดข.)',proposals:[
+    {id:'fdk-1',proposal:'ยกระดับการบูรณาการข้อมูลระหว่างระบบให้เป็นมาตรฐานเดียวกัน',processKey:'s132',
+     activities:[
+       {name:'ทบทวนสถาปัตยกรรมข้อมูลองค์กรและจัดทำ Data Catalog กลาง',weight:60},
+       {name:'กำหนดมาตรฐานการแลกเปลี่ยนข้อมูลระหว่างระบบ',weight:40}
+     ]}
+  ]},
+  {id:'fpd',dept:'ฝ่ายปฏิบัติการและบำรุงรักษาระบบดิจิทัล (ฝปด.)',proposals:[
+    {id:'fpd-1',proposal:'รวมศูนย์การเฝ้าระวังและแจ้งเตือนระบบให้ตอบสนองได้เร็วขึ้น',processKey:'s131',
+     activities:[
+       {name:'รวมศูนย์การเฝ้าระวังและแจ้งเตือนระบบ (Monitoring & Alerting)',weight:100}
+     ]}
+  ]},
+  {id:'frs',dept:'ฝ่ายระบบสื่อสาร (ฝรส.)',proposals:[
+    {id:'frs-1',proposal:'จัดทำมาตรฐานการเชื่อมต่อโครงข่ายสื่อสารภายใน',processKey:'s132',
+     activities:[
+       {name:'จัดทำเอกสารมาตรฐานการเชื่อมต่อโครงข่ายสื่อสาร',weight:100}
+     ]},
+    {id:'frs-2',proposal:'ยกระดับความมั่นคงปลอดภัยของโครงข่ายสื่อสาร',processKey:'s132',
+     activities:[
+       {name:'ประเมินช่องโหว่และจัดทำแผนป้องกันเชิงรุก',weight:40},
+       {name:'ติดตั้งระบบเฝ้าระวังภัยคุกคามโครงข่าย',weight:60}
+     ]}
+  ]}
+];
+function qlfProcessLabel(key){const p=(window.LF_BA_PROCESS_OPTIONS||[]).find(x=>x.key===key);return p?p.label:key;}
 
 function qlfKey(year){return 'qlf_submission_'+year;}
 
@@ -84,4 +129,5 @@ function qlfSeed(){
 if(typeof window!=='undefined'){
   qlfSeed();
   window.QLF_STORE={get:qlfGet,save:qlfSave,now:qlfNow};
+  Object.assign(window,{QLF_LINE_NAME,QLF_DEPT_SUBMISSIONS,qlfProcessLabel});
 }

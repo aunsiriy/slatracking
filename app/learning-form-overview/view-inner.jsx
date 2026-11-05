@@ -2,6 +2,7 @@
 
 import '@/src/shared/icons.jsx';
 import '@/src/shared/select-menu.jsx';
+import '@/src/shared/page-header.jsx';
 import './learning-form-overview-data.jsx';
 import App from './learning-form-overview-app.jsx';
 import './page.css';

@@ -2,6 +2,7 @@
 
 import '@/src/shared/icons.jsx';
 import '@/src/shared/select-menu.jsx';
+import '@/src/shared/page-header.jsx';
 import './tracking-data.jsx';
 import App from './tracking-app.jsx';
 import './page.css';

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 const {Button,Badge,InputField,Textarea}=window.DesignSystem_cbd181;
 
@@ -6,31 +5,10 @@ const SLA_FORM_GUIDE=[
 {part:'ขั้นที่ 1',title:'เลือกรายการทางซ้าย',desc:'กล่อง "ต้องกรอก" ทางซ้ายมือจะเรียงรายการให้อัตโนมัติ โดยเริ่มจากรายการที่เลยกำหนดส่งก่อน ตามด้วยรายการที่ยังไม่ถึงกำหนด คลิกรายการใดก็ได้เพื่อเปิดกรอกทางขวามือ'},
 {part:'ขั้นที่ 2',title:'กรอกข้อมูลทางขวาแล้วกด "ถัดไป"',desc:'กรอกผลการดำเนินงาน (%) ระบบจะแจ้งผ่าน/ไม่ผ่านทันที ตามด้วยรายละเอียดการดำเนินงาน และแนวทางแก้ไข (กรณีผลไม่ผ่านเกณฑ์) แล้วกด "ถัดไป" เพื่อไปยังรายการถัดไปที่ยังไม่ครบ หากกดตอนกรอกไม่ครบ ช่องที่ขาดจะขึ้นกรอบสีแดงให้แก้ไข'},
 {part:'ขั้นที่ 3',title:'กด "ยืนยันส่งทั้งหมด"',desc:'เมื่อกรอกครบทุกรายการ ตัวเลขในกล่อง "ต้องกรอก" จะเปลี่ยนเป็นเครื่องหมายถูกสีเขียว และปุ่มทางขวาจะเปลี่ยนเป็น "ตรวจทานและส่ง" ให้กดปุ่ม "ยืนยันส่งทั้งหมด" ด้านล่างสุดของหน้าเพื่อส่งรายงานทั้งหมดให้ กนอ. ในครั้งเดียว'},
-{part:'สัญลักษณ์',title:'สีสถานะในแถบรอบรายงาน',desc:'เขียว = ครบแล้ว, เหลือง = มีรายการต้องแก้ไข, แดง = เลยกำหนด, เทา = ยังไม่ถึงรอบ (กดไม่ได้)'},
+{part:'สัญลักษณ์',title:'สีสถานะในแถบรอบรายงาน',desc:'เขียว = ผ่าน SLA ครบทุกรายการ, แดง = มีรายการไม่ผ่าน SLA, เทา = ยังไม่ถึงรอบ (กดไม่ได้)'},
 {part:'หมายเหตุ',title:'รายการที่รายงานในระดับกอง',desc:'หน้านี้รายงานผล SLA รายเดือนลงถึงระดับงานย่อย (Level 2 Jobs) เช่น S1.3.1, S1.3.2 ซึ่งเป็นงานภายใต้กระบวนการ (Level 1) ของฝ่าย — ระดับกองไม่มีรายงานผลตัวชี้วัดกระบวนการรายไตรมาส'},
 {part:'หมายเหตุ',title:'แก้ไขรายการที่ยืนยันแล้วได้',desc:'รายการที่ "รายงานแล้ว" สามารถกด "แก้ไขข้อมูล" เพื่อปรับผลการดำเนินงาน รายละเอียด หรือแนวทางแก้ไขได้ภายหลัง แต่จะแก้ไขได้เฉพาะผู้ที่มีรายชื่อเป็นผู้มีสิทธิ์กรอกของรายการนั้นเท่านั้น ทุกครั้งที่แก้ไขจะถูกบันทึกไว้ใน "ประวัติการแก้ไข" ของรายการนั้น'}
 ];
-
-function TopBar(){
-  return React.createElement('header',{className:'rtop'},
-    React.createElement('div',{className:'rtop-left'},
-      React.createElement(Link,{className:'rtop-back',href:'/'},React.createElement(Icon,{name:'corner-up-left',size:16}),'กลับ'),
-      React.createElement(Image,{className:'rtop-logo',src:'/assets/sla-logo-checkmark.png',alt:'SLA',width:36,height:36}),
-      React.createElement('div',{className:'rtop-word'},
-        React.createElement('span',{className:'rtop-title'},'SLA Tracking System'),
-        React.createElement('span',{className:'rtop-sub'},'รายงานผลการดำเนินงาน SLA')
-      )
-    )
-  );
-}
-
-function Breadcrumb(){
-  return React.createElement('div',{className:'rbreadcrumb'},
-    React.createElement(Link,{href:'/'},'หน้าหลัก'),
-    React.createElement(Icon,{name:'chevron-right',size:14}),
-    React.createElement('span',{className:'is-current'},'รายงานผล SLA (ระดับกอง)')
-  );
-}
 
 function FormGuideModal({onClose}){
   const [open,setOpen]=React.useState(0);
@@ -54,39 +32,36 @@ function FormGuideModal({onClose}){
   );
 }
 
-const PERIOD_STATUS_META={
-  done:{label:'ครบแล้ว'},
-  needs_fix:{label:'มีรายการต้องแก้ไข'},
-  overdue:{label:'เลยกำหนด'},
-  upcoming:{label:'ยังไม่ถึงรอบ'}
-};
-
-function PeriodBox({period,isSelected,onSelect}){
+function PeriodBox({period,isSelected,onSelect,summary}){
   const disabled=period.status==='upcoming';
-  const meta=PERIOD_STATUS_META[period.status];
-  const statusLabel=period.status==='needs_fix'&&period.pendingCount?meta.label+' · '+period.pendingCount:meta.label;
+  const untouched=disabled&&summary.reported===0;
+  const variant=summary.reported===0?'neutral':(summary.pass===summary.reported?'pass':'fail');
   return React.createElement('button',{type:'button',disabled,onClick:()=>onSelect(period.key),
-    className:'period-box period-box--'+period.status+(period.isCurrent?' is-current':'')+(isSelected&&!period.isCurrent?' is-selected':'')+(disabled?' is-disabled':'')},
+    className:'period-box period-box--'+variant+(period.isCurrent?' is-current':'')+(isSelected&&!period.isCurrent?' is-selected':'')+(disabled?' is-disabled':'')},
     period.isCurrent&&React.createElement('span',{className:'period-box-badge'},'รอบปัจจุบัน'),
     React.createElement('div',{className:'period-box-label'},period.label),
-    React.createElement('div',{className:'period-box-status'},statusLabel)
+    untouched?
+      React.createElement('div',{className:'period-box-status'},'ยังไม่ถึงรอบ'):
+      React.createElement('div',{className:'period-box-metric'},
+        React.createElement('i',{className:'dot '+(summary.pass===summary.reported?'dot-success':'dot-error')}),
+        'ผ่าน '+summary.pass+'/'+summary.reported
+      )
   );
 }
 
-function PeriodBar({selectedKey,onSelect}){
+function PeriodBar({selectedKey,onSelect,itemsForPeriodKey}){
   const periods=window.SLA_REPORT_L2_PERIODS_MONTHLY;
   return React.createElement('div',{className:'period-bar'},
     React.createElement('div',{className:'period-bar-head'},
       React.createElement('span',{className:'period-bar-title'},'รอบรายงาน · ปี 2569'),
       React.createElement('div',{className:'period-legend'},
-        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-success'}),'ครบแล้ว'),
-        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-warning'}),'มีรายการต้องแก้ไข'),
-        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-error'}),'เลยกำหนด'),
+        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-success'}),'ผ่าน SLA ครบทุกรายการ'),
+        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-error'}),'มีรายการไม่ผ่าน SLA'),
         React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-gray'}),'ยังไม่ถึงรอบ')
       )
     ),
     React.createElement('div',{className:'period-grid'},
-      periods.map(p=>React.createElement(PeriodBox,{key:p.key,period:p,isSelected:p.key===selectedKey,onSelect}))
+      periods.map(p=>React.createElement(PeriodBox,{key:p.key,period:p,isSelected:p.key===selectedKey,onSelect,summary:periodSummary(itemsForPeriodKey(p.key))}))
     )
   );
 }
@@ -102,6 +77,17 @@ function itemIsComplete(item){
   const improvementOk=status!=='fail'||item.improvement.trim().length>0;
   const resultOk=item.result!==''&&!isNaN(Number(item.result));
   return resultOk&&detailOk&&improvementOk;
+}
+
+// A result counts as "reported" once it holds a parseable number — same convention as the
+// ฝ่าย-level report page's period boxes, which this mirrors.
+function hasReportedResult(item){
+  return item.result!==''&&item.result!==null&&item.result!==undefined&&!isNaN(Number(item.result));
+}
+function periodSummary(items){
+  const reportedItems=items.filter(hasReportedResult);
+  const pass=reportedItems.filter(it=>computeStatus(it.result,it.target)==='pass').length;
+  return {pass,reported:reportedItems.length};
 }
 
 function findEmployee(id){return (window.EMPLOYEES||[]).find(e=>e.id===id);}
@@ -461,6 +447,21 @@ function App(){
     }).filter(Boolean);
   },[isHistoricalView,historyIndex,items]);
 
+  // Single source of truth for "what are this period's items" — the period-bar's
+  // per-box pass/fail ratio calls this for every month, same pattern as the ฝ่าย-level
+  // report page.
+  function itemsForPeriodKey(key){
+    if(key===currentPeriodKey)return items;
+    const idx=periods.findIndex(pr=>pr.key===key);
+    if(idx===-1)return [];
+    return items.map(it=>{
+      const h=(it.history||[])[idx];
+      if(!h)return null;
+      return {...it,status:'submitted',result:h.reported?String(h.result):'',target:h.target,
+        detail:h.reported?h.detail:'',improvement:''};
+    }).filter(Boolean);
+  }
+
   const livePendingItems=sortPending(items.filter(i=>i.status!=='submitted'));
   const liveSubmittedItems=items.filter(i=>i.status==='submitted');
   const pendingItems=isHistoricalView?[]:livePendingItems;
@@ -539,28 +540,27 @@ function App(){
   }
 
   return React.createElement(React.Fragment,null,
-    React.createElement(TopBar),
-    React.createElement('main',{className:'rcontent'},
-      React.createElement(Breadcrumb),
-      React.createElement('div',{className:'rpage-head'},
-        React.createElement('div',{className:'rpage-head-top'},
-          React.createElement('div',null,
-            React.createElement('h1',null,'รายงานผลการดำเนินงาน SLA (ระดับกอง)'),
-            React.createElement('div',{className:'rpage-head-subtitle'},window.SLA_REPORT_L2_DEPT.name)
-          ),
-          React.createElement('div',{className:'rpage-head-actions'},
-            React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายรายละเอียด'),
-            React.createElement(Link,{className:'rlevel-switch',href:'/sla-report-form'},'สลับไปหน้ารายงานระดับฝ่าย',React.createElement(Icon,{name:'arrow-right',size:14}))
-          )
-        ),
+    React.createElement(window.PageHeader,{maxWidth:'1180px',
+      backHref:'/',
+      systemSubtitle:'รายงานผลการดำเนินงาน SLA',
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'รายงานผล SLA (ระดับกอง)'}],
+      title:'รายงานผลการดำเนินงาน SLA (ระดับกอง)',
+      actions:React.createElement(React.Fragment,null,
+        React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายรายละเอียด'),
+        React.createElement(Link,{className:'rlevel-switch',href:'/sla-report-form'},'สลับไปหน้ารายงานระดับฝ่าย',React.createElement(Icon,{name:'arrow-right',size:14}))
+      ),
+      subtitle:React.createElement(React.Fragment,null,
+        React.createElement('div',{className:'rpage-head-subtitle'},window.SLA_REPORT_L2_DEPT.name),
         React.createElement('div',{className:'rpage-head-meta'},
           isHistoricalView?
             React.createElement(Badge,{label:'รอบ '+selectedPeriod.label+' 2569 · ย้อนหลัง',type:'pill-color',color:'gray',icon:'dot',size:'md'}):
             React.createElement(Badge,{label:'รอบ '+p.name,type:'pill-color',color:'brand',icon:'dot',size:'md'}),
           !isHistoricalView&&React.createElement('span',{className:'rpage-deadline'},React.createElement(Icon,{name:'clock',size:14}),'กำหนดส่ง '+p.deadline)
         )
-      ),
-      React.createElement(PeriodBar,{selectedKey:selectedPeriodKey,onSelect:selectPeriod}),
+      )
+    }),
+    React.createElement('main',{className:'rcontent'},
+      React.createElement(PeriodBar,{selectedKey:selectedPeriodKey,onSelect:selectPeriod,itemsForPeriodKey}),
       React.createElement('div',{className:'report-layout'},
         React.createElement('div',{className:'sidebar-col'},
           React.createElement(PendingList,{items:pendingItems,activeId,onSelect:setActiveId}),
