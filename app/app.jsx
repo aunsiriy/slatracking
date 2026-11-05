@@ -43,7 +43,7 @@ function SectionHeader({title,className}){
 }
 
 const FEATURE_COLOR_VARS={brand:{bg:'var(--pea-bg-brand-primary)',fg:'var(--pea-fg-brand-primary)'},gray:{bg:'var(--pea-bg-tertiary)',fg:'var(--pea-fg-tertiary)'}};
-function FeatureCard({icon,color,title,desc,cta}){
+function FeatureCard({icon,color,title,desc,cta,href}){
   const c=FEATURE_COLOR_VARS[color]||FEATURE_COLOR_VARS.gray;
   return React.createElement('div',{className:'card feature-card'},
     React.createElement('div',{className:'feature-icon',style:{background:c.bg,color:c.fg}},
@@ -52,8 +52,18 @@ function FeatureCard({icon,color,title,desc,cta}){
     React.createElement('div',{className:'feature-body'},
       React.createElement('h4',null,title),
       React.createElement('p',null,desc),
-      React.createElement(Button,{variant:'link-color',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:15})},cta)
+      React.createElement(Button,{variant:'link-color',size:'sm',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:15}),onClick:()=>{if(href)window.location.href=href;}},cta)
     )
+  );
+}
+
+function ReportTasksRow(){
+  const items=[
+    {icon:'file-text',color:'brand',title:'รายงานผล SLA รายเดือน',desc:'กรอกผล ตรวจสอบ และติดตามสถานะ SLA ประจำเดือนของหน่วยงาน',cta:'ไปที่รายงาน SLA',href:'/sla-report-form'},
+    {icon:'bar-chart-01',color:'brand',title:'รายงานผล QIR รายไตรมาส',desc:'รายงานความคืบหน้ากิจกรรม QIR ที่คัดเลือกไว้ เป็นรายไตรมาส',cta:'ไปที่รายงาน QIR',href:'/qir-quarterly-report?tab=fm'}
+  ];
+  return React.createElement('div',{className:'feature-row'},
+    items.map((f,i)=>React.createElement(FeatureCard,{key:i,...f}))
   );
 }
 
@@ -242,9 +252,9 @@ function ModuleCards({role}){
   const c=role.cards;
   return React.createElement('section',{className:'module-grid'+(c.qirLine?' is-4':'')},
     React.createElement(ModuleCard,{title:'BA & SLA Master',desc:'โครงสร้างสถาปัตยกรรมธุรกิจและตัวชี้วัด SLA ต้นแบบขององค์กร',img:'/assets/SLAandBAmaster.png',href:role.key==='admin'?'/ba-sla-master':'/ba-structure-view',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.ba}),
-    React.createElement(ModuleCard,{title:'SLA Tracking & รายงานผล',desc:['กรอกผล ตรวจสอบ',React.createElement('br',{key:'br'}),'และติดตามสถานะ SLA'],img:'/assets/SLAtracking.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.sla}),
-    React.createElement(ModuleCard,{title:'Learning Form & QIR',desc:'ทบทวน SLA ที่ไม่ผ่านเกณฑ์และวางแผนปรับปรุงกระบวนการ',img:'/assets/Learningform.webp',...c.learning}),
-    c.qirLine&&React.createElement(ModuleCard,{title:'QIR สายงาน',desc:'คัดเลือกและจัดกลุ่มกิจกรรม QIR ตามประเด็นพิจารณาสำหรับสายงาน',img:'/assets/qir-line-building.png',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},...c.qirLine})
+    React.createElement(ModuleCard,{title:'SLA Tracking & รายงานผล SLA',desc:['- กรอกผล ตรวจสอบและติดตามสถานะ SLA',React.createElement('br',{key:'br1'}),'- รายงานผล SLA (รายเดือน)',React.createElement('br',{key:'br2'}),'- SLA Dashboard'],img:'/assets/SLAtracking.webp',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},descStyle:{color:'var(--pea-base-black)'},...c.sla}),
+    React.createElement(ModuleCard,{title:'Learning Form & กิจกรรม QIR',desc:'ทบทวน SLA ที่ไม่ผ่านเกณฑ์และวางแผนปรับปรุงกระบวนการ',img:'/assets/Learningform.webp',...c.learning}),
+    c.qirLine&&React.createElement(ModuleCard,{title:'คัดเลือก QIR สายงาน & รายงานผล QIR',desc:['ภาพรวมคัดเลือก QIR สำหรับสายงาน',React.createElement('br',{key:'br'}),'และรายงานความคืบหน้า QIR รายไตรมาส'],img:'/assets/qir-line-building.png',cardStyle:{backgroundColor:'var(--pea-base-white)'},titleStyle:{color:'var(--pea-base-black)'},...c.qirLine})
   );
 }
 
@@ -331,6 +341,8 @@ function App(){
       React.createElement(Hero,{role}),
       React.createElement('div',{className:'layout'},
         React.createElement('div',{className:'layout-main'},
+          React.createElement(SectionHeader,{title:'งานที่ต้องรายงาน'}),
+          React.createElement(ReportTasksRow,null),
           React.createElement(SectionHeader,{title:'ฟีเจอร์หลัก'}),
           React.createElement(ModuleCards,{role}),
           React.createElement(FeatureRow,null),

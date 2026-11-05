@@ -223,7 +223,10 @@ function QqForm({processes,currentQuarter}){
 }
 
 function App(){
-  const [tab,setTab]=React.useState('ov');
+  const [tab,setTab]=React.useState(()=>{
+    const q=new URLSearchParams(window.location.search).get('tab');
+    return q==='fm'?'fm':'ov';
+  });
   const processes=window.qqBuildProcesses();
   const quarters=window.QIR_QUARTERLY_QUARTERS;
   const currentQuarter=quarters.find(q=>q.isCurrent)||quarters[quarters.length-1];
