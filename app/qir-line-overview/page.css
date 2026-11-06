@@ -23,6 +23,19 @@ button{font-family:inherit}
 .lfscope-toggle-opt:hover:not(.is-active){background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
 .lfscope-toggle-opt.is-active{background:var(--pea-bg-brand-solid);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 
+/* รายละเอียดผลการดำเนินงานรายไตรมาส (collapsible log, above the quarterly KPI cards) */
+.qlo-log{overflow:hidden}
+.qlo-log-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;cursor:pointer;padding:16px 20px;text-align:left}
+.qlo-log-head .icon{background-color:var(--pea-text-tertiary)}
+.qlo-log-head-left{display:flex;align-items:center;gap:10px}
+.qlo-log-title{font-size:14px;font-weight:700;color:var(--pea-text-primary)}
+.qlo-log-body{padding:0 20px 20px;border-top:1px solid var(--pea-border-tertiary)}
+.qlo-log-list{margin:14px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:12px}
+.qlo-log-item{font-size:13.5px;line-height:1.6;color:var(--pea-text-secondary)}
+.qlo-log-sublist{margin:8px 0 0;padding-left:16px;list-style:none;display:flex;flex-direction:column;gap:8px}
+.qlo-log-subitem{position:relative;padding-left:14px}
+.qlo-log-subitem::before{content:'-';position:absolute;left:0;color:var(--pea-text-tertiary)}
+
 .lsection{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
 .lsection-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .lsection-head h3{font-size:16px;font-weight:700}

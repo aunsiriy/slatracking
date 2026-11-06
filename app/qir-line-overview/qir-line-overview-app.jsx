@@ -42,6 +42,48 @@ function QloTabs({active,setActive,pendingCount,showReporting}){
   );
 }
 
+// Cumulative narrative log of what's been done on the line's QIR this fiscal year,
+// one entry per quarter it was updated in (some quarters cover several dated actions).
+// Shown collapsed by default above the KPI cards on the "รายงานรายไตรมาส" tab — a
+// quick narrative overview distinct from the per-process quarterly grid below it.
+const QLO_QUARTERLY_LOG=[
+  {quarter:'Q1',lines:[
+    'ศึกษาข้อมูลกระบวนการและปัญหาที่เกิดขึ้น เช่น ข้อร้องเรียนจากลูกค้าด้านการให้บริการ ปี 2567-2568, โครงสร้างการบริหารงานของ กฟภ. และ Kick off ประชุมกระบวนการ C7.3 กระบวนการสร้างความสัมพันธ์กับลูกค้า (Q1)'
+  ]},
+  {quarter:'Q2',lines:[
+    '1. ประชุมหารือหน่วยงานที่เกี่ยวข้อง กสล. และ กสธ. เพื่อศึกษากระบวนการทำงานและรวบรวมข้อมูลในการจัดทำร่าง Workflow กระบวนการ C7.3 วันพุธที่ 8 เมษายน 2569',
+    '2. กนอ. จัดทำร่าง Workflow กระบวนการ C7.3',
+    '3. ประชุมหารือเพื่อพิจารณาจัดทำร่างกระบวนการ C7.3 กระบวนการจัดการข้อร้องเรียนลูกค้า วันพฤหัสบดีที่ 23 เมษายน 2569',
+    '4. กนอ. มีหนังสือแจ้งเวียนให้ผู้เกี่ยวข้องกับกระบวนการ C7.3 พิจารณาตรวจสอบ Workflow ภายในวันศุกร์ที่ 22 พฤษภาคม 2569 (Q2)'
+  ]},
+  {quarter:'Q3',lines:[
+    'จัดทำบันทึกขออนุเคราะห์พิจารณาตรวจสอบผังการไหลของกระบวนการ C7.3 กระบวนการสร้างความสัมพันธ์กับลูกค้า ตามหนังสือเลขที่ กนอ.(พร.(ภ))242/2569 ลงวันที่ 14 พฤษภาคม 2569 โดยอยู่ระหว่างรวบรวมข้อมูลเพื่อกำหนด Painpoint และประชุมหารือกับหน่วยงานที่เกี่ยวข้อง (Q3)'
+  ]}
+];
+
+function QloQuarterlyLogSection({year}){
+  const [open,setOpen]=React.useState(false);
+  return React.createElement('div',{className:'card qlo-log'},
+    React.createElement('button',{type:'button',className:'qlo-log-head',onClick:()=>setOpen(!open)},
+      React.createElement('span',{className:'qlo-log-head-left'},
+        React.createElement(Icon,{name:'file-text',size:18}),
+        React.createElement('span',{className:'qlo-log-title'},'รายละเอียดผลการดำเนินงาน รายไตรมาส ปี '+year)
+      ),
+      React.createElement(Icon,{name:open?'chevron-down':'chevron-right',size:18})
+    ),
+    open&&React.createElement('div',{className:'qlo-log-body'},
+      React.createElement('ul',{className:'qlo-log-list'},
+        QLO_QUARTERLY_LOG.map((entry,i)=>React.createElement('li',{key:i,className:'qlo-log-item'},
+          React.createElement('span',null,entry.lines[0]),
+          entry.lines.length>1&&React.createElement('ul',{className:'qlo-log-sublist'},
+            entry.lines.slice(1).map((ln,j)=>React.createElement('li',{key:j,className:'qlo-log-subitem'},ln))
+          )
+        ))
+      )
+    )
+  );
+}
+
 function SelectionKpiCards({rows}){
   const total=rows.length;
   const latestYear=total?rows.map(r=>Number(r.year)).sort((a,b)=>b-a)[0]:null;
@@ -216,6 +258,7 @@ function App(){
             )
       )
     ):React.createElement('main',{className:'lfcontent'},
+      React.createElement(QloQuarterlyLogSection,{year:Number(window.QIR_QUARTERLY_YEAR)+1}),
       React.createElement(ReportingKpiCards,{processes,currentQuarter,pendingCount}),
       React.createElement(window.QqOverview,{processes,quarters,onOpenCell:(process,quarter,mode)=>setModal({process,quarter,mode})})
     ),
