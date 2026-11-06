@@ -7,7 +7,22 @@ const QLO_ROWS=[
   {year:'2567',recorder:'ธงชัย มีนวล',picked:5,lineAdded:1,date:'28/09/2567',status:'submitted'},
   {year:'2566',recorder:'ธงชัย มีนวล',picked:4,lineAdded:0,date:'01/10/2566',status:'submitted'}
 ];
-function KpiCards({rows}){
+
+// Tabs for the two distinct jobs this page covers: picking the year's QIR proposals
+// (an annual, occasional task) vs. reporting progress on them every quarter (the
+// recurring one). A small badge surfaces how many processes still need this quarter's
+// report, mirroring the nav/tab badges in the reference mockup.
+function QloTabs({active,setActive,pendingCount}){
+  const tabs=[{key:'sel',label:'คัดเลือกประจำปี',icon:'calendar'},{key:'rep',label:'รายงานรายไตรมาส',icon:'trending-up'}];
+  return React.createElement('nav',{className:'qlo-tabs'},
+    tabs.map(t=>React.createElement('button',{key:t.key,type:'button',className:'qlo-tab'+(active===t.key?' is-active':''),onClick:()=>setActive(t.key)},
+      React.createElement(Icon,{name:t.icon,size:16}),t.label,
+      t.key==='rep'&&pendingCount>0&&React.createElement('span',{className:'qlo-tab-badge'},pendingCount)
+    ))
+  );
+}
+
+function SelectionKpiCards({rows}){
   const total=rows.length;
   const latestYear=total?rows.map(r=>Number(r.year)).sort((a,b)=>b-a)[0]:null;
   const cards=[
@@ -15,6 +30,29 @@ function KpiCards({rows}){
     {icon:'check-circle',label:'ปีล่าสุดที่ส่ง',value:latestYear?'ปี '+latestYear:'—',color:'success'}
   ];
   return React.createElement('div',{className:'qlo-kpi-grid'},
+    cards.map((c,i)=>React.createElement('div',{key:i,className:'card qlo-kpi-card'},
+      React.createElement('span',{className:'qlo-kpi-icon qlo-kpi-icon--'+c.color},React.createElement(Icon,{name:c.icon,size:18})),
+      React.createElement('div',null,
+        React.createElement('div',{className:'qlo-kpi-value'},c.value),
+        React.createElement('div',{className:'qlo-kpi-label'},c.label)
+      )
+    ))
+  );
+}
+
+// Same card shell, but speaking the quarterly-reporting tab's own language (which
+// quarter, how many still unreported, how many already certified) instead of years.
+function ReportingKpiCards({processes,currentQuarter,pendingCount}){
+  const approved=processes.filter(p=>{
+    const rec=window.QQ_STORE.get(window.QIR_QUARTERLY_YEAR,p.key,currentQuarter.key);
+    return rec&&rec.status==='submitted'&&rec.approvedBy;
+  }).length;
+  const cards=[
+    {icon:'calendar',label:'รอบที่ต้องรายงาน',value:currentQuarter.label,color:'brand'},
+    {icon:'alert-triangle',label:'ยังไม่รายงาน',value:pendingCount+' กระบวนการ',color:pendingCount>0?'warning':'success'},
+    {icon:'check-circle',label:'รับรองแล้ว',value:approved+' จาก '+processes.length,color:'success'}
+  ];
+  return React.createElement('div',{className:'qlo-kpi-grid qlo-kpi-grid--3'},
     cards.map((c,i)=>React.createElement('div',{key:i,className:'card qlo-kpi-card'},
       React.createElement('span',{className:'qlo-kpi-icon qlo-kpi-icon--'+c.color},React.createElement(Icon,{name:c.icon,size:18})),
       React.createElement('div',null,
@@ -43,6 +81,22 @@ function App(){
   const rows=QLO_ROWS.map(mergeRow).filter(r=>r.status==='submitted');
   const [yearFilter,setYearFilter]=React.useState('all');
   const [search,setSearch]=React.useState('');
+
+  const processes=window.qqBuildProcesses();
+  const quarters=window.QIR_QUARTERLY_QUARTERS;
+  const currentQuarter=quarters.find(q=>q.isCurrent)||quarters[quarters.length-1];
+  const pendingCount=processes.filter(p=>{
+    const rec=window.QQ_STORE.get(window.QIR_QUARTERLY_YEAR,p.key,currentQuarter.key);
+    return !rec||rec.status!=='submitted';
+  }).length;
+
+  // Default tab follows whether there's a report due, not whatever tab was open last —
+  // someone who just finished picking proposals in October shouldn't land back on the
+  // selection tab in January when reports are waiting, and vice versa.
+  const [tab,setTab]=React.useState(()=>pendingCount>0?'rep':'sel');
+  const [modal,setModal]=React.useState(null);
+  const [toast,setToast]=React.useState(null);
+
   const yearOptions=rows.map(r=>r.year);
   const q=search.trim().toLowerCase();
   const filtered=rows
@@ -57,20 +111,23 @@ function App(){
     const cur=QLO_ROWS.map(mergeRow).find(r=>r.status!=='submitted');
     window.location.href='/qir-line-form?year='+(cur?cur.year:QLO_ROWS[0].year);
   }
+
   return React.createElement(React.Fragment,null,
     React.createElement(window.PageHeader,{maxWidth:'1080px',
       backHref:'/',
       avatarText:'สด',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR สายงาน'}],
       title:'ภาพรวม QIR สายงาน',
-      actions:React.createElement(React.Fragment,null,
-        React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'trending-up',size:16}),onClick:()=>{window.location.href='/qir-quarterly-report';}},'รายงานผล QIR รายไตรมาส'),
-        React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:goSelect},'คัดเลือกประจำปี')
-      ),
-      subtitle:'ติดตามสถานะการคัดเลือก QIR ระดับสายงานของ '+QLO_LINE_NAME+' ในแต่ละรอบปี'
+      actions:tab==='sel'
+        ?React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:goSelect},'คัดเลือกประจำปี')
+        :React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16}),onClick:()=>window.qqExportExcel(processes,quarters)},'Export Excel'),
+      subtitle:tab==='sel'
+        ?'ติดตามสถานะการคัดเลือก QIR ระดับสายงานของ '+QLO_LINE_NAME+' ในแต่ละรอบปี'
+        :'ติดตามความคืบหน้ารายไตรมาสของ QIR ที่ '+QLO_LINE_NAME+' คัดเลือกไว้ · คลิกที่การ์ดไตรมาสเพื่อดูรายละเอียดหรือรายงานผล',
+      tabs:React.createElement(QloTabs,{active:tab,setActive:setTab,pendingCount})
     }),
-    React.createElement('main',{className:'lfcontent'},
-      React.createElement(KpiCards,{rows}),
+    tab==='sel'?React.createElement('main',{className:'lfcontent'},
+      React.createElement(SelectionKpiCards,{rows}),
       React.createElement('div',{className:'card lsection'},
         React.createElement('div',{className:'lsection-head'},
           React.createElement('div',null,
@@ -121,7 +178,18 @@ function App(){
               ))
             )
       )
-    )
+    ):React.createElement('main',{className:'lfcontent'},
+      React.createElement(ReportingKpiCards,{processes,currentQuarter,pendingCount}),
+      React.createElement(window.QqOverview,{processes,quarters,onOpenCell:(process,quarter,mode)=>setModal({process,quarter,mode})})
+    ),
+    modal&&React.createElement(window.QqDetailModal,{process:modal.process,quarter:modal.quarter,mode:modal.mode,
+      onClose:()=>setModal(null),
+      onSaved:status=>{
+        setModal(null);
+        setToast(status==='submitted'?'ยืนยันการรายงานเรียบร้อยแล้ว':'บันทึกร่างเรียบร้อยแล้ว');
+      }
+    }),
+    toast&&React.createElement('div',{className:'ltoast'},React.createElement(Icon,{name:'check-circle',size:16}),toast)
   );
 }
 

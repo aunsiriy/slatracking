@@ -60,7 +60,7 @@ function FeatureCard({icon,color,title,desc,cta,href}){
 function ReportTasksRow(){
   const items=[
     {icon:'file-text',color:'brand',title:'รายงานผล SLA รายเดือน',desc:'กรอกผล ตรวจสอบ และติดตามสถานะ SLA ประจำเดือนของหน่วยงาน',cta:'ไปที่รายงาน SLA',href:'/sla-report-form'},
-    {icon:'bar-chart-01',color:'brand',title:'รายงานผล QIR รายไตรมาส',desc:'รายงานความคืบหน้ากิจกรรม QIR ที่คัดเลือกไว้ เป็นรายไตรมาส',cta:'ไปที่รายงาน QIR',href:'/qir-quarterly-report?tab=fm'}
+    {icon:'bar-chart-01',color:'brand',title:'รายงานผล QIR รายไตรมาส',desc:'รายงานความคืบหน้ากิจกรรม QIR ที่คัดเลือกไว้ เป็นรายไตรมาส',cta:'ไปที่รายงาน QIR',href:'/qir-line-overview'}
   ];
   return React.createElement('div',{className:'feature-row'},
     items.map((f,i)=>React.createElement(FeatureCard,{key:i,...f}))

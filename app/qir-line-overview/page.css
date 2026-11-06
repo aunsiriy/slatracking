@@ -7,18 +7,29 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
+.lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px;display:flex;flex-direction:column;gap:20px}
+
+/* tabs (header) */
+.qlo-tabs{display:flex;gap:2px;overflow-x:auto}
+.qlo-tab{display:flex;align-items:center;gap:8px;border:1px solid transparent;border-bottom:none;background:none;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--pea-text-tertiary);padding:12px 18px;border-radius:8px 8px 0 0;white-space:nowrap;margin-bottom:-1px;transition:background .12s,color .12s}
+.qlo-tab .icon{background-color:currentColor}
+.qlo-tab:hover:not(.is-active){background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
+.qlo-tab.is-active{color:var(--pea-fg-brand-primary);background:var(--pea-bg-brand-primary);border-color:var(--pea-border-tertiary);border-bottom:1px solid #fff}
+.qlo-tab.is-active .icon{background-color:var(--pea-fg-brand-primary)}
+.qlo-tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--pea-fg-error-primary);color:#fff;font-size:11px;font-weight:700}
 
 .lsection{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
 .lsection-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .lsection-head h3{font-size:16px;font-weight:700}
 .lsection-hint{font-size:12.5px;color:var(--pea-text-tertiary);margin:4px 0 0}
 
-.qlo-kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(220px,320px));gap:14px;margin-bottom:20px}
+.qlo-kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(220px,320px));gap:14px}
+.qlo-kpi-grid--3{grid-template-columns:repeat(3,minmax(200px,1fr))}
 .qlo-kpi-card{padding:16px 18px;display:flex;align-items:center;gap:14px}
 .qlo-kpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .qlo-kpi-icon--brand{background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary)}
 .qlo-kpi-icon--success{background:var(--pea-bg-success-primary);color:var(--pea-fg-success-primary)}
+.qlo-kpi-icon--warning{background:var(--pea-bg-warning-primary,#FEF0C7);color:var(--pea-fg-warning-primary)}
 .qlo-kpi-value{font-size:22px;font-weight:700;font-family:var(--pea-font-family-display);line-height:1.1}
 .qlo-kpi-label{font-size:12.5px;color:var(--pea-text-tertiary);margin-top:2px}
 
@@ -30,7 +41,7 @@ button{font-family:inherit}
 .qlo-row:hover{background:var(--pea-bg-secondary)}
 .qlo-row-action{text-align:right;white-space:nowrap}
 
-@media (max-width:820px){.qlo-kpi-grid{grid-template-columns:1fr}.ltable{display:block;overflow-x:auto}}
+@media (max-width:820px){.qlo-kpi-grid,.qlo-kpi-grid--3{grid-template-columns:1fr}.ltable{display:block;overflow-x:auto}}
 
 .qlo-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .qlo-search{display:flex;align-items:center;gap:8px;flex:1;min-width:220px;max-width:360px;height:40px;padding:0 12px;border:1px solid var(--pea-border-secondary);border-radius:8px;background:#fff;color:var(--pea-text-tertiary)}
@@ -42,3 +53,83 @@ button{font-family:inherit}
 .qlo-empty-sub{font-size:12.5px;margin-bottom:8px}
 
 .qlo-edited{font-size:11.5px;color:var(--pea-text-tertiary);margin-top:2px}
+
+/* รายงานรายไตรมาส tab — overview grid */
+.qq-ov-card{padding:18px 20px;overflow-x:auto}
+.qq-ov-head{display:grid;grid-template-columns:260px repeat(4,1fr);gap:10px;padding-bottom:10px;border-bottom:1px solid var(--pea-border-tertiary);margin-bottom:12px;min-width:860px}
+.qq-ov-head-name{font-size:11.5px;font-weight:700;color:var(--pea-text-tertiary);text-transform:uppercase;letter-spacing:.02em}
+.qq-ov-head-q{font-size:11.5px;font-weight:700;color:var(--pea-text-tertiary);text-transform:uppercase;letter-spacing:.02em;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
+.qq-ov-head-current{background:var(--pea-bg-brand-solid);color:#fff;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:999px;text-transform:none}
+.qq-ov-row{display:grid;grid-template-columns:260px repeat(4,1fr);gap:10px;padding:12px 0;border-bottom:1px solid var(--pea-border-tertiary);min-width:860px}
+.qq-ov-row:last-child{border-bottom:none}
+.qq-ov-info{padding-top:2px}
+.qq-ov-group{font-size:11px;font-weight:700;color:var(--pea-fg-brand-primary);text-transform:uppercase;letter-spacing:.02em}
+.qq-ov-title{font-size:13px;font-weight:600;color:var(--pea-text-primary);margin-top:2px;line-height:1.4}
+.qq-empty{padding:32px 0;text-align:center;color:var(--pea-text-tertiary);font-size:13.5px}
+
+.qq-cell{border:1px solid var(--pea-border-secondary);border-radius:10px;padding:9px 10px;background:var(--pea-bg-secondary-subtle,#fafafa);display:flex;flex-direction:column;gap:6px;min-height:96px}
+.qq-cell--future{align-items:center;justify-content:center;flex-direction:row;gap:6px;border-style:dashed;color:var(--pea-text-tertiary);font-size:12px}
+button.qq-cell{width:100%;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:box-shadow .15s ease,border-color .15s ease}
+button.qq-cell:hover{border-color:var(--pea-border-brand);box-shadow:0 4px 14px rgba(16,24,40,.08)}
+button.qq-cell:focus-visible{outline:2px solid var(--pea-border-brand);outline-offset:2px}
+.qq-cell--todo{align-items:flex-start;justify-content:center;border-style:dashed;border-color:var(--pea-border-brand);background:var(--pea-bg-brand-primary);color:var(--pea-fg-brand-primary)}
+.qq-cell-todo-text{font-size:12.5px;font-weight:700}
+.qq-cell-todo-cta{font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:4px}
+.qq-cell-head{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.qq-cell-pct{font-size:13px;font-weight:700;color:var(--pea-text-primary)}
+.qq-progress{height:4px;border-radius:2px;background:var(--pea-bg-tertiary);overflow:hidden}
+.qq-progress-bar{height:100%;background:var(--pea-bg-brand-solid);border-radius:2px}
+.qq-cell-person{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--pea-text-tertiary);line-height:1.3}
+.qq-cell-note{font-size:11px;color:var(--pea-fg-warning-primary)}
+
+/* รายงานรายไตรมาส tab — detail modal (opened from a quarter cell) */
+.qq-modal-overlay{position:fixed;inset:0;background:rgba(10,13,18,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:24px}
+.qq-modal-card{background:var(--pea-bg-secondary,#fafafa);border-radius:16px;width:min(820px,92vw);max-height:calc(100vh - 48px);overflow-y:auto;box-shadow:0 20px 48px rgba(0,0,0,.2)}
+.qq-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--pea-border-tertiary);position:sticky;top:0;background:#fff;z-index:1}
+.qq-modal-quarter{font-size:13.5px;font-weight:700;color:var(--pea-text-primary)}
+.qq-modal-close{border:none;background:none;color:var(--pea-text-tertiary);cursor:pointer;padding:6px;display:flex;border-radius:8px}
+.qq-modal-close:hover{background:var(--pea-bg-secondary-hover)}
+.qq-modal-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.ba-tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--pea-bg-tertiary);color:var(--pea-text-secondary)}
+.report-field-label{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--pea-text-tertiary);margin-bottom:4px}
+
+.qq-form-card{padding:22px 24px;display:flex;flex-direction:column;gap:20px}
+.qq-form-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.qq-form-title{font-size:18px;font-weight:700;margin-top:6px}
+
+.qq-table-wrap{border:1px solid var(--pea-border-secondary);border-radius:10px;overflow:hidden}
+.qq-table th:nth-child(2),.qq-table th:nth-child(3),.qq-table th:nth-child(4),.qq-table th:nth-child(5){text-align:center}
+.qq-weight-cell{text-align:center;color:var(--pea-text-secondary)}
+.qq-value-cell{width:120px}
+.qq-value-cell input{text-align:center}
+.qq-locked{display:flex;align-items:center;justify-content:center;gap:5px;font-size:13px;color:var(--pea-text-tertiary)}
+.qq-readonly-value{font-size:13.5px;font-weight:600;color:var(--pea-text-primary)}
+.qq-table-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--pea-bg-secondary-subtle,#fafafa);border-top:1px solid var(--pea-border-tertiary);font-size:13px;color:var(--pea-text-secondary)}
+.qq-table-total{font-weight:700;color:var(--pea-text-primary)}
+
+.qq-eff-box{border:1px solid var(--pea-border-warning,#FEDF89);border-radius:10px;padding:14px 16px;background:var(--pea-bg-warning-primary,#FEF0C7)}
+.qq-eff-head{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--pea-fg-warning-primary,#93370D);margin-bottom:10px}
+.qq-eff-hint{font-size:11.5px;font-weight:500;color:var(--pea-fg-warning-primary,#93370D);opacity:.8}
+.qq-eff-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.qq-eff-error{font-size:12px;color:var(--pea-fg-error-primary);margin-top:8px}
+
+.qq-static-field{min-width:0}
+.qq-static-value{font-size:13.5px;color:var(--pea-text-primary);line-height:1.5;white-space:pre-wrap}
+
+.qq-people-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qq-people-card{border:1px solid var(--pea-border-secondary);border-radius:10px;padding:12px 14px}
+.qq-people-card--pending{border-style:dashed}
+.qq-people-name{font-size:13.5px;font-weight:600;color:var(--pea-text-primary)}
+.qq-people-note{font-size:11px;color:var(--pea-text-tertiary);margin-top:3px}
+.qq-people-note--warn{color:var(--pea-fg-warning-primary)}
+
+.qq-form-actions{display:flex;justify-content:flex-end;gap:10px}
+
+.ltoast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--pea-text-primary);color:#fff;padding:12px 20px;border-radius:10px;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;z-index:200;box-shadow:0 12px 28px rgba(0,0,0,.25)}
+.ltoast .icon{color:var(--pea-fg-success-primary)}
+
+@media (max-width:860px){
+  .qq-eff-grid{grid-template-columns:1fr}
+  .qq-people-grid{grid-template-columns:1fr}
+}

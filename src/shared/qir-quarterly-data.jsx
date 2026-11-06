@@ -7,6 +7,8 @@ import * as XLSX from 'xlsx';
 // lives in window.QLF_STORE / window.QLF_DEPT_SUBMISSIONS — this file only adds the
 // ONGOING quarterly progress layer on top of that already-confirmed selection, plus
 // its own localStorage-backed draft/submit store (same pattern as qlf-store.jsx).
+// Shared (not page-local) because both /qir-line-overview's "รายงานรายไตรมาส" tab and
+// its detail modal need this data layer.
 
 const QIR_QUARTERLY_YEAR='2568'; // the most recently fully-submitted selection to track
 const QIR_QUARTERLY_QUARTERS=[

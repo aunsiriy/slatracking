@@ -84,7 +84,8 @@ function App(){
       systemSubtitle:'ภาพรวมการรายงานผล SLA',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวมการรายงานผล SLA'}],
       title:'ภาพรวมการรายงานผล SLA',
-      subtitle:'สรุปผลการดำเนินงาน SLA ของหน่วยงานคุณ กดดูหน่วยงานอื่นเพื่อดูภาพรวมทั้งองค์กร'
+      subtitle:'สรุปผลการดำเนินงาน SLA ของหน่วยงานคุณ กดดูหน่วยงานอื่นเพื่อดูภาพรวมทั้งองค์กร',
+      actions:React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'file-text',size:16}),onClick:()=>{window.location.href='/sla-report-form';}},'รายงานผล SLA')
     }),
     React.createElement('main',{className:'ocontent'},
       React.createElement(KpiCards,{data,showAll}),
