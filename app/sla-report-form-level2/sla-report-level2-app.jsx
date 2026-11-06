@@ -63,15 +63,20 @@ function PeriodBox({period,isSelected,onSelect,summary}){
   );
 }
 
-function PeriodBar({selectedKey,onSelect,itemsForPeriodKey}){
+function PeriodBar({selectedKey,onSelect,itemsForPeriodKey,activeItem,onOpenHistory}){
   const periods=window.SLA_REPORT_L2_PERIODS_MONTHLY;
   return React.createElement('div',{className:'period-bar'},
     React.createElement('div',{className:'period-bar-head'},
       React.createElement('span',{className:'period-bar-title'},'รอบรายงาน · ปี 2569'),
-      React.createElement('div',{className:'period-legend'},
-        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-success'}),'ผ่าน SLA ครบทุกรายการ'),
-        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-error'}),'มีรายการไม่ผ่าน SLA'),
-        React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-gray'}),'ยังไม่ถึงรอบ')
+      React.createElement('div',{className:'period-bar-head-right'},
+        React.createElement('div',{className:'period-legend'},
+          React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-success'}),'ผ่าน SLA ครบทุกรายการ'),
+          React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-error'}),'มีรายการไม่ผ่าน SLA'),
+          React.createElement('span',{className:'period-legend-item'},React.createElement('i',{className:'dot dot-gray'}),'ยังไม่ถึงรอบ')
+        ),
+        activeItem&&React.createElement('button',{type:'button',className:'period-history-btn',onClick:onOpenHistory},
+          React.createElement(Icon,{name:'clock',size:14}),'ดูประวัติการรายงาน'
+        )
       )
     ),
     React.createElement('div',{className:'period-grid'},
@@ -234,32 +239,34 @@ function StatusMetaRow({item}){
   );
 }
 
-function HistorySection({item}){
-  const [open,setOpen]=React.useState(false);
+function HistoryModal({item,onClose}){
   const rows=item.history||[];
-  if(rows.length===0)return null;
-  return React.createElement('div',{className:'history-section'},
-    React.createElement('button',{type:'button',className:'history-toggle',onClick:()=>setOpen(v=>!v)},
-      React.createElement(Icon,{name:'chevron-down',size:14,className:'history-chevron'+(open?' is-open':'')}),
-      'ดูประวัติการรายงาน ('+rows.length+' รอบ)'
-    ),
-    open&&React.createElement('div',{className:'history-table-wrap'},
-      React.createElement('table',{className:'history-table'},
-        React.createElement('thead',null,React.createElement('tr',null,
-          ['รอบ','ผล','เป้า','ผลลัพธ์','สถานะรายงาน','ผู้บันทึก'].map(h=>React.createElement('th',{key:h},h))
-        )),
-        React.createElement('tbody',null,
-          rows.map((r,i)=>React.createElement('tr',{key:i},
-            React.createElement('td',null,r.period),
-            React.createElement('td',null,r.result+'%'),
-            React.createElement('td',null,r.target+'%'),
-            React.createElement('td',null,React.createElement(Badge,{label:r.outcome==='pass'?'ผ่าน':'ไม่ผ่าน',type:'pill-color',color:r.outcome==='pass'?'success':'error',size:'sm'})),
-            React.createElement('td',null,React.createElement(Badge,{label:'รายงานแล้ว',type:'pill-color',color:'blue',size:'sm'})),
-            React.createElement('td',null,r.recorder)
-          ))
+  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
+    React.createElement('div',{className:'modal-card history-modal',onClick:e=>e.stopPropagation()},
+      React.createElement('div',{className:'modal-head'},
+        React.createElement('h3',null,'ประวัติการรายงาน · '+item.level2+' · '+item.slaName),
+        React.createElement('button',{className:'lfa-modal-close',onClick:onClose},React.createElement(Icon,{name:'x',size:18}))
+      ),
+      rows.length===0?
+        React.createElement('div',{className:'history-log-empty'},'ยังไม่มีประวัติการรายงานของรายการนี้'):
+        React.createElement('div',{className:'history-table-wrap'},
+          React.createElement('table',{className:'history-table'},
+            React.createElement('thead',null,React.createElement('tr',null,
+              ['รอบ','ผล','เป้า','ผลลัพธ์','สถานะรายงาน','ผู้บันทึก'].map(h=>React.createElement('th',{key:h},h))
+            )),
+            React.createElement('tbody',null,
+              rows.map((r,i)=>React.createElement('tr',{key:i},
+                React.createElement('td',null,r.period),
+                React.createElement('td',null,r.result+'%'),
+                React.createElement('td',null,r.target+'%'),
+                React.createElement('td',null,React.createElement(Badge,{label:r.outcome==='pass'?'ผ่าน':'ไม่ผ่าน',type:'pill-color',color:r.outcome==='pass'?'success':'error',size:'sm'})),
+                React.createElement('td',null,React.createElement(Badge,{label:'รายงานแล้ว',type:'pill-color',color:'blue',size:'sm'})),
+                React.createElement('td',null,r.recorder)
+              ))
+            )
+          )
         )
       )
-    )
   );
 }
 
@@ -406,7 +413,6 @@ function ReportPanel({item,onChange,onSaveEdit,pendingIndex,pendingTotal,allPend
             React.createElement('button',{type:'button',className:'panel-log-link',onClick:()=>setLogOpen(true)},React.createElement(Icon,{name:'clock',size:14}),'ประวัติการแก้ไข')
           )
         ),
-      React.createElement(HistorySection,{item}),
       logOpen&&React.createElement(HistoryLogModal,{item,onClose:()=>setLogOpen(false)})
     );
   }
@@ -428,8 +434,7 @@ function ReportPanel({item,onChange,onSaveEdit,pendingIndex,pendingTotal,allPend
         React.createElement(Button,{variant:'secondary',size:'md',isDisabled:pendingIndex===0,leadingIcon:React.createElement(Icon,{name:'chevron-left',size:16}),onClick:onPrev},'ก่อนหน้า'),
         React.createElement(Button,{variant:'primary',size:'md',trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:handleNext},allPendingComplete?'ตรวจทานและส่ง':'ถัดไป')
       )
-    ),
-    React.createElement(HistorySection,{item})
+    )
   );
 }
 
@@ -444,6 +449,7 @@ function PanelEmpty(){
 function App(){
   const [items,setItems]=React.useState(window.SLA_REPORT_L2_ITEMS);
   const [guideOpen,setGuideOpen]=React.useState(false);
+  const [historyOpen,setHistoryOpen]=React.useState(false);
   const p=window.SLA_REPORT_L2_PERIOD;
   const periods=window.SLA_REPORT_L2_PERIODS_MONTHLY;
   const currentPeriodKey=(periods.find(pr=>pr.isCurrent)||periods[0]).key;
@@ -490,6 +496,7 @@ function App(){
   });
 
   function selectPeriod(key){
+    setHistoryOpen(false);
     setSelectedPeriodKeyRaw(key);
     if(key===currentPeriodKey){
       setActiveId(livePendingItems[0]?livePendingItems[0].id:(items[0]?items[0].id:null));
@@ -574,7 +581,7 @@ function App(){
       )
     }),
     React.createElement('main',{className:'rcontent'},
-      React.createElement(PeriodBar,{selectedKey:selectedPeriodKey,onSelect:selectPeriod,itemsForPeriodKey}),
+      React.createElement(PeriodBar,{selectedKey:selectedPeriodKey,onSelect:selectPeriod,itemsForPeriodKey,activeItem,onOpenHistory:()=>setHistoryOpen(true)}),
       React.createElement('div',{className:'report-layout'},
         React.createElement('div',{className:'sidebar-col'},
           React.createElement(PendingList,{items:pendingItems,activeId,onSelect:setActiveId}),
@@ -618,7 +625,8 @@ function App(){
           React.createElement(Button,{variant:'primary',size:'md',isDisabled:!canSubmitAll,trailingIcon:React.createElement(Icon,{name:'arrow-right',size:16}),onClick:submitAll},'ยืนยันส่งทั้งหมด')
         )
       ),
-    guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)})
+    guideOpen&&React.createElement(FormGuideModal,{onClose:()=>setGuideOpen(false)}),
+    historyOpen&&activeItem&&React.createElement(HistoryModal,{item:activeItem,onClose:()=>setHistoryOpen(false)})
   );
 }
 
