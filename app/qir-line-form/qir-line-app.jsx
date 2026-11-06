@@ -364,7 +364,7 @@ function App(){
   );
   const headerActions=viewMode&&React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'edit',size:16}),onClick:()=>{setEditing(true);setStep(1);}},'แก้ไข');
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1080px',
+    React.createElement(window.PageHeader,{
       backHref:'/qir-line-overview',
       avatarText:'สด',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR สายงาน',href:'/qir-line-overview'},{label:viewMode?'รายละเอียด QIR สายงาน':(isEdit?'แก้ไข QIR สายงาน':'คัดเลือก QIR สายงาน')}],

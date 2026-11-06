@@ -17,7 +17,7 @@
 /* Content rows below the navbar: the row itself is full-bleed (background +
    optional divider), its actual content sits in .ph-inner, which is width-
    matched to the page's own body content via an inline max-width style. */
-.ph-inner{max-width:1180px;margin:0 auto;padding:0 24px;box-sizing:border-box;width:100%}
+.ph-inner{max-width:var(--app-content-max-width);margin:0 auto;padding:0 24px;box-sizing:border-box;width:100%}
 
 .ph-breadcrumb{padding:12px 0;font-size:13px;color:var(--pea-text-tertiary);background:#fff}
 .ph-breadcrumb .ph-inner{display:flex;align-items:center;gap:8px}

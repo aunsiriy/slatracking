@@ -6,7 +6,7 @@ button,select,input{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.pcontent{max-width:1400px;margin:0 auto;padding:28px 24px 80px;display:flex;flex-direction:column;gap:18px}
+.pcontent{max-width:var(--app-content-max-width);margin:0 auto;padding:28px 24px 80px;display:flex;flex-direction:column;gap:18px}
 
 .psearch-card{padding:20px 22px;display:flex;flex-direction:column;gap:10px}
 .psearch-label{font-size:13px;font-weight:700;color:var(--pea-text-secondary)}

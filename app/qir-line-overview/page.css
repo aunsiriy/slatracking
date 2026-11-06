@@ -7,7 +7,7 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px;display:flex;flex-direction:column;gap:20px}
+.lfcontent{max-width:var(--app-content-max-width);margin:0 auto;padding:28px 24px 80px;display:flex;flex-direction:column;gap:20px}
 
 /* tabs (header) */
 .qlo-tabs{display:flex;gap:2px;overflow-x:auto}

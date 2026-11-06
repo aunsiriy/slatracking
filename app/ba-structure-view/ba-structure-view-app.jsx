@@ -164,7 +164,7 @@ function BaStructureView(){
   const displayed=selectedNode?items.filter(it=>window.nodeItemMatch(selectedNode,it)):[];
 
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1320px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       title:React.createElement(React.Fragment,null,
         'โครงสร้าง Business Architecture & SLA',

@@ -82,7 +82,7 @@ function ActivityTable(){
 function App(){
   const m=window.QIR_ANNUAL_META;
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'920px',
+    React.createElement(window.PageHeader,{
       backHref:'/p1-p11-overview'+(QA_VIEW?'?view=1':''),
       systemSubtitle:'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)',
       breadcrumb:[{label:'ข้อเสนอโอกาสการปรับปรุงฯ (QIR)',href:'/'},{label:'P1-P11 / QIR ประจำปี',href:'/p1-p11-overview'+(QA_VIEW?'?view=1':'')},{label:'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)'}],

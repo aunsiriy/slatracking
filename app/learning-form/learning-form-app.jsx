@@ -517,11 +517,15 @@ function lfSeedQirRows(){
   if(f==='full')return window.LF_QIR_ACTIVITIES.map(r=>({...r}));
   return window.LF_QIR_ACTIVITIES.map((r,i)=>({...r,weight:i===0?40:0}));
 }
-function IssuesPrioritiesSection({onStateChange,exportParts}){
-  const showIssues=!exportParts||exportParts.includes('issues');
-  const showQir=!exportParts||exportParts.includes('qir');
+// Pulled out as a standalone function (rather than an inline useState initializer) so the
+// PDF export can build the same "certified" QIR group data without needing this component
+// to actually render.
+function lfSeedQirGroups(){
+  return [{id:Date.now(),issueText:window.lfFill(3)==='full'?'ปรับปรุงตัวชี้วัดกระบวนการให้สะท้อนผลลัพธ์':'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',criteria:window.lfFill(3)==='full'?['revenue']:[],rows:lfSeedQirRows()}];
+}
+function IssuesPrioritiesSection({onStateChange}){
   const [issues,setIssues]=React.useState(lfSeedIssues);
-  const [qirGroups,setQirGroups]=React.useState(()=>[{id:Date.now(),issueText:window.lfFill(3)==='full'?'ปรับปรุงตัวชี้วัดกระบวนการให้สะท้อนผลลัพธ์':'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:'',criteria:window.lfFill(3)==='full'?['revenue']:[],rows:lfSeedQirRows()}]);
+  const [qirGroups,setQirGroups]=React.useState(lfSeedQirGroups);
   const qirYear=String(Number(window.LF_META.formYear)+1);
   const hasAnyIssueFilled=issues.some(it=>String(it.analysis||'').trim()!==''&&String(it.direction||'').trim()!=='');
   const qirGroupsOk=qirGroups.every(g=>g.rows.reduce((s,r)=>s+(Number(r.weight)||0),0)===100);
@@ -549,11 +553,11 @@ function IssuesPrioritiesSection({onStateChange,exportParts}){
   }
   function removeGroup(gid){setQirGroups(qirGroups.filter(g=>g.id!==gid));}
   return React.createElement(React.Fragment,null,
-    showIssues&&React.createElement(SectionCard,{title:'ส่วนที่ 3 — ประเด็นพิจารณาสำหรับการประเมินและปรับปรุงกระบวนการและจัดลำดับความสำคัญของแนวทางการพัฒนา/ปรับปรุง',hint:'ต้องเลือกอย่างน้อย 1 ประเด็นพิจารณา'},
+    React.createElement(SectionCard,{title:'ส่วนที่ 3 — ประเด็นพิจารณาสำหรับการประเมินและปรับปรุงกระบวนการและจัดลำดับความสำคัญของแนวทางการพัฒนา/ปรับปรุง',hint:'ต้องเลือกอย่างน้อย 1 ประเด็นพิจารณา'},
       issues.map(item=>React.createElement(IssueCard,{key:item.key,item,onChange:updateIssue}))
     ),
-    showIssues&&showQir&&React.createElement('div',{className:'lqir-spacer'}),
-    showQir&&React.createElement(SectionCard,{title:'QIR — บันทึกกิจกรรมที่จะดำเนินการ',hint:'จัดกลุ่มตามกิจกรรมตามข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)',
+    React.createElement('div',{className:'lqir-spacer'}),
+    React.createElement(SectionCard,{title:'QIR — บันทึกกิจกรรมที่จะดำเนินการ',hint:'จัดกลุ่มตามกิจกรรมตามข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR)',
       action:React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:addGroup},'เพิ่ม QIR')},
       qirGroups.map((g,gi)=>{
         const qirTotal=g.rows.reduce((s,r)=>s+(Number(r.weight)||0),0);
@@ -824,9 +828,11 @@ function knowledgeRowIsTouched(r){
     ||(r.methods||[]).length>0||(r.outcomes||[]).length>0
     ||String(r.before||'').trim()!==''||String(r.after||'').trim()!=='';
 }
-function KnowledgeSection({onStateChange}){
+// Pulled out the same way as lfSeedQirGroups — lets the PDF export reuse the exact
+// "certified" knowledge rows without rendering KnowledgeSection.
+function lfSeedKnowledgeRows(){
   const fill=window.lfFill(6);
-  const [rows,setRows]=React.useState(()=>window.LF_KNOWLEDGE.map(r=>({
+  return window.LF_KNOWLEDGE.map(r=>({
     id:r.id,
     entries:[{id:Date.now()+r.id,knowType:r.type==='existing'?'existing':'new',name:fill==='empty'?'':(r.type==='existing'?(r.contentId||''):(r.topic||'')),location:fill==='empty'?[]:(r.type==='existing'?['kmsi']:['kmcs']),locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],
     methods:fill==='full'?['meeting','lesson']:[],
@@ -834,7 +840,10 @@ function KnowledgeSection({onStateChange}){
     outcomesOther:'',
     before:fill==='full'?'ใช้เวลาดำเนินการเฉลี่ย 10 วันทำการ':'',
     after:fill==='full'?'ใช้เวลาดำเนินการเฉลี่ย 6 วันทำการ':''
-  })));
+  }));
+}
+function KnowledgeSection({onStateChange}){
+  const [rows,setRows]=React.useState(lfSeedKnowledgeRows);
   function update(next){setRows(rows.map(r=>r.id===next.id?next:r));}
   function addRow(){setRows([...rows,{id:Date.now(),entries:[{id:Date.now()+1,knowType:'existing',name:'',location:[],locationOther:'',processKey:window.LF_BA_PROCESS_OPTIONS[0].key,processOther:''}],methods:[],outcomes:[],outcomesOther:'',before:'',after:''}]);}
   const state=lfStateOf(rows.some(knowledgeRowIsTouched),rows.every(knowledgeRowIsComplete));
@@ -860,8 +869,7 @@ const LF_STEPS=[
 {key:'meta',label:'ข้อมูลพื้นฐาน',hint:'กรอกข้อมูลพื้นฐานของกระบวนการและผู้เกี่ยวข้อง',Component:MetaSection},
 {key:'diagram-before',label:'แผนภาพก่อนปรับปรุง',hint:'แนบแผนภาพกระบวนการก่อนการปรับปรุง (Work Flow/SIPOC)',Component:DiagramBeforeSection},
 {key:'effectiveness',label:'ผลการดำเนินงานตามตัวชี้วัด',hint:'ทบทวนผลการดำเนินงานตามตัวชี้วัดย้อนหลัง 3 ปี และระบุ Critical/Control Point',Component:EffectivenessAndPointSection},
-{key:'issues',label:'ประเด็นพิจารณา',hint:'ระบุประเด็นพิจารณาสำหรับการปรับปรุงกระบวนการ และบันทึกกิจกรรม QIR',Component:IssuesPrioritiesSection,
- subParts:[{key:'issues',label:'ประเด็นพิจารณา'},{key:'qir',label:'QIR — บันทึกกิจกรรมที่จะดำเนินการ'}]},
+{key:'issues',label:'ประเด็นพิจารณา',hint:'ระบุประเด็นพิจารณาสำหรับการปรับปรุงกระบวนการ และบันทึกกิจกรรม QIR',Component:IssuesPrioritiesSection},
 {key:'diagram-after',label:'ผลการปรับปรุงกระบวนการ',hint:'แนบแผนภาพกระบวนการหลังการปรับปรุง',Component:DiagramAfterSection},
 {key:'nextyear',label:'ตัวชี้วัดปีถัดไป',hint:'กำหนดตัวชี้วัดและเป้าหมายสำหรับปีถัดไป',Component:NextYearMetricsSection},
 {key:'knowledge',label:'องค์ความรู้',hint:'บันทึกองค์ความรู้เดิมและองค์ความรู้ใหม่',Component:KnowledgeSection}
@@ -901,68 +909,6 @@ function FormGuideModal({onClose}){
           ),
           open===i&&React.createElement('p',{className:'lfguide-item-desc'},g.desc)
         ))
-      )
-    )
-  );
-}
-
-function ExportPdfModal({onClose,onConfirm}){
-  const [selected,setSelected]=React.useState(LF_STEPS.map(s=>s.key));
-  const [subSelected,setSubSelected]=React.useState(()=>{
-    const m={};
-    LF_STEPS.forEach(s=>{if(s.subParts)m[s.key]=s.subParts.map(p=>p.key);});
-    return m;
-  });
-  function toggle(key){
-    setSelected(sel=>{
-      if(sel.includes(key))return sel.filter(k=>k!==key);
-      const step=LF_STEPS.find(s=>s.key===key);
-      if(step&&step.subParts)setSubSelected(ss=>({...ss,[key]:step.subParts.map(p=>p.key)}));
-      return [...sel,key];
-    });
-  }
-  // A step with sub-parts drops out of the export entirely once its last sub-part is
-  // unchecked — and comes back automatically the moment any sub-part is re-checked —
-  // so the step-level checkbox always stays an accurate reflection of its children.
-  function toggleSub(stepKey,partKey){
-    const cur=subSelected[stepKey]||[];
-    const next=cur.includes(partKey)?cur.filter(k=>k!==partKey):[...cur,partKey];
-    setSubSelected(ss=>({...ss,[stepKey]:next}));
-    if(next.length===0)setSelected(sel=>sel.filter(k=>k!==stepKey));
-    else if(!selected.includes(stepKey))setSelected(sel=>[...sel,stepKey]);
-  }
-  const allChecked=selected.length===LF_STEPS.length;
-  function toggleAll(){
-    if(allChecked){setSelected([]);return;}
-    setSelected(LF_STEPS.map(s=>s.key));
-    const m={};
-    LF_STEPS.forEach(s=>{if(s.subParts)m[s.key]=s.subParts.map(p=>p.key);});
-    setSubSelected(m);
-  }
-  const ordered=LF_STEPS.filter(s=>selected.includes(s.key)).map(s=>s.key);
-  return React.createElement('div',{className:'modal-overlay',onClick:onClose},
-    React.createElement('div',{className:'modal-card lexport-modal',onClick:e=>e.stopPropagation()},
-      React.createElement('div',{className:'modal-head'},
-        React.createElement('h3',null,'เลือกขั้นตอนที่ต้องการ Export PDF'),
-        React.createElement('button',{className:'lfa-modal-close',onClick:onClose},React.createElement(Icon,{name:'x',size:18}))
-      ),
-      React.createElement('div',{className:'lmodal-body'},
-        React.createElement('p',{className:'lexport-modal-hint'},'ระบบจะรวมขั้นตอนที่เลือกเป็นไฟล์ PDF เดียว โดยแต่ละขั้นตอนจะขึ้นหน้าใหม่'),
-        React.createElement('div',{className:'lexport-check lexport-check--all'},
-          React.createElement(Checkbox,{size:'sm',label:'เลือกทั้งหมด',isChecked:allChecked,onChange:toggleAll})
-        ),
-        React.createElement('div',{className:'lexport-check-list'},
-          LF_STEPS.map((s,i)=>React.createElement('div',{key:s.key,className:'lexport-check'},
-            React.createElement(Checkbox,{size:'sm',label:i+'. '+(s.subParts?s.label+' และ กิจกรรม QIR':s.label),isChecked:selected.includes(s.key),onChange:()=>toggle(s.key)}),
-            s.subParts&&selected.includes(s.key)&&React.createElement('div',{className:'lexport-subcheck-list'},
-              s.subParts.map(p=>React.createElement(Checkbox,{key:p.key,size:'sm',label:p.label,isChecked:(subSelected[s.key]||[]).includes(p.key),onChange:()=>toggleSub(s.key,p.key)}))
-            )
-          ))
-        )
-      ),
-      React.createElement('div',{className:'lmodal-foot'},
-        React.createElement(Button,{variant:'secondary',size:'md',onClick:onClose},'ยกเลิก'),
-        React.createElement(Button,{variant:'primary',size:'md',isDisabled:ordered.length===0,leadingIcon:React.createElement(Icon,{name:'download-01',size:16}),onClick:()=>onConfirm(ordered,subSelected)},'Export PDF ('+ordered.length+')')
       )
     )
   );
@@ -1123,7 +1069,7 @@ function App(){
   const statusMeta=window.LFO_STATUS_MAP[window.LF_STATUS]||window.LFO_STATUS_MAP.pending;
   const isOverdue=window.LF_STATUS==='overdue';
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1240px',
+    React.createElement(window.PageHeader,{
       backHref:window.LF_BACK,
       systemSubtitle:'Learning Form & QIR',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม Learning Form',href:window.LF_BACK},{label:'Learning Form · '+window.LF_META.processName}],

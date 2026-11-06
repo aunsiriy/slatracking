@@ -62,7 +62,7 @@ button{font-family:inherit}
 .notif-mark-btn{width:100%;justify-content:center}
 
 /* ---- page layout ---- */
-.page{max-width:1240px;margin:0 auto;padding:24px 24px 64px}
+.page{max-width:var(--app-content-max-width);margin:0 auto;padding:24px 24px 64px}
 .page-head{margin:4px 0 20px}
 .page-head h1{font-size:26px;font-weight:700;color:var(--pea-text-primary)}
 .page-head p{margin:4px 0 0;font-size:14px;color:var(--pea-text-tertiary)}

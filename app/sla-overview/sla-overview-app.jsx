@@ -79,7 +79,7 @@ function App(){
   const [showAll,setShowAll]=React.useState(false);
   const data=window.SLA_OVERVIEW_BY_YEAR[year];
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1080px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       systemSubtitle:'ภาพรวมการรายงานผล SLA',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวมการรายงานผล SLA'}],

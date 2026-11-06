@@ -68,7 +68,7 @@ function App(){
     window.location.href='/p1-p11-summary?unit='+encodeURIComponent(unit)+'&year='+year;
   }
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1400px',
+    React.createElement(window.PageHeader,{
       onBack:()=>{history.back();},
       systemSubtitle:'การรายงานผลข้อตกลงระดับการให้บริการ (SLA)',
       breadcrumb:[

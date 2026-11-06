@@ -34,7 +34,7 @@ function App(){
   function removeFilter(f){setActiveFilters(activeFilters.filter(x=>x!==f));}
   function goToQir(node){window.location.href='/qir-annual-form'+(P11_VQ?'?'+P11_VQ:'');}
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1400px',
+    React.createElement(window.PageHeader,{
       backHref:'/learning-form-overview-province',
       systemSubtitle:'P1-P11 / QIR ประจำปี',
       title:React.createElement(React.Fragment,null,'P1-P11 / QIR ประจำปี',P11_VIEW&&React.createElement('span',{style:{marginLeft:'16px'}},React.createElement(Badge,{label:'ดูอย่างเดียว',type:'pill-color',color:'gray',size:'sm'}))),

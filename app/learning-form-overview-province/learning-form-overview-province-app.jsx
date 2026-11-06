@@ -52,7 +52,7 @@ function LearningFormEmpty(){
 function App(){
   const [guideOpen,setGuideOpen]=React.useState(false);
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1080px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       avatarText:'สด',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม Learning Form — การไฟฟ้าจังหวัด'}],

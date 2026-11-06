@@ -540,7 +540,7 @@ function App(){
   }
 
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1180px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       systemSubtitle:'รายงานผลการดำเนินงาน SLA',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'รายงานผล SLA (ระดับกอง)'}],

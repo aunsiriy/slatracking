@@ -7,7 +7,7 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.lfcontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
+.lfcontent{max-width:var(--app-content-max-width);margin:0 auto;padding:28px 24px 80px}
 
 .lsection{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
 .lsection-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}

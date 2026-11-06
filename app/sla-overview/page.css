@@ -7,7 +7,7 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.ocontent{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
+.ocontent{max-width:var(--app-content-max-width);margin:0 auto;padding:28px 24px 80px}
 
 .okpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
 .okpi-card{padding:18px 20px;display:flex;align-items:center;gap:14px}

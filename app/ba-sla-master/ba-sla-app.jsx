@@ -662,7 +662,7 @@ function App(){
   const panels={org:OrgPanel,sla:window.SlaPanel,arch:ArchPanel,kpi:KpiPanel,users:window.UserManagementPanel};
   const Panel=panels[tab];
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1320px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       avatarText:'สด',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ตั้งค่า BA & SLA Master'}],

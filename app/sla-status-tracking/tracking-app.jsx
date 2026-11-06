@@ -107,7 +107,7 @@ function App(){
   return React.createElement('div',{className:'shell'},
     React.createElement(Sidebar,null),
     React.createElement('div',{className:'main-col'},
-      React.createElement(window.PageHeader,{maxWidth:'1400px',
+      React.createElement(window.PageHeader,{
         backHref:'/',
         avatarText:'มจ',
         breadcrumb:[{label:'ติดตามสถานะ'},{label:'P2 : กระบวนการแก้กระแสไฟฟ้าขัดข้อง'}],

@@ -113,7 +113,7 @@ function App(){
   }
 
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1080px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       avatarText:'สด',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR สายงาน'}],

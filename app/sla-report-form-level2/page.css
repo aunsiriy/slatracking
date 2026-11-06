@@ -7,7 +7,7 @@ button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
 
-.rcontent{max-width:1180px;margin:0 auto;padding:28px 24px 80px}
+.rcontent{max-width:var(--app-content-max-width);margin:0 auto;padding:28px 24px 80px}
 
 .rlevel-switch{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--pea-text-brand-secondary);white-space:nowrap}
 .rpage-head-subtitle{font-size:14px;color:var(--pea-text-tertiary)}

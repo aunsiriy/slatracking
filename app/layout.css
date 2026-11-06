@@ -1,0 +1,4 @@
+:root {
+  /* Shared outer width for every centered page and PageHeader content row. */
+  --app-content-max-width: 1320px;
+}

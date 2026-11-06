@@ -619,7 +619,7 @@ function App(){
   }
 
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1180px',
+    React.createElement(window.PageHeader,{
       backHref:'/',
       breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'รายงานผล SLA (ระดับฝ่าย)'}],
       title:'รายงานผลการดำเนินงาน SLA (ระดับฝ่าย)',

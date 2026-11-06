@@ -30,7 +30,7 @@ function App(){
     try{setReported(JSON.parse(localStorage.getItem('p11_reported_'+y)||'{}'));}catch(e){}
   },[]);
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1400px',
+    React.createElement(window.PageHeader,{
       backHref:'/p1-p11-overview',
       systemSubtitle:'สรุปรายงานภาพรวม P1-P11',
       breadcrumb:[

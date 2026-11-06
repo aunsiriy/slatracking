@@ -30,7 +30,7 @@ function App(){
   const pickedReports=EX_REPORTS.filter(r=>reports.includes(r.key));
   React.useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),2600);return()=>clearTimeout(t);},[toast]);
   return React.createElement(React.Fragment,null,
-    React.createElement(window.PageHeader,{maxWidth:'1180px',
+    React.createElement(window.PageHeader,{
       onBack:()=>history.back(),
       systemSubtitle:'Export Learning Form / QIR',
       breadcrumb:[{label:'ภาพรวม Learning Form',href:'/learning-form-overview'},{label:'Export Learning Form / QIR'}],

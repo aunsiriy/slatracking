@@ -1,5 +1,6 @@
 import Script from 'next/script';
 import ReactGlobalsBridge from './react-globals-bridge.jsx';
+import './layout.css';
 
 const DS_BASE = '/_ds/pea-design-system-newest-cbd18118-ffd4-4a23-9eb9-992de10a0e85';
 

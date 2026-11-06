@@ -13,7 +13,7 @@ function BackControl({backHref,onBack}){
 // body-content column instead of running edge to edge.
 function Row({rowClassName,bordered,maxWidth,children}){
   return React.createElement('div',{className:rowClassName+(bordered?' ph-bordered':'')},
-    React.createElement('div',{className:'ph-inner',style:{maxWidth:maxWidth||'1180px'}},children)
+    React.createElement('div',{className:'ph-inner',style:{maxWidth:maxWidth||'var(--app-content-max-width)'}},children)
   );
 }
 

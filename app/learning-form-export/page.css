@@ -6,7 +6,7 @@ a:hover{color:var(--pea-text-brand-secondary-hover)}
 button{font-family:inherit}
 .icon{display:inline-block;flex-shrink:0}
 .card{background:#fff;border:1px solid var(--pea-border-secondary);border-radius:12px}
-.excontent{max-width:1180px;margin:0 auto;padding:28px 24px 80px}
+.excontent{max-width:var(--app-content-max-width);margin:0 auto;padding:28px 24px 80px}
 .exgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
 .excol{display:flex;flex-direction:column;gap:16px}
 .exsection{padding:20px 22px}
