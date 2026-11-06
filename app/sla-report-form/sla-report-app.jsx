@@ -1,5 +1,19 @@
-import Link from 'next/link';
 const {Button,Badge,InputField,Textarea}=window.DesignSystem_cbd181;
+
+const REPORT_LEVEL_OPTIONS=[
+  {value:'/sla-report-form',label:'รายงานระดับฝ่าย'},
+  {value:'/sla-report-form-level2',label:'รายงานระดับกอง'}
+];
+
+function ReportLevelSelect(){
+  return React.createElement(window.SelectMenu,{
+    className:'rlevel-select',
+    value:'/sla-report-form',
+    options:REPORT_LEVEL_OPTIONS,
+    ariaLabel:'เลือกระดับรายงาน SLA',
+    onChange:href=>{if(href!=='/sla-report-form')window.location.href=href;}
+  });
+}
 
 const SLA_FORM_GUIDE=[
 {part:'ขั้นที่ 1',title:'เลือกรายการทางซ้าย',desc:'กล่อง "ต้องกรอก" ทางซ้ายมือจะเรียงรายการให้อัตโนมัติ โดยเริ่มจากรายการที่เลยกำหนดส่งก่อน ตามด้วยรายการที่ยังไม่ถึงกำหนด คลิกรายการใดก็ได้เพื่อเปิดกรอกทางขวามือ'},
@@ -625,7 +639,7 @@ function App(){
       title:'รายงานผลการดำเนินงาน SLA (ระดับฝ่าย)',
       actions:React.createElement(React.Fragment,null,
         React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'help-circle',size:16}),onClick:()=>setGuideOpen(true)},'คำอธิบายรายละเอียด'),
-        React.createElement(Link,{className:'rlevel-switch',href:'/sla-report-form-level2'},'สลับไปหน้ารายงานระดับกอง',React.createElement(Icon,{name:'arrow-right',size:14}))
+        React.createElement(ReportLevelSelect)
       ),
       subtitle:React.createElement(React.Fragment,null,
         React.createElement('div',{className:'rpage-head-subtitle'},window.SLA_REPORT_DEPT.name),

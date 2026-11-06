@@ -42,7 +42,7 @@ const ROLES = {
     ],
     cards:{
       ba:{enabled:true,badge:'จัดการได้',cta:'จัดการ BA Master',ctaVariant:'primary',stat:'5 รายการรอตรวจสอบ'},
-      sla:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดูรายงานทั้งหมด',ctaVariant:'secondary',stat:'96 ส่งแล้ว · 21 ถูกคืน'},
+      sla:{enabled:true,badge:'ภาพรวมองค์กร',cta:'ดูรายงานทั้งหมด',ctaVariant:'secondary',stat:'96 ส่งแล้ว · 21 ถูกคืน',href:'/sla-overview'},
       learning:{enabled:true,badge:'ภาพรวมองค์กร',cta:'จัดการ learning form',ctaVariant:'secondary',stat:'8 หน่วยงานอยู่ระหว่างวิเคราะห์',href:'/learning-form-overview-admin'},
       qirLine:{enabled:true,badge:'สายงาน',cta:'ไปที่ QIR',ctaVariant:'secondary',stat:'1 กลุ่มรอคัดเลือก',href:'/qir-line-overview'}
     }

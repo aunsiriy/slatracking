@@ -132,7 +132,7 @@ function TopBar({role,setRoleKey}){
   const [notifications,setNotifications]=React.useState(()=>window.NOTIFICATIONS.slice());
   const unreadCount=notifications.filter(n=>!n.read).length;
   const NAV_BY_ROLE={
-    admin:{ba:'/ba-sla-master',sla:null,learning:'/learning-form-overview-admin'},
+    admin:{ba:'/ba-sla-master',sla:'/sla-overview',learning:'/learning-form-overview-admin'},
     manager:{ba:'/ba-structure-view',sla:'/sla-overview',learning:'/learning-form-overview'},
     staff:{ba:'/ba-structure-view',sla:'/sla-status-tracking',learning:'/learning-form-overview-province'}
   };

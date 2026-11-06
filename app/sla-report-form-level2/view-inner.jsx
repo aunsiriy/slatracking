@@ -2,6 +2,7 @@
 
 import '@/src/shared/icons.jsx';
 import '@/src/shared/ba-sla-data.jsx';
+import '@/src/shared/select-menu.jsx';
 import '@/src/shared/page-header.jsx';
 import './sla-report-level2-data.jsx';
 import App from './sla-report-level2-app.jsx';
