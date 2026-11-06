@@ -1,13 +1,16 @@
 'use client';
 
-// Persistence for the QIR สายงาน (line QIR) selection flow.
-// This is a front-end prototype, so a submitted yearly selection — the
-// picked dept proposals, the line's own QIR groups, the submit date and
-// an edit-history log — is kept in localStorage keyed by year. Exposed as
-// window.QLF_STORE.
+// Persistence for the QIR annual selection flow, shared by two scopes that use the
+// exact same wizard (/qir-line-form) and overview (/qir-line-overview) but pick from a
+// different set of units: "line" (สายงาน, picking from its ฝ่าย) and "zone" (เขต,
+// picking from its 3 ฝ่าย + 1 กอง). A submitted yearly selection — the picked unit
+// proposals, the scope's own QIR groups, the submit date and an edit-history log — is
+// kept in localStorage keyed by scope+year. Exposed as window.QLF_STORE, whose
+// get/save take an optional scope argument (defaults to 'line' for every existing
+// call site that predates the zone scope).
 //
-// The line name and the per-dept proposal catalog also live here (not just
-// in qir-line-app.jsx) so the quarterly progress report page can resolve a
+// The scope names and their per-unit proposal catalogs also live here (not just in
+// qir-line-app.jsx) so the quarterly progress report page can resolve a line
 // submission's selectedIds back into full proposal + activity data too.
 
 const QLF_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
@@ -49,9 +52,54 @@ const QLF_DEPT_SUBMISSIONS=[
      ]}
   ]}
 ];
+
+// เขต — 3 ฝ่าย + 1 กอง ทุกเขตมีโครงสร้างหน่วยงานเดียวกัน (ตาม org-tree-data.js)
+// ใช้เขต 2 (ภาคเหนือ) จังหวัดพิษณุโลก เป็นตัวอย่างสำหรับ demo นี้
+const QLF_ZONE_NAME='การไฟฟ้าส่วนภูมิภาค เขต 2 (ภาคเหนือ) จังหวัดพิษณุโลก';
+const QLF_ZONE_UNIT_SUBMISSIONS=[
+  {id:'fob',dept:'ฝ่ายปฏิบัติการและบำรุงรักษา',proposals:[
+    {id:'fob-1',proposal:'ลดระยะเวลาการแก้ไขไฟฟ้าขัดข้องด้วยระบบแจ้งเตือนอัตโนมัติ',processKey:'s131',
+     activities:[
+       {name:'จัดทำระบบแจ้งเตือนจุดเกิดเหตุไฟฟ้าขัดข้องแบบเรียลไทม์',weight:60},
+       {name:'ฝึกอบรมทีมปฏิบัติการให้ตอบสนองตามมาตรฐานเวลาใหม่',weight:40}
+     ]},
+    {id:'fob-2',proposal:'ปรับปรุงแผนบำรุงรักษาเชิงป้องกันให้ครอบคลุมอุปกรณ์เสี่ยงสูง',processKey:'s132',
+     activities:[
+       {name:'จัดทำบัญชีอุปกรณ์เสี่ยงสูงและจัดลำดับความสำคัญ',weight:50},
+       {name:'ปรับปฏิทินบำรุงรักษาเชิงป้องกันตามความเสี่ยง',weight:50}
+     ]}
+  ]},
+  {id:'feb',dept:'ฝ่ายวิศวกรรมและบริการ',proposals:[
+    {id:'feb-1',proposal:'ลดระยะเวลาติดตั้งมิเตอร์ให้ผู้ใช้ไฟรายใหม่',processKey:'s131',
+     activities:[
+       {name:'ปรับขั้นตอนขออนุมัติแบบก่อสร้างให้เป็นดิจิทัล',weight:55},
+       {name:'จัดทีมติดตั้งเฉพาะกิจรองรับช่วงเร่งด่วน',weight:45}
+     ]}
+  ]},
+  {id:'fsa',dept:'ฝ่ายสนับสนุนการบริหารงาน',proposals:[
+    {id:'fsa-1',proposal:'ลดระยะเวลาการเบิกจ่ายพัสดุให้หน่วยปฏิบัติการ',processKey:'s132',
+     activities:[
+       {name:'ทบทวนขั้นตอนการอนุมัติเบิกพัสดุให้กระชับขึ้น',weight:50},
+       {name:'นำระบบเบิกพัสดุออนไลน์มาใช้กับหน่วยงานในเขต',weight:50}
+     ]}
+  ]},
+  {id:'ksk',dept:'กองสนับสนุนงานเขต',proposals:[
+    {id:'ksk-1',proposal:'ยกระดับการสื่อสารและประสานงานระหว่างหน่วยงานภายในเขต',processKey:'s131',
+     activities:[
+       {name:'จัดทำช่องทางประสานงานกลางระหว่างฝ่ายในเขต',weight:100}
+     ]}
+  ]}
+];
+
+// Both scopes the /qir-line-form wizard and /qir-line-overview page can run under.
+const QLF_SCOPES={
+  line:{key:'line',label:'สายงาน',name:QLF_LINE_NAME,submissions:QLF_DEPT_SUBMISSIONS},
+  zone:{key:'zone',label:'เขต',name:QLF_ZONE_NAME,submissions:QLF_ZONE_UNIT_SUBMISSIONS}
+};
+
 function qlfProcessLabel(key){const p=(window.LF_BA_PROCESS_OPTIONS||[]).find(x=>x.key===key);return p?p.label:key;}
 
-function qlfKey(year){return 'qlf_submission_'+year;}
+function qlfKey(year,scope){return 'qlf_submission_'+(scope||'line')+'_'+year;}
 
 function qlfNow(){
   const d=new Date();
@@ -59,24 +107,24 @@ function qlfNow(){
   return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+(d.getFullYear()+543)+' '+p(d.getHours())+':'+p(d.getMinutes());
 }
 
-function qlfGet(year){
-  try{const raw=localStorage.getItem(qlfKey(year));return raw?JSON.parse(raw):null;}catch(e){return null;}
+function qlfGet(year,scope){
+  try{const raw=localStorage.getItem(qlfKey(year,scope));return raw?JSON.parse(raw):null;}catch(e){return null;}
 }
 
 // Who performed the action, for the ผู้ดำเนินการ / ตำแหน่ง-สังกัด columns of the history log.
-function qlfActor(){
+function qlfActor(scope){
   try{
     const u=(typeof window!=='undefined')?window.LF_CURRENT_USER:null;
     if(!u)return {by:'-',role:'-'};
-    return {by:u.name,role:u.position+' · ผู้คัดเลือก QIR สายงาน'};
+    return {by:u.name,role:u.position+' · ผู้คัดเลือก QIR '+(QLF_SCOPES[scope||'line']||QLF_SCOPES.line).label};
   }catch(e){return {by:'-',role:'-'};}
 }
 
 // isEdit=false -> first submission; isEdit=true -> a later edit of a submission.
-function qlfSave(year,payload,isEdit){
-  const existing=qlfGet(year)||{};
+function qlfSave(year,payload,isEdit,scope){
+  const existing=qlfGet(year,scope)||{};
   const at=qlfNow();
-  const actor=qlfActor();
+  const actor=qlfActor(scope);
   const history=(existing.history||[]).concat([{action:isEdit?'แก้ไขข้อมูล':'ส่งคัดเลือก',at,by:actor.by,role:actor.role}]);
   const rec={
     status:'submitted',
@@ -86,7 +134,7 @@ function qlfSave(year,payload,isEdit){
     lastEditedAt:isEdit?at:(existing.lastEditedAt||null),
     history
   };
-  try{localStorage.setItem(qlfKey(year),JSON.stringify(rec));}catch(e){}
+  try{localStorage.setItem(qlfKey(year,scope),JSON.stringify(rec));}catch(e){}
   return rec;
 }
 
@@ -109,12 +157,23 @@ const QLF_SEED={
     history:[{action:'ส่งคัดเลือก',at:'01/10/2566 09:30',by:'ปิยวัฒน์ อนุกูลสวัสดิ์',role:'วิศวกรไฟฟ้า 5 · ผู้คัดเลือก QIR สายงาน'}],lastEditedAt:null}
 };
 
-function qlfSeed(){
+// Seed the zone scope's own (smaller) history, same shape as QLF_SEED.
+const QLF_ZONE_SEED={
+  '2568':{selectedIds:['fob-1','fob-2','feb-1','ksk-1'],
+    ownGroups:[
+      {id:1,proposal:'ยกระดับมาตรฐานความปลอดภัยในการทำงานของหน่วยปฏิบัติการทั้งเขต',processKey:'s131',rows:[{id:11,activity:'ทบทวนและอบรมมาตรฐานความปลอดภัยให้ทุกฝ่ายในเขต',weight:100}]}
+    ],submittedAt:'03/10/2568 09:40',
+    history:[{action:'ส่งคัดเลือก',at:'03/10/2568 09:40',by:'ดำรงค์ ศักดิ์สิทธิ์',role:'ผู้ช่วยผู้ว่าการเขต · ผู้คัดเลือก QIR เขต'}],lastEditedAt:null},
+  '2567':{selectedIds:['fob-1','feb-1','fsa-1'],ownGroups:[],submittedAt:'25/09/2567 13:15',
+    history:[{action:'ส่งคัดเลือก',at:'25/09/2567 13:15',by:'ดำรงค์ ศักดิ์สิทธิ์',role:'ผู้ช่วยผู้ว่าการเขต · ผู้คัดเลือก QIR เขต'}],lastEditedAt:null}
+};
+
+function qlfSeedOne(key,seed){
   try{
-    Object.keys(QLF_SEED).forEach(y=>{
-      if(localStorage.getItem(qlfKey(y)))return;
-      const s=QLF_SEED[y];
-      localStorage.setItem(qlfKey(y),JSON.stringify({
+    Object.keys(seed).forEach(y=>{
+      if(localStorage.getItem(key(y)))return;
+      const s=seed[y];
+      localStorage.setItem(key(y),JSON.stringify({
         status:'submitted',
         selectedIds:s.selectedIds,
         ownGroups:s.ownGroups,
@@ -126,8 +185,13 @@ function qlfSeed(){
   }catch(e){}
 }
 
+function qlfSeed(){
+  qlfSeedOne(y=>qlfKey(y,'line'),QLF_SEED);
+  qlfSeedOne(y=>qlfKey(y,'zone'),QLF_ZONE_SEED);
+}
+
 if(typeof window!=='undefined'){
   qlfSeed();
   window.QLF_STORE={get:qlfGet,save:qlfSave,now:qlfNow};
-  Object.assign(window,{QLF_LINE_NAME,QLF_DEPT_SUBMISSIONS,qlfProcessLabel});
+  Object.assign(window,{QLF_LINE_NAME,QLF_DEPT_SUBMISSIONS,QLF_ZONE_NAME,QLF_ZONE_UNIT_SUBMISSIONS,QLF_SCOPES,qlfProcessLabel});
 }

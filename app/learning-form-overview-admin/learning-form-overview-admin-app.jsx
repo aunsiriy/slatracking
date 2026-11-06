@@ -1,6 +1,6 @@
 const {Button,Badge,InputField,Avatar}=window.DesignSystem_cbd181;
 
-const LFOA_MY_DEPT='ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง (ฝพอ.)';
+const LFOA_MY_DEPT='ฝ่ายพัฒนาองค์กรและบริหารการเปลี่ยนแปลง';
 function getTrackRows(scope){
   const depts=window.LFOA_DEPTS||[];
   if(scope==='own'){
@@ -198,8 +198,8 @@ function SubmissionDashboard(){
       ),
       React.createElement('div',{className:'lfadash-filters'},
         React.createElement('div',{className:'lfscope-toggle'},
-          React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='line'?' is-active':''),onClick:()=>{setTab('line');setExpanded({});}},'สายงาน (สำนักงานใหญ่)'),
-          React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='zone'?' is-active':''),onClick:()=>{setTab('zone');setExpanded({});}},'แต่ละเขต')
+          React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='line'?' is-active':''),onClick:()=>{setTab('line');setExpanded({});}},'สายงาน'),
+          React.createElement('button',{className:'lfscope-toggle-opt'+(tab==='zone'?' is-active':''),onClick:()=>{setTab('zone');setExpanded({});}},'การไฟฟ้าเขต')
         ),
         React.createElement(window.SelectMenu,{style:{width:'150px'},value:year,onChange:setYear,options:years.map(y=>({value:y,label:'ประจำปี '+y}))})
       )

@@ -18,6 +18,11 @@ button{font-family:inherit}
 .qlo-tab.is-active .icon{background-color:var(--pea-fg-brand-primary)}
 .qlo-tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--pea-fg-error-primary);color:#fff;font-size:11px;font-weight:700}
 
+.lfscope-toggle{display:inline-flex;background:var(--pea-bg-secondary);border:1px solid var(--pea-border-secondary);border-radius:999px;padding:4px;gap:2px;box-shadow:inset 0 1px 2px rgba(0,0,0,.04)}
+.lfscope-toggle-opt{border:none;background:none;border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--pea-text-secondary);cursor:pointer;transition:background-color .15s,color .15s}
+.lfscope-toggle-opt:hover:not(.is-active){background:var(--pea-bg-secondary-hover);color:var(--pea-text-primary)}
+.lfscope-toggle-opt.is-active{background:var(--pea-bg-brand-solid);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+
 .lsection{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
 .lsection-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .lsection-head h3{font-size:16px;font-weight:700}

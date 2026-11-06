@@ -94,14 +94,18 @@ function qqSave(year,processKey,quarterKey,record){
 }
 
 // Seeds ไตรมาส 1-3 as already-reported history for every process, so the overview has
-// real-looking data to show and the current quarter's form has a "ไตรมาสก่อน" baseline —
-// only when nothing is saved for that year yet, same guard as qlf-store's own seed.
+// real-looking data to show and the current quarter's form has a "ไตรมาสก่อน" baseline.
+// Guarded per PROCESS (not per year) — a process that already has any saved record is
+// left alone, but a process added to the mock data later (a new dept proposal, a new
+// own QIR group picked in a later selection round) still gets its history backfilled
+// instead of silently showing "ยังไม่ถึงรอบ" forever just because other processes in
+// the same year already had data when this last ran.
 function qqSeedHistory(){
   try{
     const processes=qqBuildProcesses();
     const all=qqGetAll(QIR_QUARTERLY_YEAR);
-    if(Object.keys(all).length>0)return;
     processes.forEach((p,pi)=>{
+      if(all[p.key])return;
       [0,1,2].forEach(qIndex=>{
         const q=QIR_QUARTERLY_QUARTERS[qIndex];
         const values={};

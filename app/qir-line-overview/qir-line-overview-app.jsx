@@ -1,5 +1,6 @@
 const {Button}=window.DesignSystem_cbd181;
 
+// มุมมองของสายงาน (default) — ติดตามและคัดเลือก QIR ของฝ่ายภายใต้สายงาน
 const QLO_LINE_NAME='สายงานดิจิทัลและการสื่อสาร';
 const QLO_ROWS=[
   {year:'2569',recorder:'สวิชญา พฤกษหิรัญ',picked:0,lineAdded:0,date:'—',status:'pending'},
@@ -7,13 +8,32 @@ const QLO_ROWS=[
   {year:'2567',recorder:'ธงชัย มีนวล',picked:5,lineAdded:1,date:'28/09/2567',status:'submitted'},
   {year:'2566',recorder:'ธงชัย มีนวล',picked:4,lineAdded:0,date:'01/10/2566',status:'submitted'}
 ];
+// มุมมองของเขต — ใช้ flow เดียวกัน แต่คัดเลือก QIR จาก 3 ฝ่ายในเขต + 1 กองสนับสนุนงานเขต แทน
+const QLO_ZONE_ROWS=[
+  {year:'2569',recorder:'ดำรงค์ ศักดิ์สิทธิ์',picked:0,lineAdded:0,date:'—',status:'pending'},
+  {year:'2568',recorder:'ดำรงค์ ศักดิ์สิทธิ์',picked:4,lineAdded:1,date:'03/10/2568',status:'submitted'},
+  {year:'2567',recorder:'ดำรงค์ ศักดิ์สิทธิ์',picked:3,lineAdded:0,date:'25/09/2567',status:'submitted'}
+];
+const QLO_SCOPE_ROWS={line:QLO_ROWS,zone:QLO_ZONE_ROWS};
+
+// A small pill toggle between the two scopes this page can run under — same flow for
+// both, only which unit-level data feeds it differs (ฝ่ายของสายงาน vs ฝ่าย/กองของเขต).
+function QloScopeToggle({scope,setScope}){
+  return React.createElement('div',{className:'lfscope-toggle'},
+    React.createElement('button',{type:'button',className:'lfscope-toggle-opt'+(scope==='line'?' is-active':''),onClick:()=>setScope('line')},'มุมมองของสายงาน'),
+    React.createElement('button',{type:'button',className:'lfscope-toggle-opt'+(scope==='zone'?' is-active':''),onClick:()=>setScope('zone')},'มุมมองของเขต')
+  );
+}
 
 // Tabs for the two distinct jobs this page covers: picking the year's QIR proposals
 // (an annual, occasional task) vs. reporting progress on them every quarter (the
 // recurring one). A small badge surfaces how many processes still need this quarter's
-// report, mirroring the nav/tab badges in the reference mockup.
-function QloTabs({active,setActive,pendingCount}){
-  const tabs=[{key:'sel',label:'คัดเลือกประจำปี',icon:'calendar'},{key:'rep',label:'รายงานรายไตรมาส',icon:'trending-up'}];
+// report, mirroring the nav/tab badges in the reference mockup. The quarterly-reporting
+// tab only applies to the line scope for now, so zone view only ever shows "sel".
+function QloTabs({active,setActive,pendingCount,showReporting}){
+  const tabs=[{key:'sel',label:'คัดเลือกประจำปี',icon:'calendar'}].concat(
+    showReporting?[{key:'rep',label:'รายงานรายไตรมาส',icon:'trending-up'}]:[]
+  );
   return React.createElement('nav',{className:'qlo-tabs'},
     tabs.map(t=>React.createElement('button',{key:t.key,type:'button',className:'qlo-tab'+(active===t.key?' is-active':''),onClick:()=>setActive(t.key)},
       React.createElement(Icon,{name:t.icon,size:16}),t.label,
@@ -63,8 +83,8 @@ function ReportingKpiCards({processes,currentQuarter,pendingCount}){
   );
 }
 
-function mergeRow(r){
-  const stored=(typeof window!=='undefined'&&window.QLF_STORE)?window.QLF_STORE.get(r.year):null;
+function mergeRow(r,scope){
+  const stored=(typeof window!=='undefined'&&window.QLF_STORE)?window.QLF_STORE.get(r.year,scope):null;
   if(!stored)return r;
   return {...r,
     status:stored.status||r.status,
@@ -75,25 +95,37 @@ function mergeRow(r){
   };
 }
 
+const QLO_INITIAL_SCOPE=(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('scope')==='zone')?'zone':'line';
+
 function App(){
+  const [scope,setScope]=React.useState(QLO_INITIAL_SCOPE);
+  const isZone=scope==='zone';
+  const scopeDef=(window.QLF_SCOPES||{})[scope]||{label:'สายงาน',name:QLO_LINE_NAME};
+  const scopeLabel=scopeDef.label;
+  const scopeName=scopeDef.name;
+  const scopeRowsRaw=QLO_SCOPE_ROWS[scope];
   // The history table is a record of what's actually happened, so only years with a
   // real submitted selection belong in it — a year nobody has picked yet isn't "history".
-  const rows=QLO_ROWS.map(mergeRow).filter(r=>r.status==='submitted');
+  const rows=scopeRowsRaw.map(r=>mergeRow(r,scope)).filter(r=>r.status==='submitted');
   const [yearFilter,setYearFilter]=React.useState('all');
   const [search,setSearch]=React.useState('');
 
-  const processes=window.qqBuildProcesses();
+  // The quarterly-reporting engine only tracks the line scope for now, so the zone
+  // view never shows that tab and always stays on the annual-selection one.
+  const processes=isZone?[]:window.qqBuildProcesses();
   const quarters=window.QIR_QUARTERLY_QUARTERS;
   const currentQuarter=quarters.find(q=>q.isCurrent)||quarters[quarters.length-1];
-  const pendingCount=processes.filter(p=>{
+  const pendingCount=isZone?0:processes.filter(p=>{
     const rec=window.QQ_STORE.get(window.QIR_QUARTERLY_YEAR,p.key,currentQuarter.key);
     return !rec||rec.status!=='submitted';
   }).length;
 
   // Default tab follows whether there's a report due, not whatever tab was open last —
   // someone who just finished picking proposals in October shouldn't land back on the
-  // selection tab in January when reports are waiting, and vice versa.
-  const [tab,setTab]=React.useState(()=>pendingCount>0?'rep':'sel');
+  // selection tab in January when reports are waiting, and vice versa. Zone view has
+  // no reporting tab at all, so it always starts (and stays) on "sel".
+  const [tab,setTab]=React.useState(()=>(!isZone&&pendingCount>0)?'rep':'sel');
+  function changeScope(next){setScope(next);if(next==='zone')setTab('sel');}
   const [modal,setModal]=React.useState(null);
   const [toast,setToast]=React.useState(null);
 
@@ -105,26 +137,31 @@ function App(){
   const hasFilter=yearFilter!=='all'||q!=='';
   function clearFilter(){setYearFilter('all');setSearch('');}
   function openRow(r){
-    window.location.href='/qir-line-form?year='+r.year+'&mode=view';
+    window.location.href='/qir-line-form?year='+r.year+'&mode=view&scope='+scope;
   }
   function goSelect(){
-    const cur=QLO_ROWS.map(mergeRow).find(r=>r.status!=='submitted');
-    window.location.href='/qir-line-form?year='+(cur?cur.year:QLO_ROWS[0].year);
+    const cur=scopeRowsRaw.map(r=>mergeRow(r,scope)).find(r=>r.status!=='submitted');
+    window.location.href='/qir-line-form?year='+(cur?cur.year:scopeRowsRaw[0].year)+'&scope='+scope;
   }
+
+  const scopeToggle=React.createElement(QloScopeToggle,{scope,setScope:changeScope});
 
   return React.createElement(React.Fragment,null,
     React.createElement(window.PageHeader,{
       backHref:'/',
       avatarText:'สด',
-      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR สายงาน'}],
-      title:'ภาพรวม QIR สายงาน',
-      actions:tab==='sel'
-        ?React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:goSelect},'คัดเลือกประจำปี')
-        :React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16}),onClick:()=>window.qqExportExcel(processes,quarters)},'Export Excel'),
+      breadcrumb:[{label:'หน้าหลัก',href:'/'},{label:'ภาพรวม QIR '+scopeLabel}],
+      title:'ภาพรวม QIR '+scopeLabel,
+      actions:React.createElement(React.Fragment,null,
+        scopeToggle,
+        tab==='sel'
+          ?React.createElement(Button,{variant:'primary',size:'md',leadingIcon:React.createElement(Icon,{name:'plus',size:16}),onClick:goSelect},'คัดเลือกประจำปี')
+          :React.createElement(Button,{variant:'secondary',size:'md',leadingIcon:React.createElement(Icon,{name:'download',size:16}),onClick:()=>window.qqExportExcel(processes,quarters)},'Export Excel')
+      ),
       subtitle:tab==='sel'
-        ?'ติดตามสถานะการคัดเลือก QIR ระดับสายงานของ '+QLO_LINE_NAME+' ในแต่ละรอบปี'
-        :'ติดตามความคืบหน้ารายไตรมาสของ QIR ที่ '+QLO_LINE_NAME+' คัดเลือกไว้ · คลิกที่การ์ดไตรมาสเพื่อดูรายละเอียดหรือรายงานผล',
-      tabs:React.createElement(QloTabs,{active:tab,setActive:setTab,pendingCount})
+        ?'ติดตามสถานะการคัดเลือก QIR ระดับ'+scopeLabel+'ของ '+scopeName+' ในแต่ละรอบปี'
+        :'ติดตามความคืบหน้ารายไตรมาสของ QIR ที่ '+scopeName+' คัดเลือกไว้ · คลิกที่การ์ดไตรมาสเพื่อดูรายละเอียดหรือรายงานผล',
+      tabs:React.createElement(QloTabs,{active:tab,setActive:setTab,pendingCount,showReporting:!isZone})
     }),
     tab==='sel'?React.createElement('main',{className:'lfcontent'},
       React.createElement(SelectionKpiCards,{rows}),
@@ -132,7 +169,7 @@ function App(){
         React.createElement('div',{className:'lsection-head'},
           React.createElement('div',null,
             React.createElement('h3',null,'ประวัติการคัดเลือกรายปี'),
-            React.createElement('p',{className:'lsection-hint'},'แต่ละปีระบุว่าได้ส่งผลการคัดเลือก QIR ของสายงานเรียบร้อยแล้วหรือยัง')
+            React.createElement('p',{className:'lsection-hint'},'แต่ละปีระบุว่าได้ส่งผลการคัดเลือก QIR ของ'+scopeLabel+'เรียบร้อยแล้วหรือยัง')
           )
         ),
         rows.length>0&&React.createElement('div',{className:'qlo-filters'},
@@ -147,7 +184,7 @@ function App(){
           ?React.createElement('div',{className:'qlo-empty'},
             React.createElement(Icon,{name:'file-text',size:22}),
             React.createElement('span',{className:'qlo-empty-title'},'ยังไม่มีประวัติการคัดเลือก'),
-            React.createElement('span',{className:'qlo-empty-sub'},'เมื่อส่งผลการคัดเลือก QIR ของสายงานในปีใด ประวัติของปีนั้นจะมาแสดงที่นี่'),
+            React.createElement('span',{className:'qlo-empty-sub'},'เมื่อส่งผลการคัดเลือก QIR ของ'+scopeLabel+'ในปีใด ประวัติของปีนั้นจะมาแสดงที่นี่'),
             React.createElement(Button,{variant:'primary',size:'sm',leadingIcon:React.createElement(Icon,{name:'plus',size:14}),onClick:goSelect},'คัดเลือกประจำปี')
           )
           :filtered.length===0
@@ -159,7 +196,7 @@ function App(){
             )
             :React.createElement('table',{className:'ltable qlo-table'},
               React.createElement('thead',null,React.createElement('tr',null,
-                ['ประจำปี','ผู้คัดเลือก','ข้อเสนอที่คัดเลือก','QIR ของสายงาน','วันที่ส่ง',''].map((h,i)=>React.createElement('th',{key:i},h))
+                ['ประจำปี','ผู้คัดเลือก','ข้อเสนอที่คัดเลือก','QIR ของ'+scopeLabel,'วันที่ส่ง',''].map((h,i)=>React.createElement('th',{key:i},h))
               )),
               React.createElement('tbody',null,filtered.map(r=>
                 React.createElement('tr',{key:r.year,className:'qlo-row',onClick:()=>openRow(r)},

@@ -86,7 +86,11 @@ function lfPdfBuildMetaSection(data) {
   return [
     lfPdfHeaderBar('การประเมินและปรับปรุงกระบวนการ'),
     {
-      table: { widths: [108, '*', 48, 66, 78, 56, 36, 42], body: body, dontBreakRows: true },
+      // Fixed pixel widths throughout (never '*' — pdfmake's star-column sizing silently
+      // overflows the page with long/multi-line cell text) and always a bit LESS than the
+      // page's full content width (712pt here) — summing to the exact width also overflows,
+      // confirmed via a minimal repro. Leaving ~20pt of slack avoids both failure modes.
+      table: { widths: [108, 258, 48, 66, 78, 56, 36, 42], body: body, dontBreakRows: true },
       layout: LF_PDF_TABLE_BORDER,
       margin: [0, 0, 0, 0]
     }
@@ -117,7 +121,7 @@ function lfPdfMetricRow(item, data) {
   ];
 }
 function lfPdfBuildMetricsSection(data) {
-  var widths = [108, 150, 60, 55, 50, 50, 50, '*', '*'];
+  var widths = [100, 140, 55, 50, 45, 45, 45, 106, 106];
   var body = [
     [
       { text: 'ขั้นตอน', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 9.5, margin: [5, 8, 5, 8] },
@@ -165,7 +169,7 @@ function lfPdfBuildDiagramSection(headerText, file) {
 
 // ส่วนที่ 3 — ประเด็นพิจารณาสำหรับการประเมินและปรับปรุงกระบวนการและจัดลำดับความสำคัญ
 function lfPdfBuildIssuesSection(data) {
-  var widths = [110, '*', '*', 140, 70];
+  var widths = [110, 186, 186, 140, 70];
   var body = [
     [
       { text: 'ประเด็นพิจารณา', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 10, margin: [5, 7, 5, 7] },
@@ -195,7 +199,7 @@ function lfPdfBuildIssuesSection(data) {
 
   // QIR — บันทึกกิจกรรมที่จะดำเนินการ (ไม่มีหน้าต้นแบบแนบมาให้ จึงออกแบบให้อยู่ในภาษาเดียวกับส่วนอื่น)
   (data.qirGroups || []).forEach(function (g) {
-    var qirWidths = [40, '*', 55];
+    var qirWidths = [40, 597, 55];
     var qirBody = [[
       { text: 'กิจกรรมที่จะดำเนินการ', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 9.5, margin: [5, 6, 5, 6], colSpan: 2 }, {},
       { text: 'น้ำหนัก', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 9.5, margin: [5, 6, 5, 6] }
@@ -211,7 +215,7 @@ function lfPdfBuildIssuesSection(data) {
     out.push({ text: 'QIR — บันทึกกิจกรรมที่จะดำเนินการ', bold: true, fontSize: 11, margin: [0, 14, 0, 6] });
     out.push({
       table: {
-        widths: ['*', '*'],
+        widths: [346, 346],
         body: [[
           { text: 'ข้อเสนอโอกาสในการปรับปรุงกระบวนการ (QIR):\n' + (g.issueText || '-'), fontSize: 9.5, margin: [6, 6, 6, 6] },
           { text: 'สอดคล้องกับกระบวนการ: ' + procLabel + '\n\nหลักเกณฑ์ (Criteria):\n' + lfPdfCheckLines(data.qirCriteriaOptions, g.criteria), fontSize: 9.5, margin: [6, 6, 6, 6] }
@@ -227,7 +231,7 @@ function lfPdfBuildIssuesSection(data) {
 
 // ส่วนที่ 5 — การกำหนดตัวชี้วัดและเป้าหมายของกระบวนการ ประจำปี (ปีปัจจุบัน / ปีถัดไป)
 function lfPdfNextYearTable(leadingRows, laggingRows, targetLabel) {
-  var widths = [150, '*', 110];
+  var widths = [150, 432, 110];
   var body = [[
     { text: 'ขั้นตอน', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 9.5, margin: [5, 6, 5, 6] },
     { text: 'ตัวชี้วัด', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 9.5, margin: [5, 6, 5, 6] },
@@ -255,7 +259,7 @@ function lfPdfBuildNextYearSection(data) {
 
 // ส่วนที่ 6 — องค์ความรู้ที่ใช้ / องค์ความรู้ใหม่ที่เกิดขึ้นจากการปรับปรุงกระบวนการ
 function lfPdfBuildKnowledgeSection(data) {
-  var widths = ['*', '*', '*', '*'];
+  var widths = [173, 173, 173, 173];
   var body = [[
     { text: 'หัวข้อองค์ความรู้', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 10, margin: [5, 7, 5, 7] },
     { text: 'ที่อยู่ในการจัดเก็บ', fillColor: LF_PDF_PURPLE, color: '#fff', bold: true, fontSize: 10, margin: [5, 7, 5, 7] },
@@ -297,7 +301,7 @@ function lfPdfBuildGuideSection(formGuide) {
     ]);
   });
   return {
-    table: { widths: [70, '*'], headerRows: 1, body: body },
+    table: { widths: [70, 622], headerRows: 1, body: body },
     layout: LF_PDF_TABLE_BORDER
   };
 }
